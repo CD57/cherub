@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "351098426941",
+    "project_id": "cherub-app",
+    "storage_bucket": "cherub-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351098426941:android:e2c5b472bfd6081eefbc54",
+        "android_client_info": {
+          "package_name": "com.cherub.cherub_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "351098426941-j80kuf26s0v5umsbve5dlgp5gvigdh2u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgb1hnHbiB7cvc_QLZFUxkH7_uK93mRQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "351098426941-j80kuf26s0v5umsbve5dlgp5gvigdh2u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
