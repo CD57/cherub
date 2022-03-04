@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
+import '../services/storage_service.dart';
+import '../services/database_service.dart';
 import '../services/media_service.dart';
 import '../services/navigation_service.dart';
 
@@ -22,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1)).then(
+    Future.delayed(const Duration(seconds: 3)).then(
       (_) {
         _setup().then(
           (_) => widget.onInitializationComplete(),
@@ -60,20 +63,35 @@ class _SplashPageState extends State<SplashPage> {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
     _registerServices();
+    if (kDebugMode) {
+      print("Service Set Up Complete");
+    }
   }
 
   void _registerServices() {
     GetIt.instance.registerSingleton<NavigationService>(
       NavigationService(),
     );
+    if (kDebugMode) {
+      print("NavigationService Ready");
+    }
     GetIt.instance.registerSingleton<MediaService>(
       MediaService(),
     );
-  //   GetIt.instance.registerSingleton<CloudStorageService>(
-  //     CloudStorageService(),
-  //   );
-  //   GetIt.instance.registerSingleton<DatabaseService>(
-  //     DatabaseService(),
-  //   );
+    if (kDebugMode) {
+      print("MediaService Ready");
+    }
+    GetIt.instance.registerSingleton<StorageService>(
+      StorageService(),
+    );
+    if (kDebugMode) {
+      print("StorageService Ready");
+    }
+    GetIt.instance.registerSingleton<DatabaseService>(
+      DatabaseService(),
+    );
+    if (kDebugMode) {
+      print("DatabaseService Ready");
+    }
   }
 }
