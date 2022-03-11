@@ -1,7 +1,8 @@
-import 'dart:io';
+// profile_picture_widget.dart - Custom widget for displaying profile picture
 
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfilePictureNetwork extends StatelessWidget {
   final String image;
@@ -33,7 +34,7 @@ class ProfilePictureNetwork extends StatelessWidget {
 }
 
 class ProfilePictureFile extends StatelessWidget {
-  final PlatformFile image;
+  final XFile image;
   final double size;
 
   const ProfilePictureFile({
@@ -50,7 +51,7 @@ class ProfilePictureFile extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: FileImage(File(image.path!)),
+          image: FileImage(File(image.path)),
         ),
         borderRadius: BorderRadius.all(Radius.circular(size)),
         color: Colors.black,

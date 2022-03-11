@@ -1,8 +1,11 @@
+// main.dart - Cherub Application - C18465384
+
 // ignore: unused_import
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'pages/date_setup_page.dart';
 import 'pages/home_page.dart';
 import './pages/splash_page.dart';
 import './pages/login_page.dart';
@@ -45,6 +48,9 @@ class MainApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Cherub',
         theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: const Color.fromARGB(255, 20, 133, 43), secondary: const Color.fromRGBO(163, 235, 177, 1.0)),
+          primaryColor: Colors.green[900],
           backgroundColor: const Color.fromRGBO(163, 235, 177, 1.0),
           scaffoldBackgroundColor: const Color.fromRGBO(163, 235, 177, 1.0),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -57,6 +63,7 @@ class MainApp extends StatelessWidget {
           '/login': (BuildContext _context) => const LoginPage(),
           '/registration': (BuildContext _context) => const RegistrationPage(),
           '/home': (BuildContext _context) => const HomePage(),
+          '/datesetup': (BuildContext _context) => const DateSetupPage(),
         },
       ),
     );

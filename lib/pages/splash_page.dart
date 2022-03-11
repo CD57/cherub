@@ -1,6 +1,9 @@
+// splash_page.dart - App page containing splash screen with initializing app services
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:get_it/get_it.dart';
 import '../services/storage_service.dart';
 import '../services/database_service.dart';
@@ -36,6 +39,9 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("splash_page.dart - build - begin");
+    }
     return MaterialApp(
       title: 'Cherub',
       theme: ThemeData(
@@ -62,6 +68,10 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> _setup() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
+    FlutterFireUIAuth.configureProviders([
+      const EmailProviderConfiguration(),
+      const PhoneProviderConfiguration(),
+    ]);
     _registerServices();
     if (kDebugMode) {
       print("Service Set Up Complete");

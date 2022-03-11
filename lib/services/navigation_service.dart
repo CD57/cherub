@@ -1,3 +1,5 @@
+// navigation_service.dart - Service to manage app navigation between pages
+
 import 'package:flutter/material.dart';
 
 class NavigationService {

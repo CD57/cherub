@@ -1,3 +1,5 @@
+// user_input_widget.dart - Custom widget for user form input, containing text hint, regex validation, and hidden text option
+
 import 'package:flutter/material.dart';
 
 class UserInputForm extends StatelessWidget {

@@ -1,14 +1,19 @@
-import 'package:file_picker/file_picker.dart';
+// media_service.dart - Service to manage uploading media files from phone
+
+import 'package:image_picker/image_picker.dart';
 
 class MediaService {
-  Future<PlatformFile?> getImage() async {
-    FilePickerResult? _image =
-        await FilePicker.platform.pickFiles(type: FileType.image);
-    if (_image != null) {
-      return _image.files[0];
-    }
-    return null;
+  MediaService();
+
+  Future<XFile?> getImageFromGallery() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    return image;
   }
 
-  MediaService();
+  Future<XFile?> getPhotoFromCamera() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    return photo;
+  }
 }

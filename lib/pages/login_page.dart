@@ -1,3 +1,6 @@
+// login_page.dart - App page containing forms for user to enter login details, or go to registration page
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +21,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late double _deviceHeight;
   late double _deviceWidth;
-
   late AuthProvider _auth;
   late NavigationService _nav;
 
@@ -29,10 +31,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("login_page.dart - build - begin");
+    }
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _auth = Provider.of<AuthProvider>(context);
     _nav = GetIt.instance.get<NavigationService>();
+    _auth.logout;
     return _buildUI();
   }
 
@@ -45,10 +51,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         height: _deviceHeight * 0.98,
         width: _deviceWidth * 0.97,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
           children: [
             _pageTitle(),
             SizedBox(
@@ -62,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: _deviceHeight * 0.02,
             ),
-            _registerAccountLink(),
+            Center(child: _registerAccountLink()),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+// custom_button_widget.dart - Custom widget for button, containing text and size details
+
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {

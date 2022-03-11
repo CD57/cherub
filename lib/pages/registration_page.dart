@@ -1,9 +1,11 @@
+// registraion_page.dart - App page containing forms for user to enter details of registration
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../services/navigation_service.dart';
 import '../services/media_service.dart';
 import '../services/storage_service.dart';
 import '../services/database_service.dart';
@@ -26,23 +28,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   late AuthProvider _auth;
   late DatabaseService _db;
-  late StorageService _cloudStorage;
-  late NavigationService _nav;
+  late StorageService _storage;
 
   String? _name;
   String? _number;
   String? _email;
   String? _password;
-  PlatformFile? _profileImage;
+  XFile? _profileImage;
 
   final _registerFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      print("registration_page.dart - build - begin");
+    }
     _auth = Provider.of<AuthProvider>(context);
     _db = GetIt.instance.get<DatabaseService>();
-    _cloudStorage = GetIt.instance.get<StorageService>();
-    _nav = GetIt.instance.get<NavigationService>();
+    _storage = GetIt.instance.get<StorageService>();
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return _buildUI();
@@ -84,7 +87,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget _profilePictureField() {
     return GestureDetector(
       onTap: () {
-        GetIt.instance.get<MediaService>().getImage().then(
+        GetIt.instance.get<MediaService>().getImageFromGallery().then(
           (_file) {
             setState(
               () {
@@ -167,21 +170,36 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _registerButton() {
+    late String _imageURL;
     return CustomButton(
       name: "Register",
       height: _deviceHeight * 0.065,
       width: _deviceWidth * 0.65,
       onPressed: () async {
-        if (_registerFormKey.currentState!.validate() &&
-            _profileImage != null) {
+        if (_registerFormKey.currentState!.validate()) {
           _registerFormKey.currentState!.save();
           String? _uid = await _auth.emailRegister(_email!, _password!);
-          String? _imageURL =
-              await _cloudStorage.saveProfilePicture(_uid!, _profileImage!);
-          await _db.createUser(
-              _uid, _name!, _number!, _email!, _profileImage!.toString());
+          if (kDebugMode) {
+            print("registration_page.dart - emailRegister - _uid = $_uid");
+          }
+
+          if (_profileImage != null) {
+            _imageURL =
+                (await _storage.saveProfilePicture(_uid!, _profileImage!))!;
+          } else {
+            _imageURL =
+                "https://firebasestorage.googleapis.com/v0/b/cherub-app.appspot.com/o/images%2Fdefault%2FNoPicture%2FUser-NoProfile-PNG.png?alt=media&token=4e098702-0f8c-4eb4-b670-9ac2035dbe3c";
+          }
+
+          await _db.createUser(_uid!, _name!, _number!, _email!, _imageURL);
+          await _auth.setAccountDetails(_name!, _imageURL);
           await _auth.logout();
           await _auth.emailLogin(_email!, _password!);
+        } else {
+          if (kDebugMode) {
+            print(
+                "registration_page.dart - _registerButton - onPressed: Error");
+          }
         }
       },
     );

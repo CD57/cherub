@@ -1,9 +1,11 @@
+// user_model.dart - Model class containing the details of a user, such as their name and phone number
+
 class UserModel {
   final String uid;
   final String name;
   final String number;
   final String email;
-  final String imageURL;
+  late String imageURL;
   late DateTime lastActive;
 
   UserModel({
