@@ -8,6 +8,7 @@ const String users = "Users";
 const String dates = "Dates";
 const String messages = "Messages";
 const String plans = "Plans";
+const String details = "DateDetails";
 
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -36,12 +37,34 @@ class DatabaseService {
     }
   }
 
-  // Get User
-  Future<DocumentSnapshot> getUser(String _uid) {
+  // Get User By ID
+  Future<DocumentSnapshot> getUserByID(String _uid) {
     if (kDebugMode) {
-      print("database_service.dart - updateLastActive()");
+      print("database_service.dart - getUser()");
     }
     return _db.collection(users).doc(_uid).get();
+  }
+
+  // Get User
+  Future<DocumentSnapshot> getUserByUsername(String _uid) {
+    if (kDebugMode) {
+      print("database_service.dart - getUser()");
+    }
+    return _db.collection(users).doc(_uid).get();
+  }
+
+  // Get All Users
+  Future<QuerySnapshot> getAllUsers({String? name}) {
+    if (kDebugMode) {
+      print("database_service.dart - getAllUsers()");
+    }
+    Query _query = _db.collection(users);
+    if (name != null) {
+      _query = _query
+          .where("name", isGreaterThanOrEqualTo: name)
+          .where("name", isLessThanOrEqualTo: name + "z");
+    }
+    return _query.get();
   }
 
   // Update Last Active time for user
@@ -172,6 +195,36 @@ class DatabaseService {
     }
     try {
       await _db.collection(dates).doc(_dateID).delete();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+   // Create Date Details
+  Future<DocumentReference?> createDateDetails(Map<String, dynamic> _data) async {
+    if (kDebugMode) {
+      print("database_service.dart - createDateDetails()");
+    }
+    try {
+      DocumentReference _dateDetails = await _db.collection(details).add(_data);
+      return _dateDetails;
+    } catch (e) {
+      if (kDebugMode) {
+        print("createDateDetails: Error - " + e.toString());
+      }
+      return null;
+    }
+  }
+
+  // Delete Date Details
+  Future<void> deleteDateDetails(String _dateDetailsID) async {
+    if (kDebugMode) {
+      print("database_service.dart - deleteDateDetails()");
+    }
+    try {
+      await _db.collection(dates).doc(_dateDetailsID).delete();
     } catch (e) {
       if (kDebugMode) {
         print(e);

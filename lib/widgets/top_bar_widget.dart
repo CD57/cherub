@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class TopBar extends StatelessWidget {
   final String _barTitle;
   Widget? primaryAction;
@@ -47,7 +48,7 @@ class TopBar extends StatelessWidget {
       _barTitle,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        color: const Color.fromARGB(255, 7, 160, 33),
+        color: const Color.fromARGB(255, 20, 133, 43),
         fontSize: fontSize,
         fontWeight: FontWeight.w700,
       ),

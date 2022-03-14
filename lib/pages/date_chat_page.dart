@@ -12,9 +12,7 @@ import '../widgets/top_bar_widget.dart';
 
 class DateChatPage extends StatefulWidget {
   final DateChat dateChat;
-
   const DateChatPage({Key? key, required this.dateChat}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() {
     return _DateChatPageState();
@@ -74,11 +72,11 @@ class _DateChatPageState extends State<DateChatPage> {
                 children: [
                   TopBar(
                     widget.dateChat.title(),
-                    fontSize: 10,
+                    fontSize: 25,
                     primaryAction: IconButton(
                       icon: const Icon(
                         Icons.delete,
-                        color: Color.fromRGBO(0, 82, 218, 1.0),
+                        color: Color.fromARGB(255, 20, 133, 43),
                       ),
                       onPressed: () {
                         _pageProvider.deleteChat();
@@ -87,7 +85,7 @@ class _DateChatPageState extends State<DateChatPage> {
                     secondaryAction: IconButton(
                       icon: const Icon(
                         Icons.arrow_back,
-                        color: Color.fromRGBO(0, 82, 218, 1.0),
+                        color: Color.fromARGB(255, 20, 133, 43),
                       ),
                       onPressed: () {
                         _pageProvider.goBack();
@@ -121,10 +119,8 @@ class _DateChatPageState extends State<DateChatPage> {
                 width: _deviceWidth * 0.80,
                 message: _message,
                 isOwnMessage: _isOwnMessage,
-                sender: widget
-                    .dateChat
-                    .contacts
-                    .where((_m) => _m.uid == _message.senderID)
+                sender: widget.dateChat.contacts
+                    .where((_user) => _user.uid == _message.senderID)
                     .first,
               );
             },
@@ -134,7 +130,7 @@ class _DateChatPageState extends State<DateChatPage> {
         return const Align(
           alignment: Alignment.center,
           child: Text(
-            "Be the first to say Hi!",
+            "Say Hi!",
             style: TextStyle(color: Colors.white),
           ),
         );
@@ -152,7 +148,7 @@ class _DateChatPageState extends State<DateChatPage> {
     return Container(
       height: _deviceHeight * 0.06,
       decoration: BoxDecoration(
-        color: const Color.fromRGBO(30, 29, 37, 1.0),
+        color: const Color.fromARGB(255, 20, 133, 43),
         borderRadius: BorderRadius.circular(100),
       ),
       margin: EdgeInsets.symmetric(
@@ -178,7 +174,7 @@ class _DateChatPageState extends State<DateChatPage> {
   Widget _messageTextField() {
     return SizedBox(
       width: _deviceWidth * 0.65,
-      child: UserInputForm(
+      child: CustomInputForm(
           onSaved: (_value) {
             _pageProvider.message = _value;
           },
@@ -189,7 +185,7 @@ class _DateChatPageState extends State<DateChatPage> {
   }
 
   Widget _sendMessageButton() {
-    double _size = _deviceHeight * 0.04;
+    double _size = _deviceHeight * 0.05;
     return SizedBox(
       height: _size,
       width: _size,
@@ -215,12 +211,7 @@ class _DateChatPageState extends State<DateChatPage> {
       height: _size,
       width: _size,
       child: FloatingActionButton(
-        backgroundColor: const Color.fromRGBO(
-          0,
-          82,
-          218,
-          1.0,
-        ),
+        backgroundColor: const Color.fromARGB(255, 20, 133, 43),
         onPressed: () {
           _pageProvider.sendImageMessage();
         },

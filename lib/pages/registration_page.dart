@@ -1,4 +1,4 @@
-// registraion_page.dart - App page containing forms for user to enter details of registration
+// registraion_page.dart - App page containing forms for user to enter details of registration.
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
-      print("registration_page.dart - build - begin");
+      print("registration_page.dart - build()");
     }
     _auth = Provider.of<AuthProvider>(context);
     _db = GetIt.instance.get<DatabaseService>();
@@ -126,7 +126,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            UserInputForm(
+            CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
                     _name = _value;
@@ -135,7 +135,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 regex: r'.{8,}',
                 hint: "Name",
                 hidden: false),
-            UserInputForm(
+            CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
                     _email = _value;
@@ -145,7 +145,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                 hint: "Email",
                 hidden: false),
-            UserInputForm(
+            CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
                     _number = _value;
@@ -154,7 +154,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 regex: r".{8,}",
                 hint: "Phone Number",
                 hidden: false),
-            UserInputForm(
+            CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
                     _password = _value;
@@ -179,10 +179,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
         if (_registerFormKey.currentState!.validate()) {
           _registerFormKey.currentState!.save();
           String? _uid = await _auth.emailRegister(_email!, _password!);
-          if (kDebugMode) {
-            print("registration_page.dart - emailRegister - _uid = $_uid");
-          }
-
           if (_profileImage != null) {
             _imageURL =
                 (await _storage.saveProfilePicture(_uid!, _profileImage!))!;
@@ -193,8 +189,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
           await _db.createUser(_uid!, _name!, _number!, _email!, _imageURL);
           await _auth.setAccountDetails(_name!, _imageURL);
-          await _auth.logout();
-          await _auth.emailLogin(_email!, _password!);
+          if (kDebugMode) {
+            print("registration_page.dart - registerButton() - User Created and Account Details Updated");
+          }
         } else {
           if (kDebugMode) {
             print(

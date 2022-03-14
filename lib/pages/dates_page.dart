@@ -1,4 +1,4 @@
-// dates_page.dart - App page containing display for all users availiable dates
+// dates_page.dart - App page containing display for all users availiable dates.
 
 import 'package:cherub/models/user_model.dart';
 import 'package:cherub/widgets/custom_tile_list_widget.dart';
@@ -66,23 +66,15 @@ class _DatesPageState extends State<DatesPage> {
               TopBar(
                 'My Dates',
                 primaryAction: IconButton(
-                  icon: Icon(
-                    Icons.logout,
-                    color: Colors.green.shade900,
+                  icon: const Icon(
+                    Icons.keyboard_return_rounded,
+                    color: Color.fromARGB(255, 20, 133, 43),
                   ),
                   onPressed: () {
-                    _auth.logout();
+                    _nav.goBack();
                   },
                 ),
               ),
-              // CustomTileListView(
-              //     height: _deviceHeight * .1,
-              //     title: "Me",
-              //     subtitle: "Test",
-              //     imagePath: _auth.user.imageURL,
-              //     isActive: true,
-              //     isSelected: false,
-              //     onTap: (){})
               _datesList(),
             ],
           ),
@@ -106,10 +98,10 @@ class _DatesPageState extends State<DatesPage> {
               },
             );
           } else {
-            return Center(
+            return const Center(
               child: Text(
                 "No Dates Available",
-                style: TextStyle(color: Colors.green.shade900),
+                style: TextStyle(color: Color.fromARGB(255, 20, 133, 43)),
               ),
             );
           }

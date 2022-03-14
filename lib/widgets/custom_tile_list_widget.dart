@@ -1,6 +1,6 @@
 // custom_tile_list_widget.dart - Custom widget for listview of tiles, with date or chat details
 
-import 'package:cherub/widgets/custom_status_notification_widget.dart';
+import 'package:cherub/widgets/custom_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../models/date_message_model.dart';
@@ -157,13 +157,13 @@ class CustomTileListViewChat extends StatelessWidget {
             width: width * 0.05,
           ),
           message.type == MessageContentType.text
-              ? TextNotification(
+              ? MessageBubble(
                   isOwnMessage: isOwnMessage,
                   message: message,
                   height: deviceHeight * 0.06,
                   width: width,
                 )
-              : ImageNotification(
+              : MediaBubble(
                   isOwnMessage: isOwnMessage,
                   message: message,
                   height: deviceHeight * 0.30,

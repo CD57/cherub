@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../services/navigation_service.dart';
 
-class NewDate extends StatefulWidget {
-  const NewDate({Key? key}) : super(key: key);
+class CreateDatePage extends StatefulWidget {
+  const CreateDatePage({Key? key}) : super(key: key);
 
   @override
-  _NewDateState createState() {
-    return _NewDateState();
+  State<StatefulWidget> createState() {
+    return _CreateDatePage();
   }
 }
 
-class _NewDateState extends State<NewDate> {
+class _CreateDatePage extends State<CreateDatePage> {
   late NavigationService _nav;
 
   @override

@@ -40,7 +40,7 @@ class DatesPageProvider extends ChangeNotifier {
               //Get Users In Chat
               List<UserModel> _contacts = [];
               for (var _uid in _chatData["contacts"]) {
-                DocumentSnapshot _userSnapshot = await _db.getUser(_uid);
+                DocumentSnapshot _userSnapshot = await _db.getUserByID(_uid);
                 Map<String, dynamic> _userData =
                     _userSnapshot.data() as Map<String, dynamic>;
                 _userData["uid"] = _userSnapshot.id;

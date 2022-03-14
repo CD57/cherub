@@ -1,8 +1,8 @@
 // home_page.dart - App page containing main menu of app, containing a scaffold of displaying other app pages
 
+import 'package:cherub/pages/date_setup_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'create_date_page.dart';
 import 'profile_page.dart';
 import 'dates_page.dart';
 import 'contacts_page.dart';
@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
   final List<Widget> _pages = [
-    const NewDate(),
+    const DateSetupPage(),
     const DatesPage(),
     const ContactsPage(),
     const ProfilePage()

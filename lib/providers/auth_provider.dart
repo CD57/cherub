@@ -1,4 +1,4 @@
-// auth_provider.dart - Provider for the apps authentication, managing account data
+// auth_provider.dart - Provider for the apps authentication, managing account data.
 
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,18 +12,20 @@ class AuthProvider extends ChangeNotifier {
   late final NavigationService _navService;
   late final DatabaseService _dbService;
   late UserModel user;
+  late bool authorised = false;
 
   AuthProvider() {
     _auth = FirebaseAuth.instance;
     _navService = GetIt.instance.get<NavigationService>();
     _dbService = GetIt.instance.get<DatabaseService>();
     _auth.authStateChanges().listen((_user) {
-      if (_user != null) {
+      if (_user != null && (_auth.currentUser?.uid == _user.uid)) {
         if (kDebugMode) {
-          print("auth_provider - User Authorised");
+          print("auth_provider.dart - AuthProvider() - User Found");
         }
+        authorised = true;
         _dbService.updateLastActive(_user.uid);
-        _dbService.getUser(_user.uid).then(
+        _dbService.getUserByID(_user.uid).then(
           (_snapshot) {
             if (_snapshot.data() != null) {
               Map<String, dynamic> _userData =
@@ -41,19 +43,25 @@ class AuthProvider extends ChangeNotifier {
               if (kDebugMode) {
                 print("User: " + user.toMap().toString());
               }
-            }
-            else {
+              authorised = true;
+              _navService.removeAndGoToRoute('/home');
+            } else {
               if (kDebugMode) {
-                print("auth_provider - AuthProvider() - No User Data Found");
+                print(
+                    "auth_provider.dart - AuthProvider() - No User Data Found - Returning to login");
+              }
+              authorised = false;
+              if (_navService.getRoute() != '/login') {
+                _navService.removeAndGoToRoute('/login');
               }
             }
-            _navService.removeAndGoToRoute('/home');
           },
         );
       } else {
         if (kDebugMode) {
-          print("auth_provider - User Not Authorised");
+          print("auth_provider.dart - AuthProvider() - User Not Authorised");
         }
+        authorised = false;
         if (_navService.getRoute() != '/login') {
           _navService.removeAndGoToRoute('/login');
         }
@@ -70,11 +78,12 @@ class AuthProvider extends ChangeNotifier {
           email: _email, password: _password);
     } on FirebaseAuthException {
       if (kDebugMode) {
-        print("Error: Could Not Login Into Firebase");
+        print(
+            "auth_provider.dart - emailLogin() - Error: Could Not Login Into Firebase");
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print("auth_provider.dart - emailLogin() - " + e.toString());
       }
     }
   }
@@ -89,11 +98,11 @@ class AuthProvider extends ChangeNotifier {
       return _credentials.user!.uid;
     } on FirebaseAuthException {
       if (kDebugMode) {
-        print("auth_provider - Error registering user.");
+        print("auth_provider.dart - emailRegister() - Error registering user.");
       }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print("auth_provider.dart - emailRegister() - Error - " + e.toString());
       }
     }
     return null;
@@ -107,7 +116,9 @@ class AuthProvider extends ChangeNotifier {
       await _auth.currentUser!.updateDisplayName(_name);
       await _auth.currentUser!.updatePhotoURL(_photoURL);
       if (kDebugMode) {
-        print("auth_provider.dart - " + _auth.currentUser!.displayName.toString() + _auth.currentUser!.photoURL.toString());
+        print("auth_provider.dart - " +
+            _auth.currentUser!.displayName.toString() +
+            _auth.currentUser!.photoURL.toString());
       }
     } on FirebaseAuthException {
       if (kDebugMode) {
@@ -121,6 +132,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    authorised = false;
     if (kDebugMode) {
       print("auth_provider.dart - logout()");
     }

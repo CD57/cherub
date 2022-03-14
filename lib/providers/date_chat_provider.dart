@@ -92,6 +92,10 @@ class DateChatProvider extends ChangeNotifier {
         _db.updateDateChat(_chatId, {"isTyping": _event});
       },
     );
+    if (kDebugMode) {
+      print("date_chat_provider.dart - listenToKeyboardChanges(): " +
+          _keyboardVisibilityStream.toString());
+    }
   }
 
   void sendTextMessage() {

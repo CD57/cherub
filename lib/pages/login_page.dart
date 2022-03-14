@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            UserInputForm(
+            CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
                     _email = _value;
@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                 hint: "Email",
                 hidden: false),
-            UserInputForm(
+            CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
                     _password = _value;

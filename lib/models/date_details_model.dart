@@ -1,46 +1,46 @@
 // date_details_model.dart - Model class containing the details of a users date, such as time, location and check-in time
-
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DateDetailsModel {
-  final String uid;
-  late String dateUid;
+  //final String uid;
+  late String hostID;
   late String datePlan;
-  late String dateType;
-  late DateTime dateTime;
-  late DateTime checkpointTime;
-  late LatLng dateGPS;
+  late DateTime dateDay;
+  late String dateTime;
+  late String checkInTime;
+  //late LatLng dateGPS;
 
   DateDetailsModel({
-    required this.uid,
-    required this.dateUid,
+    //required this.uid,
+    required this.hostID,
     required this.datePlan,
-    required this.dateType,
+    required this.dateDay,
     required this.dateTime,
-    required this.checkpointTime,
-    required this.dateGPS,
+    required this.checkInTime,
+    //required this.dateGPS,
   });
 
   factory DateDetailsModel.fromJSON(Map<String, dynamic> _json) {
     return DateDetailsModel(
-      uid: _json["uid"],
-      dateUid: _json["dateUid"],
+      //uid: _json["uid"],
+      hostID: _json["hostID"],
       datePlan: _json["datePlan"],
-      dateType: _json["dateType"],
-      dateTime: _json["dateTime"].toDate(),
-      checkpointTime: _json["checkpointTime"].toDate(), 
-      dateGPS: _json["dateGPS"],
+      dateDay: _json["dateDay"],
+      dateTime: _json["dateTime"],
+      checkInTime: _json["checkInTime"], 
+      //dateGPS: _json["dateGPS"],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      "dateUid": dateUid,
+      //"dateUid": uid,
+      "hostID": hostID,
       "datePlan": datePlan,
-      "dateType": dateType,
+      "dateDay": dateDay,
       "dateTime": dateTime,
-      "checkpointTime": checkpointTime,
-      "dateGPS": dateGPS,
+      "checkInTime": checkInTime,
+      //"dateGPS": dateGPS,
     };
   }
 }
