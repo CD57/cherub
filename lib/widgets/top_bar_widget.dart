@@ -13,7 +13,8 @@ class TopBar extends StatelessWidget {
   late double _deviceWidth;
 
   TopBar(
-    this._barTitle, {Key? key, 
+    this._barTitle, {
+    Key? key,
     this.primaryAction,
     this.secondaryAction,
     this.fontSize = 35,
@@ -27,7 +28,7 @@ class TopBar extends StatelessWidget {
   }
 
   Widget _buildUI() {
-    return SizedBox(
+    return  SizedBox(
       height: _deviceHeight * 0.10,
       width: _deviceWidth,
       child: Row(

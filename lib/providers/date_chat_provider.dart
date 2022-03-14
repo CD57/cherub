@@ -32,6 +32,7 @@ class DateChatProvider extends ChangeNotifier {
   String? _message;
 
   String get message {
+    // ignore: recursive_getters
     return message;
   }
 
@@ -80,7 +81,7 @@ class DateChatProvider extends ChangeNotifier {
       );
     } catch (e) {
       if (kDebugMode) {
-        print("Error getting messages.");
+        print("date_chat_provider.dart - listenToMessages() - Error getting messages.");
         print(e);
       }
     }

@@ -33,6 +33,7 @@ class AuthProvider extends ChangeNotifier {
               user = UserModel.fromJSON(
                 {
                   "uid": _user.uid,
+                  "username": _userData["username"],
                   "name": _userData["name"],
                   "number": _userData["number"],
                   "email": _userData["email"],
@@ -76,6 +77,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(
           email: _email, password: _password);
+      if (kDebugMode) {
+        print("auth_provider.dart - emailLogin() - Signed In: " + _auth.currentUser!.email.toString());
+      }
     } on FirebaseAuthException {
       if (kDebugMode) {
         print(
@@ -108,12 +112,12 @@ class AuthProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<void> setAccountDetails(String _name, String _photoURL) async {
+  Future<void> setAccountDetails(String _displayName, String _photoURL) async {
     if (kDebugMode) {
       print("auth_provider.dart - setAccountDetails");
     }
     try {
-      await _auth.currentUser!.updateDisplayName(_name);
+      await _auth.currentUser!.updateDisplayName(_displayName);
       await _auth.currentUser!.updatePhotoURL(_photoURL);
       if (kDebugMode) {
         print("auth_provider.dart - " +

@@ -30,6 +30,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   late DatabaseService _db;
   late StorageService _storage;
 
+  String? _username;
   String? _name;
   String? _number;
   String? _email;
@@ -72,7 +73,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             _registrationForm(),
             SizedBox(
-              height: _deviceHeight * 0.05,
+              height: _deviceHeight * 0.1,
             ),
             _registerButton(),
             SizedBox(
@@ -102,7 +103,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           return ProfilePictureFile(
             key: UniqueKey(),
             image: _profileImage!,
-            size: _deviceHeight * 0.25,
+            size: _deviceHeight * 0.15,
           );
         } else {
           return ProfilePictureNetwork(
@@ -118,7 +119,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Widget _registrationForm() {
     return SizedBox(
-      height: _deviceHeight * 0.35,
+      height: _deviceHeight * 0.50,
       child: Form(
         key: _registerFormKey,
         child: Column(
@@ -129,12 +130,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
             CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
+                    _username = _value;
+                  });
+                },
+                regex: r'.{5,}',
+                hint: "Username",
+                hidden: false),
+                SizedBox(
+              height: _deviceHeight * 0.01,
+            ),
+            CustomInputForm(
+                onSaved: (_value) {
+                  setState(() {
                     _name = _value;
                   });
                 },
                 regex: r'.{8,}',
                 hint: "Name",
                 hidden: false),
+                SizedBox(
+              height: _deviceHeight * 0.01,
+            ),
             CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
@@ -145,6 +161,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                 hint: "Email",
                 hidden: false),
+                SizedBox(
+              height: _deviceHeight * 0.01,
+            ),
             CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
@@ -154,6 +173,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 regex: r".{8,}",
                 hint: "Phone Number",
                 hidden: false),
+                SizedBox(
+              height: _deviceHeight * 0.01,
+            ),
             CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
@@ -187,8 +209,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 "https://firebasestorage.googleapis.com/v0/b/cherub-app.appspot.com/o/images%2Fdefault%2FNoPicture%2FUser-NoProfile-PNG.png?alt=media&token=4e098702-0f8c-4eb4-b670-9ac2035dbe3c";
           }
 
-          await _db.createUser(_uid!, _name!, _number!, _email!, _imageURL);
-          await _auth.setAccountDetails(_name!, _imageURL);
+          await _db.createUser(_uid!, _username!, _name!, _number!, _email!, _imageURL);
+          await _auth.setAccountDetails(_username!, _imageURL);
           if (kDebugMode) {
             print("registration_page.dart - registerButton() - User Created and Account Details Updated");
           }

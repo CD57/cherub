@@ -1,6 +1,7 @@
 // main.dart - Cherub Application - C18465384
 
 // ignore: unused_import
+import 'package:cherub/pages/contacts_page.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,8 @@ class MainApp extends StatelessWidget {
           '/login': (BuildContext _context) => const LoginPage(),
           '/registration': (BuildContext _context) => const RegistrationPage(),
           '/home': (BuildContext _context) => const HomePage(),
-          '/datesetup': (BuildContext _context) => const DateSetupPage(),
+          '/contacts': (BuildContext _context) => const ContactsPage(),
+          //'/datesetup': (BuildContext _context) => const DateSetupPage(),
         },
       ),
     );

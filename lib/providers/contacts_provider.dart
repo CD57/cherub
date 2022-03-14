@@ -53,23 +53,23 @@ class ContactsProvider extends ChangeNotifier {
     }
   }
 
-  void getUser({String? name}) async {
+  void getUser({String? uid}) async {
     try {
-      _database.getUserByUsername(name!).then(
+      _database.getUserByID(uid!).then(
         (_snapshot) {
           if (_snapshot.data() != null) {
-              Map<String, dynamic> _userData =
-                  _snapshot.data()! as Map<String, dynamic>;
-              user = UserModel.fromJSON(
-                {
-                  "uid": _userData["uid"],
-                  "name": _userData["name"],
-                  "number": _userData["number"],
-                  "email": _userData["email"],
-                  "lastActive": _userData["lastActive"],
-                  "imageURL": _userData["imageURL"],
-                },
-              );
+            Map<String, dynamic> _userData =
+                _snapshot.data()! as Map<String, dynamic>;
+            user = UserModel.fromJSON(
+              {
+                "uid": _userData["uid"],
+                "name": _userData["name"],
+                "number": _userData["number"],
+                "email": _userData["email"],
+                "lastActive": _userData["lastActive"],
+                "imageURL": _userData["imageURL"],
+              },
+            );
           }
         },
       );
@@ -91,6 +91,9 @@ class ContactsProvider extends ChangeNotifier {
   }
 
   void createChat() async {
+    if (kDebugMode) {
+      print("contacts_provider.dart - createChat()");
+    }
     try {
       //Create Chat
       List<String> _contactsIds =

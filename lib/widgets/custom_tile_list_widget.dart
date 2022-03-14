@@ -123,7 +123,7 @@ class CustomTileListViewWithActivity extends StatelessWidget {
 }
 
 class CustomTileListViewChat extends StatelessWidget {
-  final double width;
+  final double deviceWidth;
   final double deviceHeight;
   final bool isOwnMessage;
   final DateMessage message;
@@ -131,7 +131,7 @@ class CustomTileListViewChat extends StatelessWidget {
 
   const CustomTileListViewChat({
     Key? key,
-    required this.width,
+    required this.deviceWidth,
     required this.deviceHeight,
     required this.isOwnMessage,
     required this.message,
@@ -142,7 +142,7 @@ class CustomTileListViewChat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      width: width,
+      width: deviceWidth,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment:
@@ -151,23 +151,23 @@ class CustomTileListViewChat extends StatelessWidget {
         children: [
           !isOwnMessage
               ? ProfilePictureNetwork(
-                  key: UniqueKey(), image: sender.imageURL, size: width * 0.08)
+                  key: UniqueKey(), image: sender.imageURL, size: deviceWidth * 0.08)
               : Container(),
           SizedBox(
-            width: width * 0.05,
+            width: deviceWidth * 0.05,
           ),
           message.type == MessageContentType.text
               ? MessageBubble(
                   isOwnMessage: isOwnMessage,
                   message: message,
                   height: deviceHeight * 0.06,
-                  width: width,
+                  width: deviceWidth,
                 )
               : MediaBubble(
                   isOwnMessage: isOwnMessage,
                   message: message,
                   height: deviceHeight * 0.30,
-                  width: width * 0.55,
+                  width: deviceWidth * 0.55,
                 ),
         ],
       ),

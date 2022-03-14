@@ -1,5 +1,6 @@
 // login_page.dart - App page containing forms for user to enter login details, or go to registration page
 
+import 'package:cherub/pages/home_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -132,6 +133,10 @@ class _LoginPageState extends State<LoginPage> {
         if (_loginFormKey.currentState!.validate()) {
           _loginFormKey.currentState!.save();
           _auth.emailLogin(_email!, _password!);
+        }
+        if (_auth.authorised)
+        {
+          _nav.removeAndGoToRoute('/home');
         }
       },
     );

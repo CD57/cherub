@@ -24,8 +24,9 @@ class _ContactsPageState extends State<ContactsPage> {
   late double _deviceWidth;
   late AuthProvider _auth;
   late ContactsProvider _contactsProvider;
-  final TextEditingController _searchFieldTextEditingController =
-      TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+
+  bool searchBool = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Widget _buildUI() {
-    return Builder(
+    return Material(child: Builder(
       builder: (BuildContext _context) {
         _contactsProvider = _context.watch<ContactsProvider>();
         return Container(
@@ -78,7 +79,7 @@ class _ContactsPageState extends State<ContactsPage> {
                 },
                 hintText: "Search...",
                 obscureText: false,
-                controller: _searchFieldTextEditingController,
+                controller: _searchController,
                 icon: Icons.search,
               ),
               _usersList(),
@@ -87,7 +88,7 @@ class _ContactsPageState extends State<ContactsPage> {
           ),
         );
       },
-    );
+    ));
   }
 
   Widget _usersList() {
@@ -145,6 +146,10 @@ class _ContactsPageState extends State<ContactsPage> {
         height: _deviceHeight * 0.08,
         width: _deviceWidth * 0.80,
         onPressed: () {
+          if (kDebugMode) {
+            print("contacts_page.dart - createChatButton()");
+            print("contacts_page.dart - Details: " + _contactsProvider.selectedUsers.toString());
+          }
           _contactsProvider.createChat();
         },
       ),

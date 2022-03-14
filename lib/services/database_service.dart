@@ -8,14 +8,14 @@ const String users = "Users";
 const String dates = "Dates";
 const String messages = "Messages";
 const String plans = "Plans";
-const String details = "DateDetails";
+const String dateDetails = "DateDetails";
 
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   DatabaseService();
 
   // Create User
-  Future<void> createUser(String _uid, String _name, String _number,
+  Future<void> createUser(String _uid, String _username, String _name, String _number,
       String _email, String _imageURL) async {
     if (kDebugMode) {
       print("database_service.dart - createUser()");
@@ -23,6 +23,7 @@ class DatabaseService {
     try {
       await _db.collection(users).doc(_uid).set(
         {
+          "username": _username,
           "name": _name,
           "number": _number,
           "email": _email,
@@ -39,14 +40,6 @@ class DatabaseService {
 
   // Get User By ID
   Future<DocumentSnapshot> getUserByID(String _uid) {
-    if (kDebugMode) {
-      print("database_service.dart - getUser()");
-    }
-    return _db.collection(users).doc(_uid).get();
-  }
-
-  // Get User
-  Future<DocumentSnapshot> getUserByUsername(String _uid) {
     if (kDebugMode) {
       print("database_service.dart - getUser()");
     }
@@ -90,10 +83,20 @@ class DatabaseService {
     if (kDebugMode) {
       print("database_service.dart - getDateChats()");
     }
+    try {
     return _db
         .collection(dates)
         .where('contacts', arrayContains: _uid)
         .snapshots();
+        } catch (e) {
+      if (kDebugMode) {
+        print("database_service.dart - getDateChats() - FAILED: " + e.toString());
+      }
+      return _db
+        .collection(dates)
+        .where('contacts', arrayContains: _uid)
+        .snapshots();
+    }
   }
 
   // Get Last Message of Date Chat
@@ -208,7 +211,7 @@ class DatabaseService {
       print("database_service.dart - createDateDetails()");
     }
     try {
-      DocumentReference _dateDetails = await _db.collection(details).add(_data);
+      DocumentReference _dateDetails = await _db.collection(dateDetails).add(_data);
       return _dateDetails;
     } catch (e) {
       if (kDebugMode) {

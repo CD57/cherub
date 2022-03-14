@@ -19,6 +19,17 @@ class NavigationService {
     );
   }
 
+  void removeAndGoToPage(Widget _page) {
+    navKey.currentState?.pop();
+    navKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (BuildContext _context) {
+          return _page;
+        },
+      ),
+    );
+  }
+
   void goToRoute(String _route) {
     navKey.currentState?.pushNamed(_route);
   }

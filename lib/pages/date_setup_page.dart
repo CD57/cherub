@@ -1,14 +1,17 @@
 // date_setup_page.dart - App page containing forms for user to enter details of date
-import 'package:cherub/models/date_details_model.dart';
+import 'package:cherub/pages/contacts_page.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get_it/get_it.dart';
+import 'package:get/get.dart';
+import '../models/user_model.dart';
 import '../providers/auth_provider.dart';
-import '../providers/date_details_provider.dart';
+import '../providers/contacts_provider.dart';
 import '../services/database_service.dart';
+import '../widgets/custom_tile_list_widget.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
 import '../widgets/custom_button_widget.dart';
@@ -27,16 +30,18 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late AuthProvider _auth;
   late NavigationService _nav;
   late DatabaseService _dbService;
+  late ContactsProvider _contactsProvider;
+  final TextEditingController _searchController = TextEditingController();
 
-  // late String _dateUid;
-  late DateDetailsModel aDatesDetails;
-  late String _datePlan;
-  late DateTime? _dayOfDate;
-  late TimeOfDay? _dateTime;
-  late TimeOfDay? _checkInTime;
+  bool searchBool = false;
+
+  String _datePlan = "None";
   String dayOfDateText = "None Selected";
   String dateTimeText = "None Selected";
   String checkInTimeText = "None Selected";
+  late DateTime? _dayOfDate;
+  late TimeOfDay? _dateTime;
+  late TimeOfDay? _checkInTime;
   //late LatLng _dateGPS;
 
   final _dateDetailsFormKey = GlobalKey<FormState>();
@@ -48,20 +53,14 @@ class _DateSetupPageState extends State<DateSetupPage> {
     }
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-    _auth = Provider.of<AuthProvider>(context);
     _dbService = GetIt.instance.get<DatabaseService>();
-
-    aDatesDetails = DateDetailsModel(
-        hostID: "",
-        datePlan: "",
-        dateDay: DateTime.now(),
-        dateTime: "",
-        checkInTime: "");
+    _nav = GetIt.instance.get<NavigationService>();
+    _auth = Provider.of<AuthProvider>(context);
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<DetailsProvider>(
-          create: (_) => DetailsProvider(_auth),
+        ChangeNotifierProvider<ContactsProvider>(
+          create: (_) => ContactsProvider(_auth),
         ),
       ],
       child: _buildUI(),
@@ -69,47 +68,50 @@ class _DateSetupPageState extends State<DateSetupPage> {
   }
 
   Widget _buildUI() {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: _deviceWidth * 0.03,
-          vertical: _deviceHeight * 0.02,
-        ),
-        height: _deviceHeight * 0.98,
-        width: _deviceWidth * 0.97,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TopBar(
-              'Your Date Details',
-              primaryAction: IconButton(
-                icon: const Icon(
-                  Icons.keyboard_return_rounded,
-                  color: Color.fromARGB(255, 20, 133, 43),
+    return Builder(builder: (BuildContext _context) {
+      _contactsProvider = _context.watch<ContactsProvider>();
+      return Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: _deviceWidth * 0.03,
+            vertical: _deviceHeight * 0.02,
+          ),
+          height: _deviceHeight * 0.98,
+          width: _deviceWidth * 0.97,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TopBar(
+                'Your Date Details',
+                primaryAction: IconButton(
+                  icon: const Icon(
+                    Icons.keyboard_return_rounded,
+                    color: Color.fromARGB(255, 20, 133, 43),
+                  ),
+                  onPressed: () {
+                    _nav.goBack();
+                  },
                 ),
-                onPressed: () {
-                  _nav.goBack();
-                },
               ),
-            ),
-            SizedBox(
-              height: _deviceHeight * 0.05,
-            ),
-            _dateDetailsForm(),
-            SizedBox(
-              height: _deviceHeight * 0.05,
-            ),
-            _nextButton(),
-            // SizedBox(
-            //   height: _deviceHeight * 0.02,
-            // ),
-          ],
+              SizedBox(
+                height: _deviceHeight * 0.05,
+              ),
+              _dateDetailsForm(),
+              SizedBox(
+                height: _deviceHeight * 0.05,
+              ),
+              _nextButton(),
+              SizedBox(
+                height: _deviceHeight * 0.02,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _dateDetailsForm() {
@@ -134,7 +136,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
                 onSaved: (_value) {
                   setState(() {
                     _datePlan = _value;
-                    aDatesDetails.datePlan = _datePlan;
                   });
                 },
                 regex: r'.{10,}',
@@ -157,7 +158,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
                   );
                   setState(() {
                     _dayOfDate = _dayOfDate;
-                    aDatesDetails.dateDay = _dayOfDate!;
                     dayOfDateText = _dayOfDate!.day.toString() +
                         "/" +
                         _dayOfDate!.month.toString() +
@@ -184,7 +184,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
                   );
                   setState(() {
                     _dateTime = _dateTime;
-                    aDatesDetails.dateTime = _dateTime!.toString();
                     dateTimeText = _dateTime!.hour.toString() +
                         ":" +
                         _dateTime!.minute.toString();
@@ -210,7 +209,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
                   );
                   setState(() {
                     _checkInTime = _checkInTime;
-                    aDatesDetails.checkInTime = _checkInTime!.toString();
                     checkInTimeText = _checkInTime!.hour.toString() +
                         ":" +
                         _checkInTime!.minute.toString();
@@ -240,40 +238,39 @@ class _DateSetupPageState extends State<DateSetupPage> {
     );
   }
 
+  
   Widget _nextButton() {
-    return CustomButton(
-      name: "Confirm and Select Contacts",
-      height: _deviceHeight * 0.065,
-      width: _deviceWidth * 0.8,
-      onPressed: () async {
-        // //if (_dateDetailsFormKey.currentState!.validate()) {
-          _dateDetailsFormKey.currentState!.save();
-        //   Provider.of<DetailsProvider>(context, listen: false).createDate();
-        // //} else {
-        // //  if (kDebugMode) {
-        // //    print("date_setup_page.dart - _confirmutton - onPressed: Error");
-        // //  }
-        // //}
-        try {
-          //Create Date Details
-          await _dbService.createDateDetails({
-            "hostID": _auth.user.uid,
-            "datePlan": _datePlan,
-            "dateDay": _dayOfDate,
-            "dateTime": dateTimeText,
-            "checkInTime": checkInTimeText,
-            //"dateGPS": dateGPS,
-          });
-          if (kDebugMode) {
-            print("date_setup_page.dart - createDate() - Date Details Created");
-          }
-        } catch (e) {
-          if (kDebugMode) {
-            print("contacts_provider.dart - createDate() - Error");
-            print(e);
-          }
-        }
-      },
+    return Builder(
+      builder: (context) {
+        return CustomButton(
+          name: "Confirm and Select Contacts",
+          height: _deviceHeight * 0.065,
+          width: _deviceWidth * 0.8,
+          onPressed: () async {
+            _dateDetailsFormKey.currentState!.save();
+            try {
+              //Create Date Details
+              await _dbService.createDateDetails({
+                "hostID": _auth.user.uid,
+                "datePlan": _datePlan,
+                "dateDay": _dayOfDate,
+                "dateTime": dateTimeText,
+                "checkInTime": checkInTimeText,
+                //"dateGPS": dateGPS,
+              });
+              if (kDebugMode) {
+                print("date_setup_page.dart - createDate() - Date Details Created");
+              }
+              _nav.goToPage(const ContactsPage());
+            } catch (e) {
+              if (kDebugMode) {
+                print("contacts_provider.dart - createDate() - Error");
+                print(e);
+              }
+            }
+          },
+        );
+      }
     );
   }
 }

@@ -116,7 +116,7 @@ class _DateChatPageState extends State<DateChatPage> {
               bool _isOwnMessage = _message.senderID == _auth.user.uid;
               return CustomTileListViewChat(
                 deviceHeight: _deviceHeight,
-                width: _deviceWidth * 0.80,
+                deviceWidth: _deviceWidth * 0.80,
                 message: _message,
                 isOwnMessage: _isOwnMessage,
                 sender: widget.dateChat.contacts
