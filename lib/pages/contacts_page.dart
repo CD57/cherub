@@ -148,7 +148,8 @@ class _ContactsPageState extends State<ContactsPage> {
         onPressed: () {
           if (kDebugMode) {
             print("contacts_page.dart - createChatButton()");
-            print("contacts_page.dart - Details: " + _contactsProvider.selectedUsers.toString());
+            print("contacts_page.dart - Details: " +
+                _contactsProvider.selectedUsers.toString());
           }
           _contactsProvider.createChat();
         },

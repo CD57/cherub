@@ -56,6 +56,7 @@ dev_dependencies:
   flutter_keyboard_visibility: ^5.2.0
   image_picker: ^0.8.4+10
   google_maps_flutter: ^2.1.2
+  geocoding: ^2.0.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

@@ -1,5 +1,6 @@
 // date_setup_page.dart - App page containing forms for user to enter details of date
 import 'package:cherub/pages/contacts_page.dart';
+import 'package:cherub/pages/date_map_page.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,10 @@ import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get/get.dart';
-import '../models/user_model.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../providers/contacts_provider.dart';
 import '../services/database_service.dart';
-import '../widgets/custom_tile_list_widget.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
 import '../widgets/custom_button_widget.dart';
@@ -30,8 +30,8 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late AuthProvider _auth;
   late NavigationService _nav;
   late DatabaseService _dbService;
-  late ContactsProvider _contactsProvider;
-  final TextEditingController _searchController = TextEditingController();
+  // late ContactsProvider _contactsProvider;
+  // final TextEditingController _searchController = TextEditingController();
 
   bool searchBool = false;
 
@@ -42,6 +42,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late DateTime? _dayOfDate;
   late TimeOfDay? _dateTime;
   late TimeOfDay? _checkInTime;
+  late LatLng _pickedLocation;
   //late LatLng _dateGPS;
 
   final _dateDetailsFormKey = GlobalKey<FormState>();
@@ -69,7 +70,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
 
   Widget _buildUI() {
     return Builder(builder: (BuildContext _context) {
-      _contactsProvider = _context.watch<ContactsProvider>();
+      //_contactsProvider = _context.watch<ContactsProvider>();
       return Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
@@ -226,9 +227,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
             //     name: "Pick a Location",
             //     height: _deviceHeight * 0.065,
             //     width: _deviceWidth * 0.65,
-            //     onPressed: () async {
-            //       // TO IMPLEMENT GOOGLE MAP PAGE
-            //     }),
+            //     onPressed: getLocation()),
             SizedBox(
               height: _deviceHeight * 0.02,
             ),
@@ -238,39 +237,42 @@ class _DateSetupPageState extends State<DateSetupPage> {
     );
   }
 
-  
   Widget _nextButton() {
-    return Builder(
-      builder: (context) {
-        return CustomButton(
-          name: "Confirm and Select Contacts",
-          height: _deviceHeight * 0.065,
-          width: _deviceWidth * 0.8,
-          onPressed: () async {
-            _dateDetailsFormKey.currentState!.save();
-            try {
-              //Create Date Details
-              await _dbService.createDateDetails({
-                "hostID": _auth.user.uid,
-                "datePlan": _datePlan,
-                "dateDay": _dayOfDate,
-                "dateTime": dateTimeText,
-                "checkInTime": checkInTimeText,
-                //"dateGPS": dateGPS,
-              });
-              if (kDebugMode) {
-                print("date_setup_page.dart - createDate() - Date Details Created");
-              }
-              _nav.goToPage(const ContactsPage());
-            } catch (e) {
-              if (kDebugMode) {
-                print("contacts_provider.dart - createDate() - Error");
-                print(e);
-              }
+    return Builder(builder: (context) {
+      return CustomButton(
+        name: "Confirm and Select Contacts",
+        height: _deviceHeight * 0.065,
+        width: _deviceWidth * 0.8,
+        onPressed: () async {
+          _dateDetailsFormKey.currentState!.save();
+          //_pickedLocation = _nav.goToPage(const DateMap());//Get.to(() => const DateMap());
+          _pickedLocation = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DateMap()),
+          );
+          try {
+            //Create Date Details
+            await _dbService.createDateDetails({
+              "hostID": _auth.user.uid,
+              "datePlan": _datePlan,
+              "dateDay": dayOfDateText,
+              "dateTime": dateTimeText,
+              "checkInTime": checkInTimeText,
+              "dateGPS": _pickedLocation.toString(),
+            });
+            if (kDebugMode) {
+              print(
+                  "date_setup_page.dart - createDate() - Date Details Created");
             }
-          },
-        );
-      }
-    );
+            _nav.goToPage(const ContactsPage());
+          } catch (e) {
+            if (kDebugMode) {
+              print("contacts_provider.dart - createDate() - Error");
+              print(e);
+            }
+          }
+        },
+      );
+    });
   }
 }
