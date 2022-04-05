@@ -32,7 +32,7 @@ class AuthProvider extends ChangeNotifier {
                   _snapshot.data()! as Map<String, dynamic>;
               user = UserModel.fromJSON(
                 {
-                  "uid": _user.uid,
+                  "userId": _user.uid,
                   "username": _userData["username"],
                   "name": _userData["name"],
                   "number": _userData["number"],

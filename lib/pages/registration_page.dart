@@ -200,16 +200,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
       onPressed: () async {
         if (_registerFormKey.currentState!.validate()) {
           _registerFormKey.currentState!.save();
-          String? _uid = await _auth.emailRegister(_email!, _password!);
+          String? _userId = await _auth.emailRegister(_email!, _password!);
           if (_profileImage != null) {
             _imageURL =
-                (await _storage.saveProfilePicture(_uid!, _profileImage!))!;
+                (await _storage.saveProfilePicture(_userId!, _profileImage!))!;
+                if (kDebugMode) {
+            print("registration_page.dart - registerButton() - Profile Picture Saved");
+          }
           } else {
             _imageURL =
                 "https://firebasestorage.googleapis.com/v0/b/cherub-app.appspot.com/o/images%2Fdefault%2FNoPicture%2FUser-NoProfile-PNG.png?alt=media&token=4e098702-0f8c-4eb4-b670-9ac2035dbe3c";
+                if (kDebugMode) {
+            print("registration_page.dart - registerButton() - Default Profile Picture Used");
+          }
           }
 
-          await _db.createUser(_uid!, _username!, _name!, _number!, _email!, _imageURL);
+          await _db.createUser(_userId!, _username!, _name!, _number!, _email!, _imageURL);
           await _auth.setAccountDetails(_username!, _imageURL);
           if (kDebugMode) {
             print("registration_page.dart - registerButton() - User Created and Account Details Updated");

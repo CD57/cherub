@@ -104,7 +104,7 @@ class DateChatProvider extends ChangeNotifier {
       DateMessage _messageToSend = DateMessage(
         content: _message!,
         type: MessageContentType.text,
-        senderID: _auth.user.uid,
+        senderID: _auth.user.userId,
         sentTime: DateTime.now(),
       );
       _db.addMessage(_chatId, _messageToSend);
@@ -116,11 +116,11 @@ class DateChatProvider extends ChangeNotifier {
       XFile? _file = await _media.getImageFromGallery();
       if (_file != null) {
         String? _downloadURL =
-            await _storage.saveMedia(_chatId, _auth.user.uid, _file);
+            await _storage.saveMedia(_chatId, _auth.user.userId, _file);
         DateMessage _messageToSend = DateMessage(
           content: _downloadURL!,
           type: MessageContentType.media,
-          senderID: _auth.user.uid,
+          senderID: _auth.user.userId,
           sentTime: DateTime.now(),
         );
         _db.addMessage(_chatId, _messageToSend);

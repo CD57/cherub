@@ -9,7 +9,8 @@ const String dates = "Dates";
 const String messages = "Messages";
 const String plans = "Plans";
 const String dateDetails = "DateDetails";
-
+const String userFriends = "UserFriends";
+const String userRequests = "UserRequests";
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   DatabaseService();
@@ -23,6 +24,7 @@ class DatabaseService {
     try {
       await _db.collection(users).doc(_uid).set(
         {
+          "userId": _uid,
           "username": _username,
           "name": _name,
           "number": _number,
@@ -205,7 +207,7 @@ class DatabaseService {
     }
   }
 
-   // Create Date Details
+  // Create Date Details
   Future<DocumentReference?> createDateDetails(Map<String, dynamic> _data) async {
     if (kDebugMode) {
       print("database_service.dart - createDateDetails()");
@@ -228,6 +230,53 @@ class DatabaseService {
     }
     try {
       await _db.collection(dates).doc(_dateDetailsID).delete();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  // Create Date Details
+  Future<DocumentReference?> createFriendRequest(Map<String, dynamic> _data) async {
+    if (kDebugMode) {
+      print("database_service.dart - createFriendRequest()");
+    }
+    try {
+      DocumentReference _friendRequestDoc = await _db.collection(userRequests).add(_data);
+      return _friendRequestDoc;
+    } catch (e) {
+      if (kDebugMode) {
+        print("createDateDetails: Error - " + e.toString());
+      }
+      return null;
+    }
+  }
+
+  // Accept Friend Request
+  Future<DocumentReference?> acceptFriendRequest(String _uid, Map<String, dynamic> _data, String _friendRequestID) async {
+    if (kDebugMode) {
+      print("database_service.dart - acceptFriendRequest()");
+    }
+    try {
+      DocumentReference _friendAcceptDoc = await _db.collection("Friends").doc(_uid).collection(userFriends).add(_data);
+      await _db.collection(dates).doc(_friendRequestID).delete();
+      return _friendAcceptDoc;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      return null;
+    }
+  }
+
+  // Cancel Friend Request
+  Future<void> cancelFriendRequest(String _friendRequestID) async {
+    if (kDebugMode) {
+      print("database_service.dart - cancelFriendRequest()");
+    }
+    try {
+      await _db.collection(dates).doc(_friendRequestID).delete();
     } catch (e) {
       if (kDebugMode) {
         print(e);

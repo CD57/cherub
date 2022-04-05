@@ -18,12 +18,11 @@ class DetailsProvider extends ChangeNotifier {
     try {
       //Create Date Details
       await _dbService.createDateDetails({
-        "hostID": _auth.user.uid,
+        "hostID": _auth.user.userId,
         "datePlan": aDateDetails!.datePlan,
-        "dateDay": aDateDetails!.dateDay,
         "dateTime": aDateDetails!.dateTime,
         "checkInTime": aDateDetails!.checkInTime,
-        //"dateGPS": dateGPS,
+        "dateGPS": aDateDetails!.dateGPS,
       });
       notifyListeners();
       if (kDebugMode) {

@@ -31,7 +31,7 @@ class DatesPageProvider extends ChangeNotifier {
   void getDateChats() async {
     try {
       _dateChatsStream =
-          _db.getDateChats(_auth.user.uid).listen((_snapshot) async {
+          _db.getDateChats(_auth.user.userId).listen((_snapshot) async {
         dates = await Future.wait(
           _snapshot.docs.map(
             (_d) async {
@@ -43,7 +43,7 @@ class DatesPageProvider extends ChangeNotifier {
                 DocumentSnapshot _userSnapshot = await _db.getUserByID(_uid);
                 Map<String, dynamic> _userData =
                     _userSnapshot.data() as Map<String, dynamic>;
-                _userData["uid"] = _userSnapshot.id;
+                _userData["userId"] = _userSnapshot.id;
                 _contacts.add(
                   UserModel.fromJSON(_userData),
                 );
@@ -60,7 +60,7 @@ class DatesPageProvider extends ChangeNotifier {
               //Return Chat Instance
               return DateChat(
                 uid: _d.id,
-                userId: _auth.user.uid,
+                userId: _auth.user.userId,
                 contacts: _contacts,
                 messages: _messages,
                 isTyping: _chatData["isTyping"],

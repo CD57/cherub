@@ -21,7 +21,7 @@ class DateChat {
     required this.isTyping,
     required this.isGroup,
   }) {
-    _received = contacts.where((_i) => _i.uid != userId).toList();
+    _received = contacts.where((_i) => _i.userId != userId).toList();
   }
 
   List<UserModel> received() {

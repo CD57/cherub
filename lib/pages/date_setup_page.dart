@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get_it/get_it.dart';
-import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../providers/contacts_provider.dart';
@@ -15,6 +14,8 @@ import '../services/database_service.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
 import '../widgets/custom_button_widget.dart';
+import 'package:date_time_picker/date_time_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateSetupPage extends StatefulWidget {
   const DateSetupPage({Key? key}) : super(key: key);
@@ -44,6 +45,10 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late TimeOfDay? _checkInTime;
   late LatLng _pickedLocation;
   //late LatLng _dateGPS;
+
+  Timestamp dateTimeStamp = Timestamp.fromDate(DateTime.now());
+  Timestamp checkinTimeStamp = Timestamp.fromDate(DateTime.now());
+
 
   final _dateDetailsFormKey = GlobalKey<FormState>();
 
@@ -164,6 +169,9 @@ class _DateSetupPageState extends State<DateSetupPage> {
                         _dayOfDate!.month.toString() +
                         "/" +
                         _dayOfDate!.year.toString();
+                    dateTimeStamp = Timestamp.fromDate(_dayOfDate!);
+                    //Datetime to string to string in format of datetime for firebase :))))
+                    // Add push notifications, fuck u lazy asshooole
                   });
                 }),
             AutoSizeText(
@@ -223,14 +231,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
             SizedBox(
               height: _deviceHeight * 0.02,
             ),
-            // CustomButton(
-            //     name: "Pick a Location",
-            //     height: _deviceHeight * 0.065,
-            //     width: _deviceWidth * 0.65,
-            //     onPressed: getLocation()),
-            SizedBox(
-              height: _deviceHeight * 0.02,
-            ),
           ],
         ),
       ),
@@ -245,7 +245,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
         width: _deviceWidth * 0.8,
         onPressed: () async {
           _dateDetailsFormKey.currentState!.save();
-          //_pickedLocation = _nav.goToPage(const DateMap());//Get.to(() => const DateMap());
           _pickedLocation = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const DateMap()),
@@ -253,11 +252,10 @@ class _DateSetupPageState extends State<DateSetupPage> {
           try {
             //Create Date Details
             await _dbService.createDateDetails({
-              "hostID": _auth.user.uid,
+              "hostID": _auth.user.userId,
               "datePlan": _datePlan,
-              "dateDay": dayOfDateText,
-              "dateTime": dateTimeText,
-              "checkInTime": checkInTimeText,
+              "dateTime": dateTimeStamp,
+              "checkInTime": checkinTimeStamp,
               "dateGPS": _pickedLocation.toString(),
             });
             if (kDebugMode) {

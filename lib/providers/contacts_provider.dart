@@ -17,6 +17,7 @@ class ContactsProvider extends ChangeNotifier {
 
   UserModel? user;
   List<UserModel>? users;
+  late UserModel _selectedUser;
   late List<UserModel> _selectedUsers;
 
   List<UserModel> get selectedUsers {
@@ -38,7 +39,7 @@ class ContactsProvider extends ChangeNotifier {
           users = _snapshot.docs.map(
             (_doc) {
               Map<String, dynamic> _data = _doc.data() as Map<String, dynamic>;
-              _data["uid"] = _doc.id;
+              _data["userId"] = _doc.id;
               return UserModel.fromJSON(_data);
             },
           ).toList();
@@ -62,7 +63,7 @@ class ContactsProvider extends ChangeNotifier {
                 _snapshot.data()! as Map<String, dynamic>;
             user = UserModel.fromJSON(
               {
-                "uid": _userData["uid"],
+                "userId": _userData["userId"],
                 "name": _userData["name"],
                 "number": _userData["number"],
                 "email": _userData["email"],
@@ -81,6 +82,13 @@ class ContactsProvider extends ChangeNotifier {
     }
   }
 
+  void updateSelectedUser(UserModel _user) {
+    if (!(_selectedUser == _user)) {
+      _selectedUser = _user;
+    }
+    notifyListeners();
+  }
+
   void updateSelectedUsers(UserModel _user) {
     if (_selectedUsers.contains(_user)) {
       _selectedUsers.remove(_user);
@@ -97,8 +105,8 @@ class ContactsProvider extends ChangeNotifier {
     try {
       //Create Chat
       List<String> _contactsIds =
-          _selectedUsers.map((_user) => _user.uid).toList();
-      _contactsIds.add(_auth.user.uid);
+          _selectedUsers.map((_user) => _user.userId).toList();
+      _contactsIds.add(_auth.user.userId);
       bool _isGroup = _selectedUsers.length > 1;
       DocumentReference? _doc = await _database.createDateChat(
         {
@@ -113,7 +121,7 @@ class ContactsProvider extends ChangeNotifier {
         DocumentSnapshot _userSnapshot = await _database.getUserByID(_uid);
         Map<String, dynamic> _userData =
             _userSnapshot.data() as Map<String, dynamic>;
-        _userData["uid"] = _userSnapshot.id;
+        _userData["userId"] = _userSnapshot.id;
         _contacts.add(
           UserModel.fromJSON(
             _userData,
@@ -123,7 +131,7 @@ class ContactsProvider extends ChangeNotifier {
       DateChatPage _dateChatPage = DateChatPage(
         dateChat: DateChat(
             uid: _doc!.id,
-            userId: _auth.user.uid,
+            userId: _auth.user.userId,
             contacts: _contacts,
             messages: [],
             isTyping: false,

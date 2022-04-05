@@ -51,6 +51,7 @@ class _ContactsPageState extends State<ContactsPage> {
       builder: (BuildContext _context) {
         _contactsProvider = _context.watch<ContactsProvider>();
         return Container(
+          color: Theme.of(context).backgroundColor,
           padding: EdgeInsets.symmetric(
               horizontal: _deviceWidth * 0.03, vertical: _deviceHeight * 0.02),
           height: _deviceHeight * 0.98,

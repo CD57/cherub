@@ -1,6 +1,4 @@
 // login_page.dart - App page containing forms for user to enter login details, or go to registration page
-
-import 'package:cherub/pages/home_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

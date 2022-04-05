@@ -113,14 +113,14 @@ class _DateChatPageState extends State<DateChatPage> {
             itemCount: _pageProvider.messages!.length,
             itemBuilder: (BuildContext _context, int _index) {
               DateMessage _message = _pageProvider.messages![_index];
-              bool _isOwnMessage = _message.senderID == _auth.user.uid;
+              bool _isOwnMessage = _message.senderID == _auth.user.userId;
               return CustomTileListViewChat(
                 deviceHeight: _deviceHeight,
                 deviceWidth: _deviceWidth * 0.80,
                 message: _message,
                 isOwnMessage: _isOwnMessage,
                 sender: widget.dateChat.contacts
-                    .where((_user) => _user.uid == _message.senderID)
+                    .where((_user) => _user.userId == _message.senderID)
                     .first,
               );
             },

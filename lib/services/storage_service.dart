@@ -11,9 +11,9 @@ class StorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   StorageService();
 
-  Future<String?> saveProfilePicture(String _uid, XFile _file) async {
+  Future<String?> saveProfilePicture(String _userId, XFile _file) async {
     try {
-      Reference _ref = _storage.ref().child('images/users/$_uid/profile');
+      Reference _ref = _storage.ref().child('images/users/$_userId/profile');
       UploadTask _task = _ref.putFile(File(_file.path));
       Future<String?> downloadURL = _task.then((res) {
         return res.ref.getDownloadURL();
