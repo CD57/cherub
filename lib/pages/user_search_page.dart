@@ -1,7 +1,11 @@
+import 'package:cherub/providers/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
+import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
+import '../services/database_service.dart';
 import '../widgets/user_search_result_widget.dart';
 
 late Future<QuerySnapshot>? searchResultsFuture;
@@ -16,6 +20,7 @@ class _UserSearchState extends State<UserSearchPage> {
   final CollectionReference<Map<String, dynamic>> usersRef =
       FirebaseFirestore.instance.collection('Users');
   TextEditingController searchController = TextEditingController();
+  late AuthProvider _auth;
   bool searching = false;
 
   // Build depends on available search results
@@ -24,9 +29,11 @@ class _UserSearchState extends State<UserSearchPage> {
     if (kDebugMode) {
       print("user_search_page.dart - build()");
     }
+    _auth = Provider.of<AuthProvider>(context);
+    String currentUserId = _auth.user.userId;
     return Scaffold(
       appBar: buildSearchField(),
-      body: searching ? buildSearchResults() : buildNoContent(),
+      body: searching ? buildSearchResults(currentUserId) : buildNoContent(),
     );
   }
 
@@ -104,20 +111,22 @@ Center buildNoContent() {
 }
 
 // Display Users using UserSearchResult class
-buildSearchResults() {
+buildSearchResults(String _currentUserId) {
   if (kDebugMode) {
     print("user_search_page.dart - buildSearchResults()");
   }
+  late DatabaseService _dbService;
+  _dbService = GetIt.instance.get<DatabaseService>();
   return FutureBuilder(
     future: searchResultsFuture,
     builder: (context, snapshot) {
       if (!snapshot.hasData) {
         return const CircularProgressIndicator();
       }
-      List<UserSearchResult> searchResults = [];
+      List<UserSearchResultsWidget> searchResults = [];
       for (var doc in (snapshot.data! as QuerySnapshot).docs) {
-        UserModel user = UserModel.fromDocument(doc);
-        UserSearchResult searchResult = UserSearchResult(user);
+        UserModel aUser = UserModel.fromDocument(doc);
+        UserSearchResultsWidget searchResult = UserSearchResultsWidget(aUser, _dbService, _currentUserId);
         searchResults.add(searchResult);
       }
       return ListView(

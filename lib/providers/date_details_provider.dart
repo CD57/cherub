@@ -17,7 +17,7 @@ class DetailsProvider extends ChangeNotifier {
   void createDate() async {
     try {
       //Create Date Details
-      await _dbService.createDateDetails({
+      await _dbService.createDateDetails(_auth.user.userId, {
         "hostID": _auth.user.userId,
         "datePlan": aDateDetails!.datePlan,
         "dateTime": aDateDetails!.dateTime,

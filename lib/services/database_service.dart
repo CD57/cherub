@@ -208,12 +208,12 @@ class DatabaseService {
   }
 
   // Create Date Details
-  Future<DocumentReference?> createDateDetails(Map<String, dynamic> _data) async {
+  Future<DocumentReference?> createDateDetails(String _uid, Map<String, dynamic> _data) async {
     if (kDebugMode) {
       print("database_service.dart - createDateDetails()");
     }
     try {
-      DocumentReference _dateDetails = await _db.collection(dateDetails).add(_data);
+      DocumentReference _dateDetails = await _db.collection("Dates").doc(_uid).collection(dateDetails).add(_data);
       return _dateDetails;
     } catch (e) {
       if (kDebugMode) {
@@ -237,13 +237,13 @@ class DatabaseService {
     }
   }
 
-  // Create Date Details
-  Future<DocumentReference?> createFriendRequest(Map<String, dynamic> _data) async {
+  // Create Friend Request
+  Future<DocumentReference?> createFriendRequest(String _uid, Map<String, dynamic> _data) async {
     if (kDebugMode) {
       print("database_service.dart - createFriendRequest()");
     }
     try {
-      DocumentReference _friendRequestDoc = await _db.collection(userRequests).add(_data);
+      DocumentReference _friendRequestDoc = await _db.collection("Friends").doc(_uid).collection(userRequests).add(_data);
       return _friendRequestDoc;
     } catch (e) {
       if (kDebugMode) {

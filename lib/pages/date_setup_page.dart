@@ -251,7 +251,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
           );
           try {
             //Create Date Details
-            await _dbService.createDateDetails({
+            await _dbService.createDateDetails(_auth.user.userId, {
               "hostID": _auth.user.userId,
               "datePlan": _datePlan,
               "dateTime": dateTimeStamp,
