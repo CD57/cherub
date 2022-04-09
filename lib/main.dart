@@ -2,11 +2,9 @@
 
 // ignore: unused_import
 import 'package:cherub/pages/contacts_page.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'pages/date_setup_page.dart';
 import 'pages/home_page.dart';
 import './pages/splash_page.dart';
 import './pages/login_page.dart';

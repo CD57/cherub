@@ -127,13 +127,16 @@ class _LoginPageState extends State<LoginPage> {
       name: "Login",
       height: _deviceHeight * 0.065,
       width: _deviceWidth * 0.65,
-      onPressed: () {
+      onPressed: () async {
         if (_loginFormKey.currentState!.validate()) {
           _loginFormKey.currentState!.save();
-          _auth.emailLogin(_email!, _password!);
+          await _auth.emailLogin(_email!, _password!);
         }
         if (_auth.authorised)
         {
+          if (kDebugMode) {
+            print("login_page.dart - _loginButton() - User Not Authorised");
+          }
           _nav.removeAndGoToRoute('/home');
         }
       },

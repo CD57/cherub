@@ -14,7 +14,6 @@ import '../services/database_service.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
 import '../widgets/custom_button_widget.dart';
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateSetupPage extends StatefulWidget {
@@ -31,8 +30,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late AuthProvider _auth;
   late NavigationService _nav;
   late DatabaseService _dbService;
-  // late ContactsProvider _contactsProvider;
-  // final TextEditingController _searchController = TextEditingController();
 
   bool searchBool = false;
 
@@ -44,7 +41,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late TimeOfDay? _dateTime;
   late TimeOfDay? _checkInTime;
   late LatLng _pickedLocation;
-  //late LatLng _dateGPS;
 
   Timestamp dateTimeStamp = Timestamp.fromDate(DateTime.now());
   Timestamp checkinTimeStamp = Timestamp.fromDate(DateTime.now());
@@ -75,7 +71,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
 
   Widget _buildUI() {
     return Builder(builder: (BuildContext _context) {
-      //_contactsProvider = _context.watch<ContactsProvider>();
       return Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
@@ -171,7 +166,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
                         _dayOfDate!.year.toString();
                     dateTimeStamp = Timestamp.fromDate(_dayOfDate!);
                     //Datetime to string to string in format of datetime for firebase :))))
-                    // Add push notifications, fuck u lazy asshooole
+                    //Add push notifications, fuck u lazy asshooole
                   });
                 }),
             AutoSizeText(

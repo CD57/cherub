@@ -60,6 +60,48 @@ class CustomTileListView extends StatelessWidget {
   }
 }
 
+// class CustomTileListViewFriendRequest extends StatelessWidget {
+//   final double height;
+//   final String title;
+//   final String imagePath;
+//   final Function onTap;
+
+//   const CustomTileListViewFriendRequest({
+//     Key? key,
+//     required this.height,
+//     required this.title,
+//     required this.imagePath,
+//     required this.onTap,
+//   }) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     String subtitle = "Accept this friend request?";
+//     return ListTile(
+//       onTap: () => onTap(),
+//       minVerticalPadding: height * 0.20,
+//       leading: ProfilePictureNetwork(
+//           key: UniqueKey(), size: height * .1, image: imagePath),
+//       title: Text(
+//         title,
+//         style: TextStyle(
+//           color: Colors.green.shade900,
+//           fontSize: 18,
+//           fontWeight: FontWeight.w500,
+//         ),
+//       ),
+//       subtitle: Text(
+//         subtitle,
+//         style: TextStyle(
+//           color: Colors.green.shade900,
+//           fontSize: 12,
+//           fontWeight: FontWeight.w400,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class CustomTileListViewWithActivity extends StatelessWidget {
   final double height;
   final String title;
@@ -151,7 +193,9 @@ class CustomTileListViewChat extends StatelessWidget {
         children: [
           !isOwnMessage
               ? ProfilePictureNetwork(
-                  key: UniqueKey(), image: sender.imageURL, size: deviceWidth * 0.08)
+                  key: UniqueKey(),
+                  image: sender.imageURL,
+                  size: deviceWidth * 0.08)
               : Container(),
           SizedBox(
             width: deviceWidth * 0.05,

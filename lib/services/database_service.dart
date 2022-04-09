@@ -3,21 +3,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import '../models/date_message_model.dart';
+import '../models/user_model.dart';
 
 const String users = "Users";
 const String dates = "Dates";
-const String messages = "Messages";
-const String plans = "Plans";
 const String dateDetails = "DateDetails";
+const String dateChat = "DateChat";
+const String messages = "Messages";
+const String friends = "Friends";
 const String userFriends = "UserFriends";
 const String userRequests = "UserRequests";
+
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   DatabaseService();
 
   // Create User
-  Future<void> createUser(String _uid, String _username, String _name, String _number,
-      String _email, String _imageURL) async {
+  Future<void> createUser(String _uid, String _username, String _name,
+      String _number, String _email, String _imageURL) async {
     if (kDebugMode) {
       print("database_service.dart - createUser()");
     }
@@ -43,10 +46,69 @@ class DatabaseService {
   // Get User By ID
   Future<DocumentSnapshot> getUserByID(String _uid) {
     if (kDebugMode) {
-      print("database_service.dart - getUser()");
+      print("database_service.dart - getUserByID()");
     }
     return _db.collection(users).doc(_uid).get();
   }
+
+  // Get User By ID
+  Future<DocumentSnapshot<Object?>> getUserDocByID(String _uid) async {
+    if (kDebugMode) {
+      print("database_service.dart - getUserByID()");
+    }
+    DocumentSnapshot doc = DocumentSnapshot as DocumentSnapshot<Object?>;
+    await _db.collection(users).doc(_uid).get().then((value) => doc = value);
+    return doc;
+  }
+
+  Future<UserModel> getUser(String uid) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection(users)
+        .where("userId", isEqualTo: uid)
+        .get();
+
+    Iterable<UserModel> user = snapshot.docs
+        .map((e) => UserModel.fromJSON(e.data() as Map<String, dynamic>));
+
+    return user.first;
+  }
+
+  Future<QuerySnapshot> getUsersFromList(List<String> uidList) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection(users)
+        .where("userId", arrayContains: uidList)
+        .get();
+
+    return snapshot;
+  }
+
+  // // Get User By ID
+  // UserModel? getUserModelByID(String _uid) {
+  //   if (kDebugMode) {
+  //     print("database_service.dart - getUserModelByID()");
+  //   }
+  //   UserModel aUser;
+  //   getUserByID(_uid).then(
+  //     (value) {
+  //       if (value.data() != null) {
+  //         Map<String, dynamic> _userData =
+  //             value.data()! as Map<String, dynamic>;
+  //         aUser = UserModel.fromJSON(
+  //           {
+  //             "userId": _userData["userId"],
+  //             "name": _userData["name"],
+  //             "number": _userData["number"],
+  //             "email": _userData["email"],
+  //             "lastActive": _userData["lastActive"],
+  //             "imageURL": _userData["imageURL"],
+  //           },
+  //         );
+  //         return aUser;
+  //       }
+  //     },
+  //   );
+  //   return null;
+  // }
 
   // Get All Users
   Future<QuerySnapshot> getAllUsers({String? name}) {
@@ -86,18 +148,19 @@ class DatabaseService {
       print("database_service.dart - getDateChats()");
     }
     try {
-    return _db
-        .collection(dates)
-        .where('contacts', arrayContains: _uid)
-        .snapshots();
-        } catch (e) {
+      return _db
+          .collection(dates)
+          .where('contacts', arrayContains: _uid)
+          .snapshots();
+    } catch (e) {
       if (kDebugMode) {
-        print("database_service.dart - getDateChats() - FAILED: " + e.toString());
+        print(
+            "database_service.dart - getDateChats() - FAILED: " + e.toString());
       }
       return _db
-        .collection(dates)
-        .where('contacts', arrayContains: _uid)
-        .snapshots();
+          .collection(dates)
+          .where('contacts', arrayContains: _uid)
+          .snapshots();
     }
   }
 
@@ -208,12 +271,17 @@ class DatabaseService {
   }
 
   // Create Date Details
-  Future<DocumentReference?> createDateDetails(String _uid, Map<String, dynamic> _data) async {
+  Future<DocumentReference?> createDateDetails(
+      String _uid, Map<String, dynamic> _data) async {
     if (kDebugMode) {
       print("database_service.dart - createDateDetails()");
     }
     try {
-      DocumentReference _dateDetails = await _db.collection("Dates").doc(_uid).collection(dateDetails).add(_data);
+      DocumentReference _dateDetails = await _db
+          .collection("Dates")
+          .doc(_uid)
+          .collection(dateDetails)
+          .add(_data);
       return _dateDetails;
     } catch (e) {
       if (kDebugMode) {
@@ -238,29 +306,73 @@ class DatabaseService {
   }
 
   // Create Friend Request
-  Future<DocumentReference?> createFriendRequest(String _uid, Map<String, dynamic> _data) async {
+  Future<DocumentReference?> createFriendRequest(
+      Map<String, dynamic> _data) async {
     if (kDebugMode) {
       print("database_service.dart - createFriendRequest()");
     }
     try {
-      DocumentReference _friendRequestDoc = await _db.collection("Friends").doc(_uid).collection(userRequests).add(_data);
+      DocumentReference _friendRequestDoc = await _db
+          .collection(friends)
+          .doc(_data["To"])
+          .collection(userRequests)
+          .add(_data);
+      _friendRequestDoc = await _db
+          .collection(friends)
+          .doc(_data["From"])
+          .collection(userRequests)
+          .add(_data);
       return _friendRequestDoc;
     } catch (e) {
       if (kDebugMode) {
-        print("createDateDetails: Error - " + e.toString());
+        print("createFriendRequest: Error - " + e.toString());
       }
       return null;
     }
   }
 
+  // Get Friend Requests
+  Future<List<String>> getFriendRequests(String uid) async {
+    if (kDebugMode) {
+      print("database_service.dart - getFriendRequests()");
+    }
+
+    QuerySnapshot querySnapshot = await _db
+        .collection(friends)
+        .doc(uid)
+        .collection(userRequests)
+        .where("To", isGreaterThanOrEqualTo: uid)
+        .where("To", isLessThanOrEqualTo: uid + "z")
+        .get();
+
+    List<String> result = <String>[];
+    for (var doc in querySnapshot.docs) {
+      if (kDebugMode) {
+        print(doc["From"]);
+      }
+      result.add(doc["From"]);
+    }
+    return result;
+  }
+
   // Accept Friend Request
-  Future<DocumentReference?> acceptFriendRequest(String _uid, Map<String, dynamic> _data, String _friendRequestID) async {
+  Future<DocumentReference?> acceptFriendRequest(
+      String _uid, Map<String, dynamic> _data, String _friendRequestID) async {
     if (kDebugMode) {
       print("database_service.dart - acceptFriendRequest()");
     }
     try {
-      DocumentReference _friendAcceptDoc = await _db.collection("Friends").doc(_uid).collection(userFriends).add(_data);
-      await _db.collection(dates).doc(_friendRequestID).delete();
+      DocumentReference _friendAcceptDoc = await _db
+          .collection("Friends")
+          .doc(_uid)
+          .collection(userFriends)
+          .add(_data);
+      _friendAcceptDoc = await _db
+          .collection("Friends")
+          .doc(_friendRequestID)
+          .collection(userFriends)
+          .add(_data);
+      await _db.collection(friends).doc(_friendRequestID).delete();
       return _friendAcceptDoc;
     } catch (e) {
       if (kDebugMode) {
@@ -270,17 +382,32 @@ class DatabaseService {
     }
   }
 
-  // Cancel Friend Request
-  Future<void> cancelFriendRequest(String _friendRequestID) async {
+  // Delete Date Chat
+  Future<void> deleteFriendRequest(String _requestID) async {
     if (kDebugMode) {
-      print("database_service.dart - cancelFriendRequest()");
+      print("database_service.dart - deleteFriendRequest()");
     }
     try {
-      await _db.collection(dates).doc(_friendRequestID).delete();
+      await _db.collection(dates).doc(_requestID).delete();
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
     }
   }
+
+  // // Cancel Friend Request
+  // Future<void> cancelFriendRequest(String uid, String _friendRequestID) async {
+  //   if (kDebugMode) {
+  //     print("database_service.dart - cancelFriendRequest()");
+  //   }
+  //   try {
+  //     await _db.collection(friends).doc(uid).collection(userRequests).
+  //     await _db.collection(friends).doc(_friendRequestID).delete();
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print(e);
+  //     }
+  //   }
+  // }
 }

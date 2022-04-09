@@ -92,4 +92,9 @@ class UserModel {
       imageURL.hashCode ^
       lastActive.hashCode;
   }
+
+  @override
+  String toString() {
+    return 'UserModel(userId: $userId, username: $username, name: $name, number: $number, email: $email, imageURL: $imageURL, lastActive: $lastActive)';
+  }
 }

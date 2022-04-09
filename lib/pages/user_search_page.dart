@@ -8,7 +8,12 @@ import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../widgets/user_search_result_widget.dart';
 
-late Future<QuerySnapshot>? searchResultsFuture;
+late Future<QuerySnapshot>? _searchResultsFuture;
+late Future<QuerySnapshot>? _friendResultsFuture;
+late List<String> friendRequestsStringList = [];
+//late AuthProvider _auth;
+late String _uid;
+DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 
 class UserSearchPage extends StatefulWidget {
   const UserSearchPage({Key? key}) : super(key: key);
@@ -20,20 +25,28 @@ class _UserSearchState extends State<UserSearchPage> {
   final CollectionReference<Map<String, dynamic>> usersRef =
       FirebaseFirestore.instance.collection('Users');
   TextEditingController searchController = TextEditingController();
-  late AuthProvider _auth;
   bool searching = false;
 
-  // Build depends on available search results
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AuthProvider _auth;
+    _auth = Provider.of<AuthProvider>(context);
+    _uid = _auth.user.userId;
+    getFriendRequests();
+    handleFriendRequests();
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      print("user_search_page.dart - build()");
-    }
-    _auth = Provider.of<AuthProvider>(context);
-    String currentUserId = _auth.user.userId;
     return Scaffold(
       appBar: buildSearchField(),
-      body: searching ? buildSearchResults(currentUserId) : buildNoContent(),
+      body: searching ? buildSearchResults() : buildRequestResults(),
     );
   }
 
@@ -69,8 +82,39 @@ class _UserSearchState extends State<UserSearchPage> {
     Future<QuerySnapshot> users =
         usersRef.where("username", isEqualTo: query).get();
     setState(() {
-      searchResultsFuture = users;
+      _searchResultsFuture = users;
       searching = true;
+    });
+  }
+
+  // Gets pending friend requests
+  getFriendRequests() async {
+    if (kDebugMode) {
+      print("user_search_page.dart - getFriendRequests()");
+    }
+    List<String> friendRequests = await _dbService.getFriendRequests(_uid);
+    if (kDebugMode) {
+      print("user_search_page.dart - getFriendRequests() - " +
+          friendRequests.toString());
+    }
+    setState(() {
+      friendRequestsStringList = friendRequests;
+      _uid = _uid;
+    });
+  }
+
+  // Gets pending friend requests
+  handleFriendRequests() {
+    if (kDebugMode) {
+      print("user_search_page.dart - handleFriendRequests()");
+    }
+    var sRef = FirebaseFirestore.instance
+        .collection('Users')
+        .where("models", arrayContains: friendRequestsStringList)
+        .get();
+    Future<QuerySnapshot> users = sRef;
+    setState(() {
+      _friendResultsFuture = users;
     });
   }
 
@@ -86,39 +130,13 @@ class _UserSearchState extends State<UserSearchPage> {
   }
 }
 
-// Display image and text while no users displayed
-Center buildNoContent() {
-  if (kDebugMode) {
-    print("user_search_page.dart - buildNoContent()");
-  }
-  return Center(
-    child: ListView(
-      shrinkWrap: true,
-      children: const <Widget>[
-        Text(
-          "Find Users",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w600,
-            fontSize: 60.0,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-// Display Users using UserSearchResult class
-buildSearchResults(String _currentUserId) {
+// Display Users using UserSearchResultsWidget class
+buildSearchResults() {
   if (kDebugMode) {
     print("user_search_page.dart - buildSearchResults()");
   }
-  late DatabaseService _dbService;
-  _dbService = GetIt.instance.get<DatabaseService>();
   return FutureBuilder(
-    future: searchResultsFuture,
+    future: _searchResultsFuture,
     builder: (context, snapshot) {
       if (!snapshot.hasData) {
         return const CircularProgressIndicator();
@@ -126,7 +144,8 @@ buildSearchResults(String _currentUserId) {
       List<UserSearchResultsWidget> searchResults = [];
       for (var doc in (snapshot.data! as QuerySnapshot).docs) {
         UserModel aUser = UserModel.fromDocument(doc);
-        UserSearchResultsWidget searchResult = UserSearchResultsWidget(aUser, _dbService, _currentUserId);
+        UserSearchResultsWidget searchResult =
+            UserSearchResultsWidget(aUser, _dbService, _uid);
         searchResults.add(searchResult);
       }
       return ListView(
@@ -135,3 +154,49 @@ buildSearchResults(String _currentUserId) {
     },
   );
 }
+
+// Display Users using FriendRequestListWidget class
+buildRequestResults() {
+  if (kDebugMode) {
+    print("user_search_page.dart - buildRequestsResults()");
+  }
+  return FutureBuilder(
+    future: _friendResultsFuture,
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) {
+        return const CircularProgressIndicator();
+      }
+      List<FriendRequestListWidget> friendRequestResults = [];
+      for (var doc in (snapshot.data! as QuerySnapshot).docs) {
+        UserModel aUser = UserModel.fromDocument(doc);
+        FriendRequestListWidget aFriendRequest =
+            FriendRequestListWidget(aUser, _dbService, _uid);
+        friendRequestResults.add(aFriendRequest);
+      }
+      if (kDebugMode) {
+        print("buildRequestsResults() - Length: " +
+            friendRequestResults.length.toString());
+      }
+      return ListView(
+        children: friendRequestResults,
+      );
+    },
+  );
+}
+
+// // Display image and text while no users displayed
+// buildNoContent() {
+//   if (kDebugMode) {
+//     print("user_search_page.dart - buildNoContent()");
+//   }
+//   return FutureBuilder(
+//     builder: (context, snapshot) {
+//       if (friendRequestsList.isEmpty) {
+//         return const Text("Add a Friend");
+//       }
+//       return ListView(
+//         children: friendRequestsList,
+//       );
+//     },
+//   );
+// }
