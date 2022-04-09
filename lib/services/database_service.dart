@@ -74,41 +74,29 @@ class DatabaseService {
   }
 
   Future<QuerySnapshot> getUsersFromList(List<String> uidList) async {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection(users)
-        .where("userId", arrayContains: uidList)
-        .get();
-
-    return snapshot;
+    QuerySnapshot snapshot;
+    try {
+      snapshot = await FirebaseFirestore.instance
+          .collection(users)
+          .where("userId", arrayContains: uidList)
+          .get()
+          // ignore: avoid_print
+          .whenComplete(() => print("getUsersFromList: Complete"));
+      return snapshot;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      snapshot = await FirebaseFirestore.instance
+          .collection(users)
+          .where("userId", arrayContains: uidList)
+          .get();
+      if (kDebugMode) {
+        print("getUsersFromList - FAILED");
+      }
+      return snapshot;
+    }
   }
-
-  // // Get User By ID
-  // UserModel? getUserModelByID(String _uid) {
-  //   if (kDebugMode) {
-  //     print("database_service.dart - getUserModelByID()");
-  //   }
-  //   UserModel aUser;
-  //   getUserByID(_uid).then(
-  //     (value) {
-  //       if (value.data() != null) {
-  //         Map<String, dynamic> _userData =
-  //             value.data()! as Map<String, dynamic>;
-  //         aUser = UserModel.fromJSON(
-  //           {
-  //             "userId": _userData["userId"],
-  //             "name": _userData["name"],
-  //             "number": _userData["number"],
-  //             "email": _userData["email"],
-  //             "lastActive": _userData["lastActive"],
-  //             "imageURL": _userData["imageURL"],
-  //           },
-  //         );
-  //         return aUser;
-  //       }
-  //     },
-  //   );
-  //   return null;
-  // }
 
   // Get All Users
   Future<QuerySnapshot> getAllUsers({String? name}) {

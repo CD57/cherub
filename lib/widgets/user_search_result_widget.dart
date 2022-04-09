@@ -88,7 +88,6 @@ class FriendRequestListWidget extends StatelessWidget {
   final UserModel aUser;
   final DatabaseService _dbService;
   final String _currentUserId;
-
   const FriendRequestListWidget(
       this.aUser, this._dbService, this._currentUserId,
       {Key? key})
@@ -130,40 +129,38 @@ class FriendRequestListWidget extends StatelessWidget {
 
   void requestOptions(BuildContext context, DatabaseService dbService,
       String currentUserId, String requestedUsersId) {
-    {
-      if (kDebugMode) {
-        print("user_search_result_widget.dart - contactOptions");
-      }
-      showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: const Text('Accept Friend Request?'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  _dbService.deleteFriendRequest(requestedUsersId);
-                  Navigator.pop(context);
-                },
-                child: const Text('Dismiss Request'),
-              ),
-              TextButton(
-                onPressed: () {
-                  _dbService.acceptFriendRequest(
-                      currentUserId,
-                      {
-                        "FriendId": currentUserId.toString(),
-                        "TimeAdded": DateTime.now()
-                      },
-                      requestedUsersId);
-                  Navigator.pop(context);
-                },
-                child: const Text('Accept Request'),
-              ),
-            ],
-          );
-        },
-      );
+    if (kDebugMode) {
+      print("user_search_result_widget.dart - contactOptions");
     }
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Accept Friend Request?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _dbService.deleteFriendRequest(requestedUsersId);
+                Navigator.pop(context);
+              },
+              child: const Text('Dismiss Request'),
+            ),
+            TextButton(
+              onPressed: () {
+                _dbService.acceptFriendRequest(
+                    currentUserId,
+                    {
+                      "FriendId": currentUserId.toString(),
+                      "TimeAdded": DateTime.now()
+                    },
+                    requestedUsersId);
+                Navigator.pop(context);
+              },
+              child: const Text('Accept Request'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
