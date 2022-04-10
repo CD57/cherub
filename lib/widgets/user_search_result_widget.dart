@@ -1,6 +1,8 @@
 //Displays and holds user search results
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cherub/models/user_model.dart';
+import 'package:cherub/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
@@ -23,21 +25,7 @@ class UserSearchResultsWidget extends StatelessWidget {
           GestureDetector(
             onTap: () => contactOptions(
                 context, _dbService, _currentUserId, aUser.userId),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: CachedNetworkImageProvider(aUser.imageURL),
-              ),
-              title: Text(
-                aUser.username,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                aUser.email,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
+            child: userDetailsWidget(aUser.email, aUser),
           ),
           const Divider(
             height: 2.0,
@@ -100,23 +88,8 @@ class FriendRequestListWidget extends StatelessWidget {
       child: Column(
         children: <Widget>[
           GestureDetector(
-            onTap: () => requestOptions(
-                context, _dbService, _currentUserId, aUser.userId),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: CachedNetworkImageProvider(aUser.imageURL),
-              ),
-              title: Text(
-                aUser.username,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-              subtitle: const Text(
-                "New Friend Request",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
+            onTap: () => requestOptions(context, _dbService, _currentUserId),
+            child: userDetailsWidget("New Friend Request", aUser),
           ),
           const Divider(
             height: 2.0,
@@ -127,11 +100,12 @@ class FriendRequestListWidget extends StatelessWidget {
     );
   }
 
-  void requestOptions(BuildContext context, DatabaseService dbService,
-      String currentUserId, String requestedUsersId) {
+  void requestOptions(
+      BuildContext context, DatabaseService dbService, String currentUserId) {
     if (kDebugMode) {
       print("user_search_result_widget.dart - contactOptions");
     }
+    AuthProvider _auth = Provider.of<AuthProvider>(context, listen: false);
     showDialog(
       context: context,
       builder: (_) {
@@ -140,20 +114,15 @@ class FriendRequestListWidget extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                _dbService.deleteFriendRequest(requestedUsersId);
+                _dbService.deleteFriendRequest(aUser.userId);
                 Navigator.pop(context);
               },
               child: const Text('Dismiss Request'),
             ),
             TextButton(
               onPressed: () {
-                _dbService.acceptFriendRequest(
-                    currentUserId,
-                    {
-                      "FriendId": currentUserId.toString(),
-                      "TimeAdded": DateTime.now()
-                    },
-                    requestedUsersId);
+                _dbService.acceptFriendRequest(_auth.user.userId,
+                    _auth.user.username, aUser.userId, aUser.username);
                 Navigator.pop(context);
               },
               child: const Text('Accept Request'),
@@ -163,4 +132,21 @@ class FriendRequestListWidget extends StatelessWidget {
       },
     );
   }
+}
+
+ListTile userDetailsWidget(String subtitle, UserModel aUser) {
+  return ListTile(
+    leading: CircleAvatar(
+      backgroundColor: Colors.grey,
+      backgroundImage: CachedNetworkImageProvider(aUser.imageURL),
+    ),
+    title: Text(
+      aUser.username,
+      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    ),
+    subtitle: Text(
+      subtitle,
+      style: const TextStyle(color: Colors.white),
+    ),
+  );
 }

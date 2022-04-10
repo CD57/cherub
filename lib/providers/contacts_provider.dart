@@ -1,4 +1,4 @@
-// contacts_provider.dart - Provider for the apps contacts managment.
+// contacts_provider.dart - Provider for the apps contacts managment
 
 import 'package:cherub/models/user_model.dart';
 import 'package:flutter/foundation.dart';

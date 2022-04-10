@@ -1,6 +1,7 @@
 // create_date_page.dart - App page containing option to set up a new date
 
 import 'package:cherub/pages/date_setup_page.dart';
+import 'package:cherub/pages/view_dates_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -101,7 +102,7 @@ class DatesMenuState extends State<DatesMenuPage> {
           height: _deviceHeight * 0.065,
           width: _deviceWidth * 0.8,
           onPressed: () {
-            _nav.goToPage(const DateSetupPage());
+            _nav.goToPage(const DisplayDatesPage());
           });
     });
   }

@@ -31,20 +31,17 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late NavigationService _nav;
   late DatabaseService _dbService;
 
-  bool searchBool = false;
-
   String _datePlan = "None";
-  String dayOfDateText = "None Selected";
-  String dateTimeText = "None Selected";
-  String checkInTimeText = "None Selected";
-  late DateTime? _dayOfDate;
-  late TimeOfDay? _dateTime;
-  late TimeOfDay? _checkInTime;
+  String _dayOfDateText = "None Selected";
+  String _dateTimeText = "None Selected";
+  String _checkInTimeText = "None Selected";
+  Timestamp _dayOfDateTS = Timestamp.fromDate(DateTime.now());
+  Timestamp _dateTimeTS = Timestamp.fromDate(DateTime.now());
+  Timestamp _checkinTimeTS = Timestamp.fromDate(DateTime.now());
+  DateTime? _dayOfDateDT;
+  DateTime? _dateTimeDT;
+  DateTime? _checkInTimeDT;
   late LatLng _pickedLocation;
-
-  Timestamp dateTimeStamp = Timestamp.fromDate(DateTime.now());
-  Timestamp checkinTimeStamp = Timestamp.fromDate(DateTime.now());
-
 
   final _dateDetailsFormKey = GlobalKey<FormState>();
 
@@ -59,14 +56,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
     _nav = GetIt.instance.get<NavigationService>();
     _auth = Provider.of<AuthProvider>(context);
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ContactsProvider>(
-          create: (_) => ContactsProvider(_auth),
-        ),
-      ],
-      child: _buildUI(),
-    );
+    return _buildUI();
   }
 
   Widget _buildUI() {
@@ -150,27 +140,22 @@ class _DateSetupPageState extends State<DateSetupPage> {
                 height: _deviceHeight * 0.065,
                 width: _deviceWidth * 0.65,
                 onPressed: () async {
-                  _dayOfDate = await showDatePicker(
+                  _dayOfDateDT = (await showDatePicker(
                     context: context,
                     initialDate: DateTime.now(),
                     firstDate: DateTime.now(),
                     lastDate: DateTime(2032, 12),
                     helpText: 'Select a day for your date',
-                  );
+                  ));
                   setState(() {
-                    _dayOfDate = _dayOfDate;
-                    dayOfDateText = _dayOfDate!.day.toString() +
-                        "/" +
-                        _dayOfDate!.month.toString() +
-                        "/" +
-                        _dayOfDate!.year.toString();
-                    dateTimeStamp = Timestamp.fromDate(_dayOfDate!);
-                    //Datetime to string to string in format of datetime for firebase :))))
-                    //Add push notifications, fuck u lazy asshooole
+                    if (_dayOfDateDT != null) {
+                      _dayOfDateText = _dayOfDateDT.toString();
+                      _dayOfDateTS = Timestamp.fromDate(_dayOfDateDT!);
+                    }
                   });
                 }),
             AutoSizeText(
-              "Day of Date: " + dayOfDateText,
+              "Day of Date: " + _dayOfDateText,
               style: const TextStyle(fontSize: 15),
               maxLines: 2,
             ),
@@ -182,19 +167,26 @@ class _DateSetupPageState extends State<DateSetupPage> {
                 height: _deviceHeight * 0.065,
                 width: _deviceWidth * 0.65,
                 onPressed: () async {
-                  _dateTime = await showTimePicker(
+                  TimeOfDay? dateTime = await showTimePicker(
                     context: context,
                     initialTime: TimeOfDay.now(),
                   );
                   setState(() {
-                    _dateTime = _dateTime;
-                    dateTimeText = _dateTime!.hour.toString() +
-                        ":" +
-                        _dateTime!.minute.toString();
+                    if (dateTime != null && _dayOfDateDT != null) {
+                      _dateTimeTS = Timestamp.fromDate(DateTime(
+                          _dayOfDateDT!.year,
+                          _dayOfDateDT!.month,
+                          _dayOfDateDT!.day,
+                          dateTime.hour,
+                          dateTime.minute));
+                      _dateTimeText = dateTime.hour.toString() +
+                          ":" +
+                          dateTime.minute.toString();
+                    }
                   });
                 }),
             AutoSizeText(
-              "Date Time: " + dateTimeText.toString(),
+              "Date Time: " + _dateTimeText.toString(),
               style: const TextStyle(fontSize: 15),
               maxLines: 2,
             ),
@@ -206,20 +198,27 @@ class _DateSetupPageState extends State<DateSetupPage> {
                 height: _deviceHeight * 0.065,
                 width: _deviceWidth * 0.7,
                 onPressed: () async {
-                  _checkInTime = await showTimePicker(
+                  TimeOfDay? checkInTime = await showTimePicker(
                     context: context,
                     helpText: "Check-In Time",
                     initialTime: TimeOfDay.now(),
                   );
                   setState(() {
-                    _checkInTime = _checkInTime;
-                    checkInTimeText = _checkInTime!.hour.toString() +
-                        ":" +
-                        _checkInTime!.minute.toString();
+                    if (checkInTime != null && _dayOfDateDT != null) {
+                      _checkinTimeTS = Timestamp.fromDate(DateTime(
+                          _dayOfDateDT!.year,
+                          _dayOfDateDT!.month,
+                          _dayOfDateDT!.day,
+                          checkInTime.hour,
+                          checkInTime.minute));
+                      _checkInTimeText = checkInTime.hour.toString() +
+                          ":" +
+                          checkInTime.minute.toString();
+                    }
                   });
                 }),
             AutoSizeText(
-              "Date Time: " + checkInTimeText,
+              "Date Time: " + _checkInTimeText,
               style: const TextStyle(fontSize: 15),
               maxLines: 2,
             ),
@@ -249,8 +248,9 @@ class _DateSetupPageState extends State<DateSetupPage> {
             await _dbService.createDateDetails(_auth.user.userId, {
               "hostID": _auth.user.userId,
               "datePlan": _datePlan,
-              "dateTime": dateTimeStamp,
-              "checkInTime": checkinTimeStamp,
+              "dayOfDate": _dayOfDateTS,
+              "dateTime": _dateTimeTS,
+              "checkInTime": _checkinTimeTS,
               "dateGPS": _pickedLocation.toString(),
             });
             if (kDebugMode) {
