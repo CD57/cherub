@@ -114,14 +114,14 @@ class FriendRequestListWidget extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                _dbService.deleteFriendRequest(aUser.userId);
+                _dbService.deleteFriendRequest(currentUserId, aUser.userId);
                 Navigator.pop(context);
               },
               child: const Text('Dismiss Request'),
             ),
             TextButton(
               onPressed: () {
-                _dbService.acceptFriendRequest(_auth.user.userId,
+                _dbService.acceptFriendRequest(currentUserId,
                     _auth.user.username, aUser.userId, aUser.username);
                 Navigator.pop(context);
               },

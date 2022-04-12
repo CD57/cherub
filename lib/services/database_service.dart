@@ -417,12 +417,14 @@ class DatabaseService {
   }
 
   // Delete Date Chat
-  Future<void> deleteFriendRequest(String _requestID) async {
+  Future<void> deleteFriendRequest(String userID, String friendID) async {
     if (kDebugMode) {
       print("database_service.dart - deleteFriendRequest()");
     }
     try {
-      await _db.collection(dates).doc(_requestID).delete();
+      //final friendsCollection = FirebaseFirestore.instance.collection(friends).doc(userID).collection(userFriends);
+
+      //await _db.collection(friends).doc(userID).collection(userFriends).get();
     } catch (e) {
       if (kDebugMode) {
         print(e);

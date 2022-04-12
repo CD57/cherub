@@ -10,7 +10,6 @@ import '../widgets/user_search_result_widget.dart';
 
 late Future<QuerySnapshot>? _searchResultsFuture;
 late List<FriendRequestListWidget> friendRequestResults = [];
-late List<String> friendRequestsStringList = [];
 late List<UserModel> friendRequestsUsersList = [];
 late String _uid;
 DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
@@ -27,8 +26,9 @@ class _UserSearchState extends State<UserSearchPage> {
   final CollectionReference<Map<String, dynamic>> friendsRef =
       FirebaseFirestore.instance.collection('Friends');
   TextEditingController searchController = TextEditingController();
-  bool searching = false;
-  bool loadRequests = false;
+  bool loadingBool = true;
+  bool searchingBool = false;
+  bool loadRequestsBool = false;
 
   @override
   void initState() {
@@ -47,19 +47,27 @@ class _UserSearchState extends State<UserSearchPage> {
     AuthProvider _auth;
     _auth = Provider.of<AuthProvider>(context);
     setState(() {
+      if (kDebugMode) {
+        print(
+            "user_search_page.dart - didChangeDependencies() - setState:  _uid = _auth.user.userId, friendRequestResults = []");
+      }
       _uid = _auth.user.userId;
+      friendRequestResults = [];
     });
+    handleFriendRequests();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildSearchField(),
-      body: searching
+      body: searchingBool
           ? buildSearchResults()
-          : loadRequests
+          : loadRequestsBool
               ? buildRequestResults()
-              : buildNoContent(),
+              : loadingBool
+                  ? buildLoadingContent()
+                  : buildNoContent(),
     );
   }
 
@@ -77,7 +85,7 @@ class _UserSearchState extends State<UserSearchPage> {
               Icons.account_box,
               color: Colors.white,
             ),
-            onPressed: handleFriendRequests,
+            onPressed: loadRequests,
           ),
           suffixIcon: IconButton(
             icon: const Icon(
@@ -103,69 +111,14 @@ class _UserSearchState extends State<UserSearchPage> {
       print("Users@@@@@@:" + users.toString());
     }
     setState(() {
+      if (kDebugMode) {
+        print(
+            "user_search_page.dart - handleSearch() - setState: _searchResultsFuture = users, searchingBool = true");
+      }
       _searchResultsFuture = users;
-      searching = true;
+      searchingBool = true;
     });
   }
-
-  // // Gets pending friend requests
-  // handleFriendRequests() async {
-  //   if (kDebugMode) {
-  //     print("user_search_page.dart - handleFriendRequests()");
-  //   }
-  //   Future<QuerySnapshot> friends = friendsRef
-  //       .doc(_uid)
-  //       .collection(userRequests)
-  //       .where("To", isGreaterThanOrEqualTo: _uid)
-  //       .where("To", isLessThanOrEqualTo: _uid + "z")
-  //       .get();
-
-  //   List<UserModel> tempFriendRequestsUsersList = [];
-  //   List<String> friendRequests;
-
-  //   if (kDebugMode) {
-  //     print("Users@@@@@@:" + users.toString());
-  //   }
-  //   for (String friend in friendRequests) {
-  //     UserModel aUser;
-
-  //     await _dbService.getUserByID(friend).then(
-  //       (_snapshot) {
-  //         if (_snapshot.data() != null) {
-  //           Map<String, dynamic> _userData =
-  //               _snapshot.data()! as Map<String, dynamic>;
-  //           aUser = UserModel.fromJSON(
-  //             {
-  //               "userId": friend,
-  //               "username": _userData["username"],
-  //               "name": _userData["name"],
-  //               "number": _userData["number"],
-  //               "email": _userData["email"],
-  //               "lastActive": _userData["lastActive"],
-  //               "imageURL": _userData["imageURL"],
-  //             },
-  //           );
-  //           if (kDebugMode) {
-  //             print("User: " + aUser.toMap().toString());
-  //           }
-  //           tempFriendRequestsUsersList.add(aUser);
-  //         } else {
-  //           if (kDebugMode) {
-  //             print("auth_provider.dart - AuthProvider() - No User Data Found");
-  //           }
-  //         }
-  //       },
-  //     );
-  //     //UserModel aUser = UserModel.fromDocument(_dbService.getUserByID(friend));
-  //   }
-  //   setState(() {
-  //     if (kDebugMode) {
-  //       print("Set state for handleFriendRequests");
-  //     }
-  //     friendRequestsUsersList = tempFriendRequestsUsersList;
-  //     loadRequests = true;
-  //   });
-  // }
 
   // Gets pending friend requests
   handleFriendRequests() async {
@@ -209,14 +162,25 @@ class _UserSearchState extends State<UserSearchPage> {
           }
         },
       );
-      //UserModel aUser = UserModel.fromDocument(_dbService.getUserByID(friend));
+    }
+    for (UserModel aUser in tempFriendRequestsUsersList) {
+      FriendRequestListWidget aFriendRequest =
+          FriendRequestListWidget(aUser, _dbService, _uid);
+      if (!friendRequestResults.contains(aFriendRequest)) {
+        friendRequestResults.add(aFriendRequest);
+      } else {
+        if (kDebugMode) {
+          print("buildRequestResults - Friend Already Loaded");
+        }
+      }
     }
     setState(() {
       if (kDebugMode) {
-        print("Set state for handleFriendRequests");
+        print(
+            "handleFriendRequests() - setState: friendRequestResults = friendRequestResults, loadingBool = false");
       }
-      friendRequestsUsersList = tempFriendRequestsUsersList;
-      loadRequests = true;
+      friendRequestResults = friendRequestResults;
+      loadingBool = false;
     });
   }
 
@@ -227,8 +191,12 @@ class _UserSearchState extends State<UserSearchPage> {
     }
     searchController.clear();
     setState(() {
-      searching = false;
-      loadRequests = false;
+      if (kDebugMode) {
+        print(
+            "clearSearch() - setState: searchingBool = false, loadRequestsBool = false");
+      }
+      searchingBool = false;
+      loadRequestsBool = false;
     });
   }
 
@@ -237,74 +205,97 @@ class _UserSearchState extends State<UserSearchPage> {
     if (kDebugMode) {
       print("user_search_page.dart - buildRequestsResults()");
     }
-    addToList();
     return ListView(
       children: friendRequestResults,
     );
   }
 
-  void addToList() {
-    for (UserModel aUser in friendRequestsUsersList) {
-      FriendRequestListWidget aFriendRequest =
-          FriendRequestListWidget(aUser, _dbService, _uid);
-      friendRequestResults.add(aFriendRequest);
+  // Display Users using UserSearchResultsWidget class
+  buildSearchResults() {
+    if (kDebugMode) {
+      print("user_search_page.dart - buildSearchResults()");
     }
-    setState(() {
-      friendRequestResults = friendRequestResults;
-    });
+    return FutureBuilder(
+      future: _searchResultsFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        List<UserSearchResultsWidget> searchResultsList = [];
+        for (var doc in (snapshot.data! as QuerySnapshot).docs) {
+          UserModel aUser = UserModel.fromDocument(doc);
+          UserSearchResultsWidget aSearchResult =
+              UserSearchResultsWidget(aUser, _dbService, _uid);
+          searchResultsList.add(aSearchResult);
+        }
+        if (kDebugMode) {
+          print("user_search_page.dart - buildSearchResults() - Length: " +
+              searchResultsList.length.toString());
+        }
+        return ListView(
+          children: searchResultsList,
+        );
+      },
+    );
   }
-}
-
-// Display Users using UserSearchResultsWidget class
-buildSearchResults() {
-  if (kDebugMode) {
-    print("user_search_page.dart - buildSearchResults()");
-  }
-  return FutureBuilder(
-    future: _searchResultsFuture,
-    builder: (context, snapshot) {
-      if (!snapshot.hasData) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      List<UserSearchResultsWidget> searchResultsList = [];
-      for (var doc in (snapshot.data! as QuerySnapshot).docs) {
-        UserModel aUser = UserModel.fromDocument(doc);
-        UserSearchResultsWidget aSearchResult =
-            UserSearchResultsWidget(aUser, _dbService, _uid);
-        searchResultsList.add(aSearchResult);
-      }
-      if (kDebugMode) {
-        print("user_search_page.dart - buildSearchResults() - Length: " +
-            searchResultsList.length.toString());
-      }
-      return ListView(
-        children: searchResultsList,
-      );
-    },
-  );
-}
 
 // Display image and text while no users displayed
-Center buildNoContent() {
-  if (kDebugMode) {
-    print("user_search_page.dart - buildNoContent()");
-  }
-  return Center(
-    child: ListView(
-      shrinkWrap: true,
-      children: <Widget>[
-        Text(
-          "Find Users",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.green.shade900,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w600,
-            fontSize: 60.0,
+  Center buildNoContent() {
+    if (kDebugMode) {
+      print("user_search_page.dart - buildNoContent()");
+    }
+    return Center(
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          Text(
+            "Find Users",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.green.shade900,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w600,
+              fontSize: 60.0,
+            ),
           ),
-        ),
-        const TextButton(onPressed: null, child: Text("View Friend Requests"))
-      ],
-    ),
-  );
+          TextButton(
+              onPressed: loadRequests,
+              child: const Text("View Friend Requests"))
+        ],
+      ),
+    );
+  }
+
+  Center buildLoadingContent() {
+    if (kDebugMode) {
+      print("user_search_page.dart - buildNoContent()");
+    }
+    return Center(
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          Text(
+            "Loading...",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.green.shade900,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w600,
+              fontSize: 60.0,
+            ),
+          ),
+          const CircularProgressIndicator()
+        ],
+      ),
+    );
+  }
+
+  void loadRequests() {
+    setState(() {
+      if (kDebugMode) {
+        print("loadRequests() - setState: loadRequestsBool = true");
+      }
+      loadRequestsBool = true;
+    });
+  }
 }
