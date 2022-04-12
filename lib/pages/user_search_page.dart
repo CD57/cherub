@@ -24,6 +24,8 @@ class UserSearchPage extends StatefulWidget {
 class _UserSearchState extends State<UserSearchPage> {
   final CollectionReference<Map<String, dynamic>> usersRef =
       FirebaseFirestore.instance.collection('Users');
+  final CollectionReference<Map<String, dynamic>> friendsRef =
+      FirebaseFirestore.instance.collection('Friends');
   TextEditingController searchController = TextEditingController();
   bool searching = false;
   bool loadRequests = false;
@@ -106,6 +108,65 @@ class _UserSearchState extends State<UserSearchPage> {
     });
   }
 
+  // // Gets pending friend requests
+  // handleFriendRequests() async {
+  //   if (kDebugMode) {
+  //     print("user_search_page.dart - handleFriendRequests()");
+  //   }
+  //   Future<QuerySnapshot> friends = friendsRef
+  //       .doc(_uid)
+  //       .collection(userRequests)
+  //       .where("To", isGreaterThanOrEqualTo: _uid)
+  //       .where("To", isLessThanOrEqualTo: _uid + "z")
+  //       .get();
+
+  //   List<UserModel> tempFriendRequestsUsersList = [];
+  //   List<String> friendRequests;
+
+  //   if (kDebugMode) {
+  //     print("Users@@@@@@:" + users.toString());
+  //   }
+  //   for (String friend in friendRequests) {
+  //     UserModel aUser;
+
+  //     await _dbService.getUserByID(friend).then(
+  //       (_snapshot) {
+  //         if (_snapshot.data() != null) {
+  //           Map<String, dynamic> _userData =
+  //               _snapshot.data()! as Map<String, dynamic>;
+  //           aUser = UserModel.fromJSON(
+  //             {
+  //               "userId": friend,
+  //               "username": _userData["username"],
+  //               "name": _userData["name"],
+  //               "number": _userData["number"],
+  //               "email": _userData["email"],
+  //               "lastActive": _userData["lastActive"],
+  //               "imageURL": _userData["imageURL"],
+  //             },
+  //           );
+  //           if (kDebugMode) {
+  //             print("User: " + aUser.toMap().toString());
+  //           }
+  //           tempFriendRequestsUsersList.add(aUser);
+  //         } else {
+  //           if (kDebugMode) {
+  //             print("auth_provider.dart - AuthProvider() - No User Data Found");
+  //           }
+  //         }
+  //       },
+  //     );
+  //     //UserModel aUser = UserModel.fromDocument(_dbService.getUserByID(friend));
+  //   }
+  //   setState(() {
+  //     if (kDebugMode) {
+  //       print("Set state for handleFriendRequests");
+  //     }
+  //     friendRequestsUsersList = tempFriendRequestsUsersList;
+  //     loadRequests = true;
+  //   });
+  // }
+
   // Gets pending friend requests
   handleFriendRequests() async {
     if (kDebugMode) {
@@ -121,7 +182,7 @@ class _UserSearchState extends State<UserSearchPage> {
     for (String friend in friendRequests) {
       UserModel aUser;
 
-      _dbService.getUserByID(friend).then(
+      await _dbService.getUserByID(friend).then(
         (_snapshot) {
           if (_snapshot.data() != null) {
             Map<String, dynamic> _userData =
