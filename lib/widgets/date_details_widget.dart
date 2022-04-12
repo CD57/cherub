@@ -26,7 +26,7 @@ class DateDetailsWidget extends StatelessWidget {
                 dateOptions(context, _dbService, _currentUserId, aDate.hostID),
             child: ListTile(
               title: Text(
-                aDate.dateTime.toString(),
+                aDate.dateTime.toDate().toString(),
                 style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold),
               ),

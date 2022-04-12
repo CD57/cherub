@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cherub/models/date_details_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -19,12 +21,12 @@ class DisplayDatesPage extends StatefulWidget {
 }
 
 class _DisplayDatesPageState extends State<DisplayDatesPage> {
+  late CollectionReference dateDetailsRef;
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
   late String _uid;
   late bool datesFound;
-  List<DateDetailsWidget> datesList = [];
 
   @override
   void initState() {
@@ -45,6 +47,10 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
 
     setState(() {
       _uid = _auth.user.userId;
+      dateDetailsRef = FirebaseFirestore.instance
+          .collection('Dates')
+          .doc(_uid)
+          .collection("DateDetails");
     });
   }
 
@@ -120,9 +126,9 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
     if (kDebugMode) {
       print("view_dates_page.dart - _datesList()");
     }
-    CollectionReference dates = FirebaseFirestore.instance.collection('Dates');
+
     return FutureBuilder<QuerySnapshot>(
-      future: dates.doc(_uid).collection("DateDetails").get(),
+      future: dateDetailsRef.get(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           if (kDebugMode) {
@@ -155,11 +161,11 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
           }
 
           if (kDebugMode) {
-              print("view_dates_page.dart - _datesList() - Returning List View");
-            }
+            print("view_dates_page.dart - _datesList() - Returning List View");
+          }
           return Flexible(
             child: ListView(
-              children: datesList,
+              children: dateDetailsList,
             ),
           );
         }
