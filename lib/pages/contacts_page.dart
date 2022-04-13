@@ -6,7 +6,9 @@ import 'package:cherub/widgets/custom_button_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 import '../providers/auth_provider.dart';
+import '../services/navigation_service.dart';
 import '../widgets/custom_tile_list_widget.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
@@ -23,6 +25,7 @@ class _ContactsPageState extends State<ContactsPage> {
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
+  late final NavigationService _nav = GetIt.instance.get<NavigationService>();
   late ContactsProvider _contactsProvider;
   final TextEditingController _searchController = TextEditingController();
 
@@ -65,11 +68,11 @@ class _ContactsPageState extends State<ContactsPage> {
                 'Users',
                 primaryAction: IconButton(
                   icon: const Icon(
-                    Icons.logout,
+                    Icons.keyboard_return_rounded,
                     color: Color.fromARGB(255, 20, 133, 43),
                   ),
                   onPressed: () {
-                    _auth.logout();
+                    _nav.goBack();
                   },
                 ),
               ),

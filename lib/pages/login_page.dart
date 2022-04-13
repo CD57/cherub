@@ -29,6 +29,15 @@ class _LoginPageState extends State<LoginPage> {
   String? _password;
 
   @override
+  void initState() {
+    if (kDebugMode) {
+      print("login_page.dart - initState()");
+    }
+    _nav = GetIt.instance.get<NavigationService>();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
       print("login_page.dart - build - begin");
@@ -36,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     _auth = Provider.of<AuthProvider>(context);
-    _nav = GetIt.instance.get<NavigationService>();
+    // _nav = GetIt.instance.get<NavigationService>();
     _auth.logout;
     return _buildUI();
   }
@@ -132,10 +141,9 @@ class _LoginPageState extends State<LoginPage> {
           _loginFormKey.currentState!.save();
           await _auth.emailLogin(_email!, _password!);
         }
-        if (_auth.authorised)
-        {
+        if (_auth.authorised) {
           if (kDebugMode) {
-            print("login_page.dart - _loginButton() - User Not Authorised");
+            print("login_page.dart - _loginButton() - User Authorised");
           }
           _nav.removeAndGoToRoute('/home');
         }

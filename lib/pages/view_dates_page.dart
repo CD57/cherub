@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../providers/auth_provider.dart';
+import '../services/navigation_service.dart';
 import '../widgets/date_details_widget.dart';
 import '../widgets/top_bar_widget.dart';
 import 'package:get_it/get_it.dart';
@@ -25,6 +26,7 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
+  late NavigationService _nav;
   late String _uid;
   late bool datesFound;
 
@@ -42,8 +44,8 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
       print("user_search_page.dart - didChangeDependencies()");
     }
     super.didChangeDependencies();
-    AuthProvider _auth;
     _auth = Provider.of<AuthProvider>(context);
+    _nav = GetIt.instance.get<NavigationService>();
 
     setState(() {
       _uid = _auth.user.userId;
@@ -82,11 +84,11 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
                 'Dates',
                 primaryAction: IconButton(
                   icon: const Icon(
-                    Icons.logout,
+                    Icons.keyboard_return_rounded,
                     color: Color.fromARGB(255, 20, 133, 43),
                   ),
                   onPressed: () {
-                    _auth.logout();
+                    _nav.goBack();
                   },
                 ),
               ),
@@ -104,18 +106,34 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
       print("view_dates_page.dart - buildNoContent()");
     }
     return Center(
-      child: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          Text(
-            "No Dates Available",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.green.shade900,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w600,
-              fontSize: 60.0,
+      child: Column(
+        children: [
+          TopBar(
+            'Your Date Details',
+            primaryAction: IconButton(
+              icon: const Icon(
+                Icons.keyboard_return_rounded,
+                color: Color.fromARGB(255, 20, 133, 43),
+              ),
+              onPressed: () {
+                _nav.goBack();
+              },
             ),
+          ),
+          ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Text(
+                "No Dates Available",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.green.shade900,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 60.0,
+                ),
+              ),
+            ],
           ),
         ],
       ),

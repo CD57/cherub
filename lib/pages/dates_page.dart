@@ -67,11 +67,11 @@ class _DatesPageState extends State<DatesPage> {
                 'My Dates',
                 primaryAction: IconButton(
                   icon: const Icon(
-                    Icons.keyboard_return_rounded,
+                    Icons.logout_sharp,
                     color: Color.fromARGB(255, 20, 133, 43),
                   ),
                   onPressed: () {
-                    _nav.goBack();
+                    _auth.logout();
                   },
                 ),
               ),

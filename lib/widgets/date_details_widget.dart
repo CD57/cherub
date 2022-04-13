@@ -1,8 +1,11 @@
 //Displays and holds user search results
 import 'package:cherub/models/date_details_model.dart';
+import 'package:cherub/pages/date_details_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import '../services/database_service.dart';
+import '../services/navigation_service.dart';
 
 class DateDetailsWidget extends StatelessWidget {
   final DateDetailsModel aDate;
@@ -50,6 +53,7 @@ class DateDetailsWidget extends StatelessWidget {
     if (kDebugMode) {
       print("date_details_widget.dart - contactOptions");
     }
+    late NavigationService _nav = GetIt.instance.get<NavigationService>();
     showDialog(
       context: context,
       builder: (_) {
@@ -68,6 +72,10 @@ class DateDetailsWidget extends StatelessWidget {
                 Navigator.pop(context);
               },
               child: const Text('Delete Date'),
+            ),
+            TextButton(
+              onPressed: () => _nav.goToPage(DateDetailsPage(aDate: aDate)),
+              child: const Text('View Date Details'),
             ),
           ],
         );

@@ -9,7 +9,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../providers/auth_provider.dart';
-import '../providers/contacts_provider.dart';
 import '../services/database_service.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
@@ -39,8 +38,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
   Timestamp _dateTimeTS = Timestamp.fromDate(DateTime.now());
   Timestamp _checkinTimeTS = Timestamp.fromDate(DateTime.now());
   DateTime? _dayOfDateDT;
-  DateTime? _dateTimeDT;
-  DateTime? _checkInTimeDT;
   late LatLng _pickedLocation;
 
   final _dateDetailsFormKey = GlobalKey<FormState>();

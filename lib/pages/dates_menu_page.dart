@@ -5,6 +5,8 @@ import 'package:cherub/pages/view_dates_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../services/navigation_service.dart';
 import '../widgets/custom_button_widget.dart';
 import '../widgets/top_bar_widget.dart';
@@ -19,9 +21,11 @@ class DatesMenuPage extends StatefulWidget {
 }
 
 class DatesMenuState extends State<DatesMenuPage> {
+  late final AuthProvider _auth = Provider.of<AuthProvider>(context);
   late NavigationService _nav;
   late double _deviceHeight;
   late double _deviceWidth;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +58,11 @@ class DatesMenuState extends State<DatesMenuPage> {
               'Dates Menu',
               primaryAction: IconButton(
                 icon: const Icon(
-                  Icons.keyboard_return_rounded,
+                  Icons.logout_sharp,
                   color: Color.fromARGB(255, 20, 133, 43),
                 ),
                 onPressed: () {
-                  _nav.goBack();
+                  _auth.logout();
                 },
               ),
             ),
@@ -113,7 +117,9 @@ class DatesMenuState extends State<DatesMenuPage> {
           name: "Past Dates",
           height: _deviceHeight * 0.065,
           width: _deviceWidth * 0.8,
-          onPressed: () {});
+          onPressed: () {
+            _nav.goToPage(const DisplayDatesPage());
+          });
     });
   }
 }
