@@ -303,6 +303,92 @@ class DatabaseService {
     }
   }
 
+  // Get Friend
+  Future<List<String>> getFriendsID(String uid) async {
+    if (kDebugMode) {
+      print("database_service.dart - getFriendRequests()");
+    }
+
+    QuerySnapshot querySnapshot =
+        await _db.collection(friends).doc(uid).collection(userFriends).get();
+
+    List<String> result = <String>[];
+    for (var doc in querySnapshot.docs) {
+      if (kDebugMode) {
+        print(doc["FriendId"]);
+      }
+      result.add(doc["FriendId"]);
+    }
+    return result;
+  }
+
+  // Delete Friend
+  Future<void> deleteFriend(String userID, String friendID) async {
+    if (kDebugMode) {
+      print("database_service.dart - deleteFriend()");
+    }
+    try {
+      QuerySnapshot userSnapshot = await _db
+          .collection(friends)
+          .doc(userID)
+          .collection(userFriends)
+          .where("FriendId", isGreaterThanOrEqualTo: friendID)
+          .where("FriendId", isLessThanOrEqualTo: friendID + "z")
+          .get();
+      if (kDebugMode) {
+        print(
+            "database_service.dart - deleteFriend() - $userID's Friend Doc Collected");
+      }
+
+      for (var doc1 in userSnapshot.docs) {
+        var friendDocID = doc1.id;
+        await _db
+            .collection(friends)
+            .doc(userID)
+            .collection(userFriends)
+            .doc(friendDocID)
+            .delete();
+        if (kDebugMode) {
+          print(
+              "database_service.dart - deleteFriend - User $friendID Removed from $userID's contacts: " +
+                  doc1.id.toString());
+        }
+      }
+
+      QuerySnapshot friendSnapshot = await _db
+          .collection(friends)
+          .doc(friendID)
+          .collection(userFriends)
+          .where("FriendId", isGreaterThanOrEqualTo: userID)
+          .where("FriendId", isLessThanOrEqualTo: userID + "z")
+          .get();
+      if (kDebugMode) {
+        print(
+            "database_service.dart - deleteFriend() - $friendID's Friend Doc Collected");
+      }
+
+      for (var doc2 in friendSnapshot.docs) {
+        var friendDocID2 = doc2.id;
+        await _db
+            .collection(friends)
+            .doc(friendID)
+            .collection(userRequests)
+            .doc(friendDocID2)
+            .delete();
+
+        if (kDebugMode) {
+          print(
+              "database_service.dart - deleteFriendRequest - User $userID Removed from $friendID's contacts: " +
+                  doc2.id.toString());
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("deleteFriendRequest() - ERROR: " + e.toString());
+      }
+    }
+  }
+
   // Create Friend Request
   Future<DocumentReference?> createFriendRequest(
       Map<String, dynamic> _data) async {
@@ -430,11 +516,10 @@ class DatabaseService {
             .collection(userRequests)
             .doc(fromDocID)
             .delete();
-
         if (kDebugMode) {
-          print(doc[
+          print(
               "database_service.dart - deleteFriendRequest - User $friendID Accepted & Deleted Request: " +
-                  doc.id.toString()]);
+                  doc.id.toString());
         }
       }
 
@@ -446,11 +531,10 @@ class DatabaseService {
             .collection(userRequests)
             .doc(toDocID)
             .delete();
-
         if (kDebugMode) {
-          print(doc[
+          print(
               "database_service.dart - deleteFriendRequest - User: $friendID Sent Request Accepted & Deleted: " +
-                  doc.id.toString()]);
+                  doc.id.toString());
         }
       }
     } catch (e) {

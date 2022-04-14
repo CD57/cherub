@@ -52,12 +52,12 @@ class UserSearchResultsWidget extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 if (kDebugMode) {
                   print(
                       "contactOptions - Request from $_uid to $_requestedUsersId");
                 }
-                _dbService.createFriendRequest({
+                await _dbService.createFriendRequest({
                   "From": _uid.toString(),
                   "To": _requestedUsersId.toString()
                 });
@@ -103,7 +103,7 @@ class FriendRequestListWidget extends StatelessWidget {
   void requestOptions(
       BuildContext context, DatabaseService dbService, String currentUserId) {
     if (kDebugMode) {
-      print("user_search_result_widget.dart - contactOptions");
+      print("user_search_result_widget.dart - requestOptions");
     }
     AuthProvider _auth = Provider.of<AuthProvider>(context, listen: false);
     showDialog(
@@ -113,19 +113,92 @@ class FriendRequestListWidget extends StatelessWidget {
           title: const Text('Accept Friend Request?'),
           actions: [
             TextButton(
-              onPressed: () {
-                _dbService.deleteFriendRequest(currentUserId, aUser.userId);
-                Navigator.pop(context);
-              },
-              child: const Text('Dismiss Request'),
-            ),
-            TextButton(
-              onPressed: () {
-                _dbService.acceptFriendRequest(currentUserId,
+              onPressed: () async {
+                await _dbService.acceptFriendRequest(currentUserId,
                     _auth.user.username, aUser.userId, aUser.username);
                 Navigator.pop(context);
               },
               child: const Text('Accept Request'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _dbService.deleteFriendRequest(currentUserId, aUser.userId);
+                Navigator.pop(context);
+              },
+              child: const Text('Dismiss Request'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class FriendListWidget extends StatelessWidget {
+  final UserModel aUser;
+  final String currentUserId;
+  final DatabaseService dbService;
+  const FriendListWidget(this.aUser, this.currentUserId, this.dbService, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Theme.of(context).primaryColor.withOpacity(0.7),
+      child: Column(
+        children: <Widget>[
+          GestureDetector(
+            onTap: () => friendOptions(context, dbService, currentUserId),
+            child: userDetailsWidget(aUser.name, aUser),
+          ),
+          const Divider(
+            height: 2.0,
+            color: Colors.white54,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void friendOptions(BuildContext context, DatabaseService dbService, String currentUserId) {
+    if (kDebugMode) {
+      print("user_search_result_widget.dart - friendOptions");
+    }
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Center(child: Text(aUser.name)),
+          actions: [
+            Center(
+              child: Column(
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('View Profile'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Message'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await dbService.deleteFriend(currentUserId, aUser.userId);
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Delete Friend'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Back'),
+                  ),
+                ],
+              ),
             ),
           ],
         );

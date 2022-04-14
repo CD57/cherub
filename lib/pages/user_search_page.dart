@@ -9,8 +9,8 @@ import '../services/database_service.dart';
 import '../widgets/user_search_result_widget.dart';
 
 late Future<QuerySnapshot>? _searchResultsFuture;
-late List<FriendRequestListWidget> friendRequestResults = [];
-late List<UserModel> friendRequestsUsersList = [];
+late List<FriendRequestListWidget> friendRequestWidgetList = [];
+late List<FriendListWidget> friendsWidgetList = [];
 late String _uid;
 DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 
@@ -49,12 +49,152 @@ class _UserSearchState extends State<UserSearchPage> {
     setState(() {
       if (kDebugMode) {
         print(
-            "user_search_page.dart - didChangeDependencies() - setState:  _uid = _auth.user.userId, friendRequestResults = []");
+            "user_search_page.dart - didChangeDependencies() - setState:  _uid = _auth.user.userId, friendRequestWidgetList = []");
       }
       _uid = _auth.user.userId;
-      friendRequestResults = [];
+      friendRequestWidgetList = [];
+      friendsWidgetList = [];
     });
-    handleFriendRequests();
+    getFriendRequests();
+    getUsersFriends();
+  }
+
+  // Gets pending friend requests
+  getFriendRequests() async {
+    if (kDebugMode) {
+      print("user_search_page.dart - handleFriendRequests()");
+    }
+    List<String> friendRequests = await _dbService.getFriendRequests(_uid);
+    List<UserModel> tempFriendRequestsUsersList = [];
+
+    for (String friend in friendRequests) {
+      UserModel aUser;
+
+      await _dbService.getUserByID(friend).then(
+        (_snapshot) {
+          if (_snapshot.data() != null) {
+            Map<String, dynamic> _userData =
+                _snapshot.data()! as Map<String, dynamic>;
+            aUser = UserModel.fromJSON(
+              {
+                "userId": friend,
+                "username": _userData["username"],
+                "name": _userData["name"],
+                "number": _userData["number"],
+                "email": _userData["email"],
+                "lastActive": _userData["lastActive"],
+                "imageURL": _userData["imageURL"],
+              },
+            );
+            if (kDebugMode) {
+              print("User: " + aUser.toMap().toString());
+            }
+            tempFriendRequestsUsersList.add(aUser);
+          } else {
+            if (kDebugMode) {
+              print("auth_provider.dart - AuthProvider() - No User Data Found");
+            }
+          }
+        },
+      );
+    }
+    for (UserModel aUser in tempFriendRequestsUsersList) {
+      FriendRequestListWidget aFriendRequest =
+          FriendRequestListWidget(aUser, _dbService, _uid);
+      if (!friendRequestWidgetList.contains(aFriendRequest)) {
+        friendRequestWidgetList.add(aFriendRequest);
+      } else {
+        if (kDebugMode) {
+          print("buildRequestResults - Friend Already Loaded");
+        }
+      }
+    }
+    setState(() {
+      if (kDebugMode) {
+        print(
+            "handleFriendRequests() - setState: friendRequestWidgetList = friendRequestWidgetList");
+      }
+      friendRequestWidgetList = friendRequestWidgetList;
+    });
+  }
+
+  // Gets pending friend requests
+  getUsersFriends() async {
+    if (kDebugMode) {
+      print("user_search_page.dart - getUsersFriends()");
+    }
+    List<String> friendRequests = await _dbService.getFriendsID(_uid);
+    List<UserModel> tempFriendsList = [];
+
+    for (String friend in friendRequests) {
+      UserModel aUser;
+
+      await _dbService.getUserByID(friend).then(
+        (_snapshot) {
+          if (_snapshot.data() != null) {
+            Map<String, dynamic> _userData =
+                _snapshot.data()! as Map<String, dynamic>;
+            aUser = UserModel.fromJSON(
+              {
+                "userId": friend,
+                "username": _userData["username"],
+                "name": _userData["name"],
+                "number": _userData["number"],
+                "email": _userData["email"],
+                "lastActive": _userData["lastActive"],
+                "imageURL": _userData["imageURL"],
+              },
+            );
+            if (kDebugMode) {
+              print("User: " + aUser.toMap().toString());
+            }
+            tempFriendsList.add(aUser);
+          } else {
+            if (kDebugMode) {
+              print("auth_provider.dart - AuthProvider() - No User Data Found");
+            }
+          }
+        },
+      );
+    }
+    for (UserModel aUser in tempFriendsList) {
+      FriendListWidget aFriendRequest = FriendListWidget(aUser, _uid, _dbService);
+      if (!friendsWidgetList.contains(aFriendRequest)) {
+        friendsWidgetList.add(aFriendRequest);
+      } else {
+        if (kDebugMode) {
+          print("buildRequestResults - Friend Already Loaded");
+        }
+      }
+    }
+    setState(() {
+      if (kDebugMode) {
+        print(
+            "handleFriendRequests() - setState: friendsWidgetList = friendsWidgetList, loadingBool = false");
+      }
+      friendsWidgetList = friendsWidgetList;
+      loadingBool = false;
+    });
+  }
+
+  // Retrieves requested display name from user database
+  getSearchResults(String query) {
+    if (kDebugMode) {
+      print("user_search_page.dart - handleSearch() - Search: $query");
+    }
+    Future<QuerySnapshot> users =
+        usersRef.where("username", isEqualTo: query).get();
+    if (kDebugMode) {
+      print("Users@@@@@@:" + users.toString());
+    }
+    setState(() {
+      if (kDebugMode) {
+        print(
+            "user_search_page.dart - handleSearch() - setState: _searchResultsFuture = users, searchingBool = true");
+      }
+      _searchResultsFuture = users;
+      searchingBool = true;
+    });
   }
 
   @override
@@ -92,112 +232,12 @@ class _UserSearchState extends State<UserSearchPage> {
               Icons.clear,
               color: Colors.white,
             ),
-            onPressed: clearSearch,
+            onPressed: clearPage,
           ),
         ),
-        onFieldSubmitted: handleSearch,
+        onFieldSubmitted: getSearchResults,
       ),
     );
-  }
-
-  // Retrieves requested display name from user database
-  handleSearch(String query) {
-    if (kDebugMode) {
-      print("user_search_page.dart - handleSearch() - Search: $query");
-    }
-    Future<QuerySnapshot> users =
-        usersRef.where("username", isEqualTo: query).get();
-    if (kDebugMode) {
-      print("Users@@@@@@:" + users.toString());
-    }
-    setState(() {
-      if (kDebugMode) {
-        print(
-            "user_search_page.dart - handleSearch() - setState: _searchResultsFuture = users, searchingBool = true");
-      }
-      _searchResultsFuture = users;
-      searchingBool = true;
-    });
-  }
-
-  // Gets pending friend requests
-  handleFriendRequests() async {
-    if (kDebugMode) {
-      print("user_search_page.dart - handleFriendRequests()");
-    }
-    List<String> friendRequests = await _dbService.getFriendRequests(_uid);
-    List<UserModel> tempFriendRequestsUsersList = [];
-    Future<QuerySnapshot>? users = _dbService.getUsersFromList(friendRequests);
-
-    if (kDebugMode) {
-      print("Users@@@@@@:" + users.toString());
-    }
-    for (String friend in friendRequests) {
-      UserModel aUser;
-
-      await _dbService.getUserByID(friend).then(
-        (_snapshot) {
-          if (_snapshot.data() != null) {
-            Map<String, dynamic> _userData =
-                _snapshot.data()! as Map<String, dynamic>;
-            aUser = UserModel.fromJSON(
-              {
-                "userId": friend,
-                "username": _userData["username"],
-                "name": _userData["name"],
-                "number": _userData["number"],
-                "email": _userData["email"],
-                "lastActive": _userData["lastActive"],
-                "imageURL": _userData["imageURL"],
-              },
-            );
-            if (kDebugMode) {
-              print("User: " + aUser.toMap().toString());
-            }
-            tempFriendRequestsUsersList.add(aUser);
-          } else {
-            if (kDebugMode) {
-              print("auth_provider.dart - AuthProvider() - No User Data Found");
-            }
-          }
-        },
-      );
-    }
-    for (UserModel aUser in tempFriendRequestsUsersList) {
-      FriendRequestListWidget aFriendRequest =
-          FriendRequestListWidget(aUser, _dbService, _uid);
-      if (!friendRequestResults.contains(aFriendRequest)) {
-        friendRequestResults.add(aFriendRequest);
-      } else {
-        if (kDebugMode) {
-          print("buildRequestResults - Friend Already Loaded");
-        }
-      }
-    }
-    setState(() {
-      if (kDebugMode) {
-        print(
-            "handleFriendRequests() - setState: friendRequestResults = friendRequestResults, loadingBool = false");
-      }
-      friendRequestResults = friendRequestResults;
-      loadingBool = false;
-    });
-  }
-
-  // Clears search results
-  clearSearch() {
-    if (kDebugMode) {
-      print("user_search_page.dart - clearSearch()");
-    }
-    searchController.clear();
-    setState(() {
-      if (kDebugMode) {
-        print(
-            "clearSearch() - setState: searchingBool = false, loadRequestsBool = false");
-      }
-      searchingBool = false;
-      loadRequestsBool = false;
-    });
   }
 
   // Display Users using FriendRequestListWidget class
@@ -205,8 +245,42 @@ class _UserSearchState extends State<UserSearchPage> {
     if (kDebugMode) {
       print("user_search_page.dart - buildRequestsResults()");
     }
+    if (friendRequestWidgetList.isEmpty) {
+      if (kDebugMode) {
+        print("buildRequestResults() - No Friend Requests");
+      }
+      return Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            Text(
+              "No Pending Requests",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.green.shade900,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w600,
+                fontSize: 40.0,
+              ),
+            ),
+            TextButton(
+                onPressed: clearPage,
+                child: Text(
+                  "Return to Contacts Page",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.green.shade800,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20.0,
+                  ),
+                ))
+          ],
+        ),
+      );
+    }
     return ListView(
-      children: friendRequestResults,
+      children: friendRequestWidgetList,
     );
   }
 
@@ -244,23 +318,30 @@ class _UserSearchState extends State<UserSearchPage> {
     if (kDebugMode) {
       print("user_search_page.dart - buildNoContent()");
     }
+    if (friendsWidgetList.isNotEmpty) {
+      return Center(
+        child: ListView(
+          children: friendsWidgetList,
+        ),
+      );
+    }
     return Center(
       child: ListView(
         shrinkWrap: true,
         children: <Widget>[
           Text(
-            "Find Users",
+            "Add Friends using their Username",
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.green.shade900,
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w600,
-              fontSize: 60.0,
+              fontSize: 40.0,
             ),
           ),
           TextButton(
               onPressed: loadRequests,
-              child: const Text("View Friend Requests"))
+              child: const Text("Check Friend Requests"))
         ],
       ),
     );
@@ -290,7 +371,23 @@ class _UserSearchState extends State<UserSearchPage> {
     );
   }
 
-  void loadRequests() {
+  // Clears search results
+  clearPage() {
+    if (kDebugMode) {
+      print("user_search_page.dart - clearSearch()");
+    }
+    searchController.clear();
+    setState(() {
+      if (kDebugMode) {
+        print(
+            "clearSearch() - setState: searchingBool = false, loadRequestsBool = false");
+      }
+      searchingBool = false;
+      loadRequestsBool = false;
+    });
+  }
+
+  loadRequests() {
     setState(() {
       if (kDebugMode) {
         print("loadRequests() - setState: loadRequestsBool = true");
