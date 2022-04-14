@@ -74,7 +74,7 @@ class DateDetailsWidget extends StatelessWidget {
               child: const Text('Delete Date'),
             ),
             TextButton(
-              onPressed: () => _nav.goToPage(DateDetailsPage(aDate: aDate)),
+              onPressed: () => _nav.removeAndGoToPage(DateDetailsPage(aDate: aDate)),
               child: const Text('View Date Details'),
             ),
           ],

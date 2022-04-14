@@ -94,8 +94,7 @@ class _DateMapState extends State<DateMap> {
                           padding: const EdgeInsets.all(5),
                           width: 300,
                           child: ListTile(
-                            // leading: Icons.nav
-                            // ),
+                            leading: const Icon(Icons.gps_not_fixed_sharp),
                             title: Text(
                               location,
                               style: const TextStyle(fontSize: 20),

@@ -7,8 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/media_service.dart';
-import '../services/storage_service.dart';
-import '../services/database_service.dart';
 import '../widgets/custom_button_widget.dart';
 import '../widgets/profile_picture_widget.dart';
 import '../widgets/user_input_widget.dart';
@@ -27,8 +25,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   late double _deviceWidth;
 
   late AuthProvider _auth;
-  late DatabaseService _db;
-  late StorageService _storage;
 
   String? _username;
   String? _name;
@@ -45,8 +41,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       print("registration_page.dart - build()");
     }
     _auth = Provider.of<AuthProvider>(context);
-    _db = GetIt.instance.get<DatabaseService>();
-    _storage = GetIt.instance.get<StorageService>();
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return _buildUI();

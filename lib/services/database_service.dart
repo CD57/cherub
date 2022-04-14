@@ -62,18 +62,6 @@ class DatabaseService {
     return doc;
   }
 
-  // Future<UserModel> getUser(String uid) async {
-  //   QuerySnapshot snapshot = await FirebaseFirestore.instance
-  //       .collection(users)
-  //       .where("userId", isEqualTo: uid)
-  //       .get();
-
-  //   Iterable<UserModel> user = snapshot.docs
-  //       .map((e) => UserModel.fromJSON(e.data() as Map<String, dynamic>));
-
-  //   return user.first;
-  // }
-
   Future<QuerySnapshot> getUsersFromList(List<String> uidList) async {
     QuerySnapshot snapshot;
     try {
@@ -301,21 +289,6 @@ class DatabaseService {
     }
   }
 
-  // // Get Date Details
-  // Future<QuerySnapshot<Object?>> getDateDetails(String uid) async {
-  //   if (kDebugMode) {
-  //     print("database_service.dart - getDateDetails()");
-  //   }
-
-  //   QuerySnapshot querySnapshot = await _db
-  //       .collection(dates)
-  //       .doc(uid)
-  //       .collection(dateDetails)
-  //       .get().then((value) => null);
-
-  //   return querySnapshot;
-  // }
-
   // Delete Date Details
   Future<void> deleteDateDetails(String _dateDetailsID) async {
     if (kDebugMode) {
@@ -407,6 +380,9 @@ class DatabaseService {
         "TimeAdded": DateTime.now()
       });
 
+      await deleteFriendRequest(_uid, _friendRequestID);
+      await deleteFriendRequest(_friendRequestID, _uid);
+
       return _friendAcceptDoc;
     } catch (e) {
       if (kDebugMode) {
@@ -416,59 +392,71 @@ class DatabaseService {
     }
   }
 
-  // Delete Date Chat
+  // Delete Friend Request
   Future<void> deleteFriendRequest(String userID, String friendID) async {
     if (kDebugMode) {
       print("database_service.dart - deleteFriendRequest()");
     }
     try {
-      //final friendsCollection = FirebaseFirestore.instance.collection(friends).doc(userID).collection(userFriends);
+      QuerySnapshot fromSnapshot = await _db
+          .collection(friends)
+          .doc(userID)
+          .collection(userRequests)
+          .where("From", isGreaterThanOrEqualTo: friendID)
+          .where("From", isLessThanOrEqualTo: friendID + "z")
+          .get();
+      if (kDebugMode) {
+        print(
+            "database_service.dart - deleteFriendRequest() - $userID's Doc Collected");
+      }
 
-      //await _db.collection(friends).doc(userID).collection(userFriends).get();
+      QuerySnapshot toSnapshot = await _db
+          .collection(friends)
+          .doc(friendID)
+          .collection(userRequests)
+          .where("To", isGreaterThanOrEqualTo: userID)
+          .where("To", isLessThanOrEqualTo: userID + "z")
+          .get();
+      if (kDebugMode) {
+        print(
+            "database_service.dart - deleteFriendRequest() - $friendID's Doc Collected");
+      }
+
+      for (var doc in fromSnapshot.docs) {
+        var fromDocID = doc.id;
+        await _db
+            .collection(friends)
+            .doc(userID)
+            .collection(userRequests)
+            .doc(fromDocID)
+            .delete();
+
+        if (kDebugMode) {
+          print(doc[
+              "database_service.dart - deleteFriendRequest - User $friendID Accepted & Deleted Request: " +
+                  doc.id.toString()]);
+        }
+      }
+
+      for (var doc in toSnapshot.docs) {
+        var toDocID = doc.id;
+        await _db
+            .collection(friends)
+            .doc(friendID)
+            .collection(userRequests)
+            .doc(toDocID)
+            .delete();
+
+        if (kDebugMode) {
+          print(doc[
+              "database_service.dart - deleteFriendRequest - User: $friendID Sent Request Accepted & Deleted: " +
+                  doc.id.toString()]);
+        }
+      }
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print("deleteFriendRequest() - ERROR: " + e.toString());
       }
     }
   }
-
-  // Future<QuerySnapshot> getDateDetails(List<String> uidList) async {
-  //   QuerySnapshot snapshot;
-  //   try {
-  //     snapshot = await FirebaseFirestore.instance
-  //         .collection(users)
-  //         .where("hostI", arrayContains: uidList)
-  //         .get()
-  //         // ignore: avoid_print
-  //         .whenComplete(() => print("getUsersFromList: Complete"));
-  //     return snapshot;
-  //   } catch (e) {
-  //     if (kDebugMode) {
-  //       print(e);
-  //     }
-  //     snapshot = await FirebaseFirestore.instance
-  //         .collection(users)
-  //         .where("userId", arrayContains: uidList)
-  //         .get();
-  //     if (kDebugMode) {
-  //       print("getUsersFromList - FAILED");
-  //     }
-  //     return snapshot;
-  //   }
-  // }
-
-  // // Cancel Friend Request
-  // Future<void> cancelFriendRequest(String uid, String _friendRequestID) async {
-  //   if (kDebugMode) {
-  //     print("database_service.dart - cancelFriendRequest()");
-  //   }
-  //   try {
-  //     await _db.collection(friends).doc(uid).collection(userRequests).
-  //     await _db.collection(friends).doc(_friendRequestID).delete();
-  //   } catch (e) {
-  //     if (kDebugMode) {
-  //       print(e);
-  //     }
-  //   }
-  // }
 }
