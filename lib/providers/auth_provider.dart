@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../services/database_service.dart';
 import '../services/navigation_service.dart';
@@ -17,6 +18,8 @@ class AuthProvider extends ChangeNotifier {
   late UserModel user;
   late bool loggedIn = false;
   late bool authorised = false;
+  final CollectionReference<Map<String, dynamic>> usersRef =
+      FirebaseFirestore.instance.collection('Users');
 
   AuthProvider() {
     _auth = FirebaseAuth.instance;

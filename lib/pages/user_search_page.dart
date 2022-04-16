@@ -189,9 +189,6 @@ class _UserSearchState extends State<UserSearchPage> {
     }
     Future<QuerySnapshot> users =
         usersRef.where("username", isEqualTo: query).get();
-    if (kDebugMode) {
-      print("Users@@@@@@:" + users.toString());
-    }
     setState(() {
       if (kDebugMode) {
         print(
@@ -289,7 +286,7 @@ class _UserSearchState extends State<UserSearchPage> {
     );
   }
 
-  // Display Users using UserSearchResultsWidget class
+  // Display Users using UserSearchResultsWidget class.
   buildSearchResults() {
     if (kDebugMode) {
       print("user_search_page.dart - buildSearchResults()");

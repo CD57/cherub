@@ -1,15 +1,17 @@
 // home_page.dart - App page containing main menu of app, containing a scaffold of displaying other app pages
 
 import 'package:cherub/pages/dates_menu_page.dart';
+import 'package:cherub/pages/user_profile_page.dart';
 import 'package:cherub/pages/user_search_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
+import 'package:provider/provider.dart';
+import '../models/user_model.dart';
+import '../providers/auth_provider.dart';
 import 'dates_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() {
     return _HomePageState();
@@ -17,15 +19,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late AuthProvider _auth;
   int _currentPage = 0;
-  final List<Widget> _pages = [
-    const DatesMenuPage(),
-    const DatesPage(),
-    const UserSearchPage(),
-    const ProfilePage()
-  ];
+
   @override
   Widget build(BuildContext context) {
+    _auth = Provider.of<AuthProvider>(context);
     if (kDebugMode) {
       print("home_page.dart - build");
     }
@@ -33,6 +32,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildUI() {
+    UserModel currentUser = _auth.user;
+    late final List<Widget> _pages = [
+      const DatesMenuPage(),
+      const DatesPage(),
+      const UserSearchPage(),
+      UserProfilePage(aUser: currentUser)
+    ];
     return Scaffold(
       body: _pages[_currentPage],
       bottomNavigationBar: BottomNavigationBar(

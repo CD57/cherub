@@ -57,14 +57,14 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
-      print("contacts_page.dart - build");
+      print("view_dates_page.dart - build");
     }
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-    return Scaffold(body: _buildSearchResults());
+    return Scaffold(body: _buildDateDetailsList());
   }
 
-  Widget _buildSearchResults() {
+  Widget _buildDateDetailsList() {
     return Material(child: Builder(
       builder: (BuildContext _context) {
         return Container(
@@ -165,17 +165,16 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
           if (kDebugMode) {
             print("view_dates_page.dart - _datesList() - ConnectionState.done");
           }
-          List<DateDetailsWidget> dateDetailsList = [];
+          List<DateDetailsListWidget> dateDetailsList = [];
           for (var doc in (snapshot.data!).docs) {
             DateDetailsModel aDate = DateDetailsModel.fromDocument(doc);
-            DateDetailsWidget aDateDetailsWidget =
-                DateDetailsWidget(aDate, _dbService, _uid);
+            DateDetailsListWidget aDateDetailsWidget =
+                DateDetailsListWidget(aDate, _dbService, _uid);
             dateDetailsList.add(aDateDetailsWidget);
             if (kDebugMode) {
               print("view_dates_page.dart - _datesList() - Date Added");
             }
           }
-
           if (kDebugMode) {
             print("view_dates_page.dart - _datesList() - Returning List View");
           }

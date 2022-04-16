@@ -5,7 +5,10 @@ import 'package:cherub/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import '../pages/user_profile_page.dart';
 import '../services/database_service.dart';
+import '../services/navigation_service.dart';
 
 class UserSearchResultsWidget extends StatelessWidget {
   final UserModel aUser;
@@ -122,7 +125,8 @@ class FriendRequestListWidget extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                await _dbService.deleteFriendRequest(currentUserId, aUser.userId);
+                await _dbService.deleteFriendRequest(
+                    currentUserId, aUser.userId);
                 Navigator.pop(context);
               },
               child: const Text('Dismiss Request'),
@@ -138,7 +142,9 @@ class FriendListWidget extends StatelessWidget {
   final UserModel aUser;
   final String currentUserId;
   final DatabaseService dbService;
-  const FriendListWidget(this.aUser, this.currentUserId, this.dbService, {Key? key}) : super(key: key);
+  const FriendListWidget(this.aUser, this.currentUserId, this.dbService,
+      {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -159,10 +165,12 @@ class FriendListWidget extends StatelessWidget {
     );
   }
 
-  void friendOptions(BuildContext context, DatabaseService dbService, String currentUserId) {
+  void friendOptions(
+      BuildContext context, DatabaseService dbService, String currentUserId) {
     if (kDebugMode) {
       print("user_search_result_widget.dart - friendOptions");
     }
+    late NavigationService _nav = GetIt.instance.get<NavigationService>();
     showDialog(
       context: context,
       builder: (_) {
@@ -173,29 +181,28 @@ class FriendListWidget extends StatelessWidget {
               child: Column(
                 children: [
                   TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () =>
+                        _nav.removeAndGoToPage(UserProfilePage(aUser: aUser)),
                     child: const Text('View Profile'),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Message'),
+                    child: const Text('Send Message'),
                   ),
                   TextButton(
                     onPressed: () async {
                       await dbService.deleteFriend(currentUserId, aUser.userId);
                       Navigator.pop(context);
                     },
-                    child: const Text('Delete Friend'),
+                    child: const Text('Delete Contact'),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Back'),
+                    child: const Text('Go Back'),
                   ),
                 ],
               ),
