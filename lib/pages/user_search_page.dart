@@ -109,13 +109,15 @@ class _UserSearchState extends State<UserSearchPage> {
         }
       }
     }
-    setState(() {
-      if (kDebugMode) {
-        print(
-            "handleFriendRequests() - setState: friendRequestWidgetList = friendRequestWidgetList");
-      }
-      friendRequestWidgetList = friendRequestWidgetList;
-    });
+    if (mounted) {
+      setState(() {
+        if (kDebugMode) {
+          print(
+              "handleFriendRequests() - setState: friendRequestWidgetList = friendRequestWidgetList");
+        }
+        friendRequestWidgetList = friendRequestWidgetList;
+      });
+    }
   }
 
   // Gets pending friend requests
@@ -158,7 +160,8 @@ class _UserSearchState extends State<UserSearchPage> {
       );
     }
     for (UserModel aUser in tempFriendsList) {
-      FriendListWidget aFriendRequest = FriendListWidget(aUser, _uid, _dbService);
+      FriendListWidget aFriendRequest =
+          FriendListWidget(aUser, _uid, _dbService);
       if (!friendsWidgetList.contains(aFriendRequest)) {
         friendsWidgetList.add(aFriendRequest);
       } else {
@@ -167,14 +170,16 @@ class _UserSearchState extends State<UserSearchPage> {
         }
       }
     }
-    setState(() {
-      if (kDebugMode) {
-        print(
-            "handleFriendRequests() - setState: friendsWidgetList = friendsWidgetList, loadingBool = false");
-      }
-      friendsWidgetList = friendsWidgetList;
-      loadingBool = false;
-    });
+    if (mounted) {
+      setState(() {
+        if (kDebugMode) {
+          print(
+              "handleFriendRequests() - setState: friendsWidgetList = friendsWidgetList, loadingBool = false");
+        }
+        friendsWidgetList = friendsWidgetList;
+        loadingBool = false;
+      });
+    }
   }
 
   // Retrieves requested display name from user database

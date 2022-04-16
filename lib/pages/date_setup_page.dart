@@ -191,7 +191,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
               height: _deviceHeight * 0.02,
             ),
             CustomButton(
-                name: "Choose a Check-in Time",
+                name: "Choose a Check-In Time",
                 height: _deviceHeight * 0.065,
                 width: _deviceWidth * 0.7,
                 onPressed: () async {
@@ -215,7 +215,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
                   });
                 }),
             AutoSizeText(
-              "Date Time: " + _checkInTimeText,
+              "Check-In Time: " + _checkInTimeText,
               style: const TextStyle(fontSize: 15),
               maxLines: 2,
             ),
@@ -231,7 +231,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
   Widget _nextButton() {
     return Builder(builder: (context) {
       return CustomButton(
-        name: "Confirm and Select Contacts",
+        name: "Confirm and Select Location",
         height: _deviceHeight * 0.065,
         width: _deviceWidth * 0.8,
         onPressed: () async {

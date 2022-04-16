@@ -186,7 +186,24 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
           );
         }
 
-        return const Text("Loading");
+        return Center(
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Text(
+                "Loading...",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.green.shade900,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 40.0,
+                ),
+              ),
+              const CircularProgressIndicator()
+            ],
+          ),
+        );
       },
     );
   }
