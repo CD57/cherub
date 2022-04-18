@@ -98,7 +98,7 @@ class ContactsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void createChat() async {
+  void createAndGoToChat() async {
     if (kDebugMode) {
       print("contacts_provider.dart - createChat()");
     }
@@ -140,6 +140,32 @@ class ContactsProvider extends ChangeNotifier {
       _selectedUsers = [];
       notifyListeners();
       _navigation.goToPage(_dateChatPage);
+    } catch (e) {
+      if (kDebugMode) {
+        print("contacts_provider.dart - createChat() - Error");
+        print(e);
+      }
+    }
+  }
+
+  void createChatWithId(String contactId) async {
+    if (kDebugMode) {
+      print("contacts_provider.dart - createChat()");
+    }
+    try {
+      //Create Chat
+      List<String> _contactsIds = [];
+      _contactsIds.add(contactId);
+      _contactsIds.add(_auth.user.userId);
+      bool _isGroup = false;
+      await _database.createDateChat(
+        {
+          "isGroup": _isGroup,
+          "isTyping": false,
+          "contacts": _contactsIds,
+        },
+      );
+      notifyListeners();
     } catch (e) {
       if (kDebugMode) {
         print("contacts_provider.dart - createChat() - Error");

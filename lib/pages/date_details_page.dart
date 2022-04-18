@@ -42,7 +42,7 @@ class DateDetailsPage extends StatelessWidget {
                 },
               ),
             ),
-            Text(aDate.hostID),
+            Text(aDate.hostUid),
             Text(aDate.datePlan),
             Text(aDate.dateGPS),
             Text(aDate.dayOfDate.toString()),

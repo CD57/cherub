@@ -21,11 +21,11 @@ class DatesMenuPage extends StatefulWidget {
 }
 
 class DatesMenuState extends State<DatesMenuPage> {
-  late final AuthProvider _auth = Provider.of<AuthProvider>(context);
+  late final AuthProvider _auth =
+      Provider.of<AuthProvider>(context, listen: false);
   late NavigationService _nav;
   late double _deviceHeight;
   late double _deviceWidth;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ class DatesMenuState extends State<DatesMenuPage> {
           height: _deviceHeight * 0.065,
           width: _deviceWidth * 0.8,
           onPressed: () {
-            _nav.goToPage(const DateSetupPage());
+            _nav.goToPage(const DateSetupPage(dateID: "None"));
           });
     });
   }

@@ -55,30 +55,6 @@ class DatabaseService {
     return _db.collection(users).doc(_uid).get();
   }
 
-  // Get Users from List of UID's
-  Future<QuerySnapshot> getUsersFromList(List<String> uidList) async {
-    QuerySnapshot snapshot;
-    try {
-      snapshot = await FirebaseFirestore.instance
-          .collection(users)
-          .where("userId", arrayContains: uidList)
-          .get();
-      return snapshot;
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      snapshot = await FirebaseFirestore.instance
-          .collection(users)
-          .where("userId", arrayContains: uidList)
-          .get();
-      if (kDebugMode) {
-        print("getUsersFromList - FAILED");
-      }
-      return snapshot;
-    }
-  }
-
   // Get All Users
   Future<QuerySnapshot> getAllUsers({String? name}) {
     if (kDebugMode) {
@@ -250,7 +226,7 @@ class DatabaseService {
   // Get Friend
   Future<List<String>> getFriendsID(String uid) async {
     if (kDebugMode) {
-      print("database_service.dart - getFriendRequests()");
+      print("database_service.dart - getFriendsID()");
     }
 
     QuerySnapshot querySnapshot =

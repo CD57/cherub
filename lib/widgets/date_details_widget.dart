@@ -8,9 +8,9 @@ import '../services/database_service.dart';
 import '../services/navigation_service.dart';
 
 class DateDetailsListWidget extends StatelessWidget {
+  final String _currentUserId;
   final DateDetailsModel aDate;
   final DatabaseService _dbService;
-  final String _currentUserId;
   const DateDetailsListWidget(this.aDate, this._dbService, this._currentUserId,
       {Key? key})
       : super(key: key);
@@ -26,10 +26,10 @@ class DateDetailsListWidget extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () =>
-                dateOptions(context, _dbService, _currentUserId, aDate.hostID),
+                dateOptions(context, _dbService, _currentUserId, aDate.dateUid),
             child: ListTile(
               title: Text(
-                aDate.dateTime.toDate().toString(),
+                "Date with " + aDate.dateUid,
                 style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold),
               ),

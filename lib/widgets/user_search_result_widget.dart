@@ -1,6 +1,7 @@
 //Displays and holds user search results
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cherub/models/user_model.dart';
+import 'package:cherub/pages/date_setup_page.dart';
 import 'package:cherub/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -186,10 +187,9 @@ class FriendListWidget extends StatelessWidget {
                     child: const Text('View Profile'),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Send Message'),
+                    onPressed: () =>
+                        _nav.removeAndGoToPage(DateSetupPage(dateID: aUser.userId,)),
+                    child: const Text('Create Date'),
                   ),
                   TextButton(
                     onPressed: () async {

@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateDetailsModel {
-  late String hostID;
+  late String hostUid;
+  late String dateUid;
   late String datePlan;
   late Timestamp dayOfDate;
   late Timestamp dateTime;
@@ -12,7 +13,8 @@ class DateDetailsModel {
   late String dateGPS;
 
   DateDetailsModel({
-    required this.hostID,
+    required this.hostUid,
+    required this.dateUid,
     required this.datePlan,
     required this.dayOfDate,
     required this.dateTime,
@@ -22,7 +24,8 @@ class DateDetailsModel {
 
   factory DateDetailsModel.fromJSON(Map<String, dynamic> _json) {
     return DateDetailsModel(
-      hostID: _json["hostID"],
+      hostUid: _json["hostUid"],
+      dateUid: _json["dateUid"],
       datePlan: _json["datePlan"],
       dayOfDate: _json["dayOfDate"],
       dateTime: _json["dateTime"],
@@ -33,7 +36,8 @@ class DateDetailsModel {
 
   factory DateDetailsModel.fromDocument(DocumentSnapshot _doc) {
     return DateDetailsModel(
-      hostID: _doc["hostID"],
+      hostUid: _doc["hostUid"],
+      dateUid: _doc["dateUid"],
       datePlan: _doc["datePlan"],
       dayOfDate: _doc["dayOfDate"],
       dateTime: _doc["dateTime"],
@@ -44,7 +48,8 @@ class DateDetailsModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "hostID": hostID,
+      "hostUid": hostUid,
+      "dateUid": dateUid,
       "datePlan": datePlan,
       "dayOfDate": dayOfDate,
       "dateTime": dateTime,
@@ -57,6 +62,6 @@ class DateDetailsModel {
 
   @override
   String toString() {
-    return 'DateDetailsModel(hostID: $hostID, datePlan: $datePlan, dayOfDate: $dayOfDate, dateTime: $dateTime, checkInTime: $checkInTime, dateGPS: $dateGPS)';
+    return 'DateDetailsModel(hostUid: $hostUid, dateUid: $dateUid, datePlan: $datePlan, dayOfDate: $dayOfDate, dateTime: $dateTime, checkInTime: $checkInTime, dateGPS: $dateGPS)';
   }
 }

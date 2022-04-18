@@ -16,7 +16,8 @@ import '../widgets/custom_button_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateSetupPage extends StatefulWidget {
-  const DateSetupPage({Key? key}) : super(key: key);
+  const DateSetupPage({Key? key, required this.dateID}) : super(key: key);
+  final String dateID;
   @override
   State<StatefulWidget> createState() {
     return _DateSetupPageState();
@@ -243,7 +244,8 @@ class _DateSetupPageState extends State<DateSetupPage> {
           try {
             //Create Date Details
             await _dbService.createDateDetails(_auth.user.userId, {
-              "hostID": _auth.user.userId,
+              "hostUid": _auth.user.userId,
+              "dateUid": widget.dateID,
               "datePlan": _datePlan,
               "dayOfDate": _dayOfDateTS,
               "dateTime": _dateTimeTS,
@@ -254,7 +256,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
               print(
                   "date_setup_page.dart - createDate() - Date Details Created");
             }
-            _nav.goToPage(const ContactsPage());
+            _nav.removeAndGoToPage(ContactsPage(dateId: widget.dateID));
           } catch (e) {
             if (kDebugMode) {
               print("contacts_provider.dart - createDate() - Error");

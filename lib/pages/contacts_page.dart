@@ -8,13 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 import '../providers/auth_provider.dart';
+import '../services/database_service.dart';
 import '../services/navigation_service.dart';
 import '../widgets/custom_tile_list_widget.dart';
 import '../widgets/top_bar_widget.dart';
 import '../widgets/user_input_widget.dart';
 
+final DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
+late List<String> usersFriendUids = [];
+late String _uid;
+
 class ContactsPage extends StatefulWidget {
-  const ContactsPage({Key? key}) : super(key: key);
+  const ContactsPage({Key? key, required this.dateId}) : super(key: key);
+  final String dateId;
   @override
   State<StatefulWidget> createState() {
     return _ContactsPageState();
@@ -29,16 +35,26 @@ class _ContactsPageState extends State<ContactsPage> {
   late ContactsProvider _contactsProvider;
   final TextEditingController _searchController = TextEditingController();
 
-  bool searchBool = false;
+  @override
+  void didChangeDependencies() {
+    if (kDebugMode) {
+      print("contacts_page.dart - didChangeDependencies()");
+    }
+    super.didChangeDependencies();
+    _auth = Provider.of<AuthProvider>(context);
+    setState(() {
+      _deviceHeight = MediaQuery.of(context).size.height;
+      _deviceWidth = MediaQuery.of(context).size.width;
+      _uid = _auth.user.userId;
+    });
+    getFriends();
+  }
 
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
       print("contacts_page.dart - build");
     }
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
-    _auth = Provider.of<AuthProvider>(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ContactsProvider>(
@@ -65,7 +81,7 @@ class _ContactsPageState extends State<ContactsPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TopBar(
-                'Users',
+                'Contacts',
                 primaryAction: IconButton(
                   icon: const Icon(
                     Icons.keyboard_return_rounded,
@@ -95,26 +111,33 @@ class _ContactsPageState extends State<ContactsPage> {
     ));
   }
 
-  Widget _usersList() {
+  Expanded _usersList() {
     List<UserModel>? _users = _contactsProvider.users;
+    List<UserModel>? _contacts = [];
+
     return Expanded(child: () {
       if (_users != null) {
         if (_users.isNotEmpty) {
+          for (UserModel aUser in _users) {
+            if (usersFriendUids.contains(aUser.userId)) {
+              _contacts.add(aUser);
+            }
+          }
           return ListView.builder(
-            itemCount: _users.length,
+            itemCount: _contacts.length,
             itemBuilder: (BuildContext _context, int _index) {
               return CustomTileListView(
                 height: _deviceHeight * 0.10,
-                title: _users[_index].name,
-                subtitle: "Last Active: ${_users[_index].lastDayActive()}",
-                imagePath: _users[_index].imageURL,
-                isActive: _users[_index].wasRecentlyActive(),
+                title: _contacts[_index].name,
+                subtitle: "Last Active: ${_contacts[_index].lastDayActive()}",
+                imagePath: _contacts[_index].imageURL,
+                isActive: _contacts[_index].wasRecentlyActive(),
                 isSelected: _contactsProvider.selectedUsers.contains(
-                  _users[_index],
+                  _contacts[_index],
                 ),
                 onTap: () {
                   _contactsProvider.updateSelectedUsers(
-                    _users[_index],
+                    _contacts[_index],
                   );
                 },
               );
@@ -123,7 +146,7 @@ class _ContactsPageState extends State<ContactsPage> {
         } else {
           return Center(
             child: Text(
-              "No Users Found.",
+              "No Contacts Found.",
               style: TextStyle(
                 color: Colors.green.shade900,
               ),
@@ -150,14 +173,21 @@ class _ContactsPageState extends State<ContactsPage> {
         height: _deviceHeight * 0.08,
         width: _deviceWidth * 0.80,
         onPressed: () {
-          if (kDebugMode) {
-            print("contacts_page.dart - createChatButton()");
-            print("contacts_page.dart - Details: " +
-                _contactsProvider.selectedUsers.toString());
+          if (widget.dateId != "None") {
+            _contactsProvider.createChatWithId(widget.dateId);
           }
-          _contactsProvider.createChat();
+          _contactsProvider.createAndGoToChat();
         },
       ),
     );
+  }
+
+  void getFriends() async {
+    usersFriendUids = await _dbService.getFriendsID(_uid);
+    if (mounted) {
+      setState(() {
+        usersFriendUids = usersFriendUids;
+      });
+    }
   }
 }

@@ -75,8 +75,8 @@ class _DateMapState extends State<DateMap> {
                     }
                   } on Exception catch (exception) {
                     if (kDebugMode) {
-                      print("Map.dart - ExceptionError for placemarks: " +
-                          exception.toString());
+                      print(
+                          "Map.dart - ExceptionError: " + exception.toString());
                     }
                   } catch (error) {
                     if (kDebugMode) {
@@ -103,6 +103,9 @@ class _DateMapState extends State<DateMap> {
                           )),
                     ),
                   )),
+              const Center(
+                child: Icon(Icons.gps_not_fixed_sharp),
+              ),
               Positioned(
                   bottom: 25,
                   child: Padding(

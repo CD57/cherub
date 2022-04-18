@@ -62,8 +62,6 @@ class MainApp extends StatelessWidget {
           '/login': (BuildContext _context) => const LoginPage(),
           '/registration': (BuildContext _context) => const RegistrationPage(),
           '/home': (BuildContext _context) => const HomePage(),
-          '/contacts': (BuildContext _context) => const ContactsPage(),
-          //'/datesetup': (BuildContext _context) => const DateSetupPage(),
         },
       ),
     );
