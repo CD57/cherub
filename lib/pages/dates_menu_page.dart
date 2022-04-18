@@ -106,7 +106,7 @@ class DatesMenuState extends State<DatesMenuPage> {
           height: _deviceHeight * 0.065,
           width: _deviceWidth * 0.8,
           onPressed: () {
-            _nav.goToPage(const DisplayDatesPage());
+            _nav.goToPage(const DisplayDatesPage(pastDates: false));
           });
     });
   }
@@ -118,7 +118,7 @@ class DatesMenuState extends State<DatesMenuPage> {
           height: _deviceHeight * 0.065,
           width: _deviceWidth * 0.8,
           onPressed: () {
-            _nav.goToPage(const DisplayDatesPage());
+            _nav.goToPage(const DisplayDatesPage(pastDates: true));
           });
     });
   }

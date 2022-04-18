@@ -69,12 +69,14 @@ class DateDetailsListWidget extends StatelessWidget {
                 if (kDebugMode) {
                   print("dateOptions - Delete Date");
                 }
+                _dbService.deleteDateDetails(_uid, aDate);
                 Navigator.pop(context);
               },
               child: const Text('Delete Date'),
             ),
             TextButton(
-              onPressed: () => _nav.removeAndGoToPage(DateDetailsPage(aDate: aDate)),
+              onPressed: () =>
+                  _nav.removeAndGoToPage(DateDetailsPage(aDate: aDate)),
               child: const Text('View Date Details'),
             ),
           ],

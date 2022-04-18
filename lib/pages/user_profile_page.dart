@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 
 class UserProfilePage extends StatefulWidget {
+  //final NavigationService _nav = GetIt.instance.get<NavigationService>();
   final UserModel aUser;
   const UserProfilePage({Key? key, required this.aUser}) : super(key: key);
 
@@ -17,6 +18,7 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfilePage> {
+  final NavigationService _nav = GetIt.instance.get<NavigationService>();
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
@@ -29,7 +31,6 @@ class _UserProfileState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    NavigationService _nav = GetIt.instance.get<NavigationService>();
     _auth = Provider.of<AuthProvider>(context);
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
@@ -50,15 +51,7 @@ class _UserProfileState extends State<UserProfilePage> {
           children: <Widget>[
             TopBar(
               widget.aUser.name,
-              primaryAction: IconButton(
-                icon: const Icon(
-                  Icons.keyboard_return_rounded,
-                  color: Color.fromARGB(255, 20, 133, 43),
-                ),
-                onPressed: () {
-                  _nav.goBack();
-                },
-              ),
+              primaryAction: topBarButton()
             ),
             buildProfile(),
           ],
@@ -139,6 +132,31 @@ class _UserProfileState extends State<UserProfilePage> {
       return buildButton(text: "Edit Profile", function: editProfile);
     } else {
       return buildButton(text: "Send Message", function: sendMessage);
+    }
+  }
+
+  topBarButton() {
+    bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
+    if (isProfileOwner) {
+      return IconButton(
+        icon: const Icon(
+          Icons.logout_sharp,
+          color: Color.fromARGB(255, 20, 133, 43),
+        ),
+        onPressed: () {
+          _auth.logout();
+        },
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(
+          Icons.keyboard_return_rounded,
+          color: Color.fromARGB(255, 20, 133, 43),
+        ),
+        onPressed: () {
+          _nav.goBack();
+        },
+      );
     }
   }
 

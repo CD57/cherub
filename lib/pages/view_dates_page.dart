@@ -1,20 +1,25 @@
-import 'package:cherub/models/date_details_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import '../services/database_service.dart';
+
+import 'package:cherub/models/date_details_model.dart';
+
 import '../providers/auth_provider.dart';
+import '../services/database_service.dart';
 import '../services/navigation_service.dart';
 import '../widgets/date_details_widget.dart';
 import '../widgets/top_bar_widget.dart';
-import 'package:get_it/get_it.dart';
 
 DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 
 class DisplayDatesPage extends StatefulWidget {
-  const DisplayDatesPage({Key? key}) : super(key: key);
-
+  const DisplayDatesPage({
+    Key? key,
+    required this.pastDates,
+  }) : super(key: key);
+  final bool pastDates;
   @override
   State<DisplayDatesPage> createState() => _DisplayDatesPageState();
 }
@@ -26,7 +31,7 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
   late AuthProvider _auth;
   late NavigationService _nav;
   late String _uid;
-  late bool datesFound;
+  late bool _pastDates;
 
   @override
   void initState() {
@@ -47,6 +52,7 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
 
     setState(() {
       _uid = _auth.user.userId;
+      _pastDates = widget.pastDates;
       dateDetailsRef = FirebaseFirestore.instance
           .collection('Dates')
           .doc(_uid)
@@ -89,6 +95,15 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
                     _nav.goBack();
                   },
                 ),
+                secondaryAction: IconButton(
+                  icon: const Icon(
+                    Icons.refresh_sharp,
+                    color: Color.fromARGB(255, 20, 133, 43),
+                  ),
+                  onPressed: () {
+                    setState(() {});
+                  },
+                ),
               ),
               _datesList(context),
             ],
@@ -98,45 +113,45 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
     ));
   }
 
-  // Display image and text while no users displayed
-  Center buildNoContent() {
-    if (kDebugMode) {
-      print("view_dates_page.dart - buildNoContent()");
-    }
-    return Center(
-      child: Column(
-        children: [
-          TopBar(
-            'Your Date Details',
-            primaryAction: IconButton(
-              icon: const Icon(
-                Icons.keyboard_return_rounded,
-                color: Color.fromARGB(255, 20, 133, 43),
-              ),
-              onPressed: () {
-                _nav.goBack();
-              },
-            ),
-          ),
-          ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Text(
-                "No Dates Available",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.green.shade900,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 60.0,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // // Display image and text while no users displayed
+  // Center buildNoContent() {
+  //   if (kDebugMode) {
+  //     print("view_dates_page.dart - buildNoContent()");
+  //   }
+  //   return Center(
+  //     child: Column(
+  //       children: [
+  //         TopBar(
+  //           'Your Date Details',
+  //           primaryAction: IconButton(
+  //             icon: const Icon(
+  //               Icons.keyboard_return_rounded,
+  //               color: Color.fromARGB(255, 20, 133, 43),
+  //             ),
+  //             onPressed: () {
+  //               _nav.goBack();
+  //             },
+  //           ),
+  //         ),
+  //         ListView(
+  //           shrinkWrap: true,
+  //           children: <Widget>[
+  //             Text(
+  //               "No Dates Available",
+  //               textAlign: TextAlign.center,
+  //               style: TextStyle(
+  //                 color: Colors.green.shade900,
+  //                 fontStyle: FontStyle.italic,
+  //                 fontWeight: FontWeight.w600,
+  //                 fontSize: 60.0,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   _datesList(BuildContext context) {
     if (kDebugMode) {
@@ -147,42 +162,60 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
       future: dateDetailsRef.get(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          if (kDebugMode) {
-            print("view_dates_page.dart - _datesList() - Something went wrong");
-          }
           return const Text("Something went wrong");
         }
 
         if (snapshot.hasData && snapshot.data == null) {
-          if (kDebugMode) {
-            print(
-                "view_dates_page.dart - _datesList() - Document does not exist");
-          }
           return const Text("Document does not exist");
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          if (kDebugMode) {
-            print("view_dates_page.dart - _datesList() - ConnectionState.done");
-          }
           List<DateDetailsListWidget> dateDetailsList = [];
+
           for (var doc in (snapshot.data!).docs) {
             DateDetailsModel aDate = DateDetailsModel.fromDocument(doc);
             DateDetailsListWidget aDateDetailsWidget =
                 DateDetailsListWidget(aDate, _dbService, _uid);
-            dateDetailsList.add(aDateDetailsWidget);
-            if (kDebugMode) {
-              print("view_dates_page.dart - _datesList() - Date Added");
+
+            if (_pastDates) {
+              // If looking for past dates, only add current time is greater than date's time
+              if (DateTime.now().millisecondsSinceEpoch >
+                  aDate.checkInTime.millisecondsSinceEpoch) {
+                dateDetailsList.add(aDateDetailsWidget);
+              }
+            } else {
+              // If looking for future dates, only add current time is less than date's time
+              if (DateTime.now().millisecondsSinceEpoch <
+                  aDate.checkInTime.millisecondsSinceEpoch) {
+                dateDetailsList.add(aDateDetailsWidget);
+              }
             }
           }
+
           if (kDebugMode) {
             print("view_dates_page.dart - _datesList() - Returning List View");
           }
-          return Flexible(
-            child: ListView(
-              children: dateDetailsList,
-            ),
-          );
+
+          if (dateDetailsList.isEmpty) {
+            return Center(
+              child: Text(
+                "No Dates Available",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.green.shade900,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 45.0,
+                ),
+              ),
+            );
+          } else {
+            return Flexible(
+              child: ListView(
+                children: dateDetailsList,
+              ),
+            );
+          }
         }
 
         return Center(

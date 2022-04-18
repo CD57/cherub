@@ -9,7 +9,6 @@ const String users = "Users";
 const String dates = "Dates";
 const String chats = "Chats";
 const String dateDetails = "DateDetails";
-const String dateChat = "DateChat";
 const String messages = "Messages";
 const String friends = "Friends";
 const String userFriends = "UserFriends";
@@ -18,6 +17,10 @@ const String userRequests = "UserRequests";
 class DatabaseService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   DatabaseService();
+
+//-------------------------------------------------------------------------------------------------
+  // @@@@@ USER DATABASE OPTIONS @@@@@
+//-------------------------------------------------------------------------------------------------
 
   // Create User
   Future<void> createUser(String _uid, String _username, String _name,
@@ -52,25 +55,14 @@ class DatabaseService {
     return _db.collection(users).doc(_uid).get();
   }
 
-  // Get User Doc By ID
-  Future<DocumentSnapshot<Object?>> getUserDocByID(String _uid) async {
-    if (kDebugMode) {
-      print("database_service.dart - getUserByID()");
-    }
-    DocumentSnapshot doc = DocumentSnapshot as DocumentSnapshot<Object?>;
-    await _db.collection(users).doc(_uid).get().then((value) => doc = value);
-    return doc;
-  }
-
+  // Get Users from List of UID's
   Future<QuerySnapshot> getUsersFromList(List<String> uidList) async {
     QuerySnapshot snapshot;
     try {
       snapshot = await FirebaseFirestore.instance
           .collection(users)
           .where("userId", arrayContains: uidList)
-          .get()
-          // ignore: avoid_print
-          .whenComplete(() => print("getUsersFromList: Complete"));
+          .get();
       return snapshot;
     } catch (e) {
       if (kDebugMode) {
@@ -118,6 +110,10 @@ class DatabaseService {
       }
     }
   }
+
+//-------------------------------------------------------------------------------------------------
+  // @@@@@ CHAT DATABASE OPTIONS @@@@@
+//-------------------------------------------------------------------------------------------------
 
   // Gets All Users Date Chats
   Stream<QuerySnapshot> getDateChats(String _uid) {
@@ -247,61 +243,9 @@ class DatabaseService {
     }
   }
 
-  // Create Date Details
-  Future<DocumentReference?> createDateDetails(
-      String _uid, Map<String, dynamic> _data) async {
-    if (kDebugMode) {
-      print("database_service.dart - createDateDetails()");
-    }
-    try {
-      DocumentReference _dateDetails = await _db
-          .collection(dates)
-          .doc(_uid)
-          .collection(dateDetails)
-          .add(_data);
-      return _dateDetails;
-    } catch (e) {
-      if (kDebugMode) {
-        print("createDateDetails: Error - " + e.toString());
-      }
-      return null;
-    }
-  }
-
-  // Create Date Details
-  Future<DocumentReference?> createDateDetailsFromObject(
-      String _uid, DateDetailsModel aDate) async {
-    if (kDebugMode) {
-      print("database_service.dart - createDateDetails()");
-    }
-    try {
-      DocumentReference _dateDetails = await _db
-          .collection(dates)
-          .doc(_uid)
-          .collection(dateDetails)
-          .add(aDate.toMap());
-      return _dateDetails;
-    } catch (e) {
-      if (kDebugMode) {
-        print("createDateDetails: Error - " + e.toString());
-      }
-      return null;
-    }
-  }
-
-  // Delete Date Details
-  Future<void> deleteDateDetails(String _dateDetailsID) async {
-    if (kDebugMode) {
-      print("database_service.dart - deleteDateDetails()");
-    }
-    try {
-      await _db.collection(dates).doc(_dateDetailsID).delete();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
+//-------------------------------------------------------------------------------------------------
+  // @@@@@ FRIEND DATABASE OPTIONS @@@@@
+//-------------------------------------------------------------------------------------------------
 
   // Get Friend
   Future<List<String>> getFriendsID(String uid) async {
@@ -335,10 +279,6 @@ class DatabaseService {
           .where("FriendId", isGreaterThanOrEqualTo: friendID)
           .where("FriendId", isLessThanOrEqualTo: friendID + "z")
           .get();
-      if (kDebugMode) {
-        print(
-            "database_service.dart - deleteFriend() - $userID's Friend Doc Collected");
-      }
 
       for (var doc1 in userSnapshot.docs) {
         var friendDocID = doc1.id;
@@ -348,11 +288,6 @@ class DatabaseService {
             .collection(userFriends)
             .doc(friendDocID)
             .delete();
-        if (kDebugMode) {
-          print(
-              "database_service.dart - deleteFriend - User $friendID Removed from $userID's contacts: " +
-                  doc1.id.toString());
-        }
       }
 
       QuerySnapshot friendSnapshot = await _db
@@ -362,10 +297,6 @@ class DatabaseService {
           .where("FriendId", isGreaterThanOrEqualTo: userID)
           .where("FriendId", isLessThanOrEqualTo: userID + "z")
           .get();
-      if (kDebugMode) {
-        print(
-            "database_service.dart - deleteFriend() - $friendID's Friend Doc Collected");
-      }
 
       for (var doc2 in friendSnapshot.docs) {
         var friendDocID2 = doc2.id;
@@ -375,12 +306,6 @@ class DatabaseService {
             .collection(userRequests)
             .doc(friendDocID2)
             .delete();
-
-        if (kDebugMode) {
-          print(
-              "database_service.dart - deleteFriendRequest - User $userID Removed from $friendID's contacts: " +
-                  doc2.id.toString());
-        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -491,10 +416,6 @@ class DatabaseService {
           .where("From", isGreaterThanOrEqualTo: friendID)
           .where("From", isLessThanOrEqualTo: friendID + "z")
           .get();
-      if (kDebugMode) {
-        print(
-            "database_service.dart - deleteFriendRequest() - $userID's Doc Collected");
-      }
 
       QuerySnapshot toSnapshot = await _db
           .collection(friends)
@@ -503,39 +424,25 @@ class DatabaseService {
           .where("To", isGreaterThanOrEqualTo: userID)
           .where("To", isLessThanOrEqualTo: userID + "z")
           .get();
-      if (kDebugMode) {
-        print(
-            "database_service.dart - deleteFriendRequest() - $friendID's Doc Collected");
-      }
 
-      for (var doc in fromSnapshot.docs) {
-        var fromDocID = doc.id;
+      for (var fromDoc in fromSnapshot.docs) {
+        var fromDocID = fromDoc.id;
         await _db
             .collection(friends)
             .doc(userID)
             .collection(userRequests)
             .doc(fromDocID)
             .delete();
-        if (kDebugMode) {
-          print(
-              "database_service.dart - deleteFriendRequest - User $friendID Accepted & Deleted Request: " +
-                  doc.id.toString());
-        }
       }
 
-      for (var doc in toSnapshot.docs) {
-        var toDocID = doc.id;
+      for (var toDoc in toSnapshot.docs) {
+        var toDocID = toDoc.id;
         await _db
             .collection(friends)
             .doc(friendID)
             .collection(userRequests)
             .doc(toDocID)
             .delete();
-        if (kDebugMode) {
-          print(
-              "database_service.dart - deleteFriendRequest - User: $friendID Sent Request Accepted & Deleted: " +
-                  doc.id.toString());
-        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -543,4 +450,61 @@ class DatabaseService {
       }
     }
   }
+
+//-------------------------------------------------------------------------------------------------
+  // @@@@@ USER DATABASE OPTIONS @@@@@
+//-------------------------------------------------------------------------------------------------
+
+  // Create Date Details
+  Future<DocumentReference?> createDateDetails(
+      String _uid, Map<String, dynamic> _data) async {
+    if (kDebugMode) {
+      print("database_service.dart - createDateDetails()");
+    }
+    try {
+      DocumentReference _dateDetails = await _db
+          .collection(dates)
+          .doc(_uid)
+          .collection(dateDetails)
+          .add(_data);
+      return _dateDetails;
+    } catch (e) {
+      if (kDebugMode) {
+        print("createDateDetails: Error - " + e.toString());
+      }
+      return null;
+    }
+  }
+
+  // Delete Date Details
+  Future<void> deleteDateDetails(
+      String _uid, DateDetailsModel _dateDetails) async {
+    if (kDebugMode) {
+      print("database_service.dart - deleteDateDetails()");
+    }
+    try {
+      QuerySnapshot datesSnapshot = await _db
+          .collection(dates)
+          .doc(_uid)
+          .collection(dateDetails)
+          .where("dateGPS", isGreaterThanOrEqualTo: _dateDetails.dateGPS)
+          .where("dateGPS", isLessThanOrEqualTo: _dateDetails.dateGPS + "z")
+          .get();
+
+      for (var dateDoc in datesSnapshot.docs) {
+        var dateDocID = dateDoc.id;
+        await _db
+            .collection(dates)
+            .doc(_uid)
+            .collection(dateDetails)
+            .doc(dateDocID)
+            .delete();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+//-------------------------------------------------------------------------------------------------
 }
