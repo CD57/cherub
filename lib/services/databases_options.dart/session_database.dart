@@ -1,29 +1,21 @@
-// database_service.dart - Service to manage database connection and actions
+// session_database.dart - Service to manage session database connection and actions
 
 import 'package:cherub/models/location_data_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-const String users = "Users";
-const String dates = "Dates";
-const String chats = "Chats";
-const String messages = "Messages";
 const String sessions = "Sessions";
 const String locations = "Locations";
-const String dateDetails = "DateDetails";
-const String friends = "Friends";
-const String userFriends = "UserFriends";
-const String userRequests = "UserRequests";
 
 class SessionDatabase {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   SessionDatabase();
 
   // Create Date Session
-  Future<DocumentReference?> createDateSession(
+  Future<DocumentReference?> createSession(
       Map<String, dynamic> _data) async {
     if (kDebugMode) {
-      print("database_service.dart - createDateSession()");
+      print("session_database.dart - createDateSession()");
     }
     try {
       DocumentReference _dateSession =
@@ -37,10 +29,10 @@ class SessionDatabase {
     }
   }
 
-  // Gets All Date Sessions
-  Stream<QuerySnapshot> getDateSessions(String _uid) {
+  // Get Date Sessions
+  Stream<QuerySnapshot> getSessions(String _uid) {
     if (kDebugMode) {
-      print("database_service.dart - getDateSessions()");
+      print("session_database.dart - getDateSessions()");
     }
     try {
       return _db
@@ -49,8 +41,8 @@ class SessionDatabase {
           .snapshots();
     } catch (e) {
       if (kDebugMode) {
-        print(
-            "database_service.dart - getDateSessions() - FAILED: " + e.toString());
+        print("session_database.dart - getDateSessions() - FAILED: " +
+            e.toString());
       }
       return _db
           .collection(sessions)
@@ -59,37 +51,39 @@ class SessionDatabase {
     }
   }
 
-  // Get Last Message of Date Chat
-  Future<QuerySnapshot> getLastLocation(String _dateID) {
+  // Update Date Session
+  Future<void> updateSession(
+      String _dateID, Map<String, dynamic> _data) async {
     if (kDebugMode) {
-      print("database_service.dart - getLastLocation()");
+      print("session_database.dart - updateDateSession()");
     }
-    return _db
-        .collection(sessions)
-        .doc(_dateID)
-        .collection(locations)
-        .orderBy("timeOfUpdate", descending: true)
-        .limit(1)
-        .get();
+    try {
+      await _db.collection(sessions).doc(_dateID).update(_data);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 
-  // Listen to stream of select dates messages
-  Stream<QuerySnapshot> streamLocations(String _dateID) {
+  // Delete Date Session
+  Future<void> deleteSession(String _dateID) async {
     if (kDebugMode) {
-      print("database_service.dart - streamLocations()");
+      print("session_database.dart - deleteDateChat()");
     }
-    return _db
-        .collection(sessions)
-        .doc(_dateID)
-        .collection(locations)
-        .orderBy("timeOfUpdate", descending: false)
-        .snapshots();
+    try {
+      await _db.collection(sessions).doc(_dateID).delete();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 
-  // Add message to date chat
+  // Add location data to session
   Future<void> addLocationData(String _dateID, LocationData _location) async {
     if (kDebugMode) {
-      print("database_service.dart - addLocationData()");
+      print("session_database.dart - addLocationData()");
     }
     try {
       await _db.collection(sessions).doc(_dateID).collection(locations).add(
@@ -102,19 +96,18 @@ class SessionDatabase {
     }
   }
 
-  // Update users date session
-  Future<void> updateDateSession(
-      String _dateID, Map<String, dynamic> _data) async {
+  // Get Last Location of Date Session
+  Future<QuerySnapshot> getLastLocation(String _dateID) {
     if (kDebugMode) {
-      print("database_service.dart - updateDateSession()");
+      print("database_service.dart - getLastLocation()");
     }
-    try {
-      await _db.collection(sessions).doc(_dateID).update(_data);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+    return _db
+        .collection(sessions)
+        .doc(_dateID)
+        .collection(locations)
+        .orderBy("timeOfUpdate", descending: true)
+        .limit(1)
+        .get();
   }
 
   // Get Last Active Time of Location Activity
@@ -135,17 +128,16 @@ class SessionDatabase {
     }
   }
 
-  // Delete Date Session
-  Future<void> deleteDateSession(String _dateID) async {
+  // Listen to stream of select dates messages
+  Stream<QuerySnapshot> streamLocations(String _dateID) {
     if (kDebugMode) {
-      print("database_service.dart - deleteDateChat()");
+      print("database_service.dart - streamLocations()");
     }
-    try {
-      await _db.collection(sessions).doc(_dateID).delete();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
+    return _db
+        .collection(sessions)
+        .doc(_dateID)
+        .collection(locations)
+        .orderBy("timeOfUpdate", descending: false)
+        .snapshots();
   }
 }

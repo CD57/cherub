@@ -1,18 +1,8 @@
-// database_service.dart - Service to manage database connection and actions
+// user_database.dart - Service to manage user database connection and actions
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-
 const String users = "Users";
-const String dates = "Dates";
-const String chats = "Chats";
-const String messages = "Messages";
-const String sessions = "Sessions";
-const String locations = "Locations";
-const String dateDetails = "DateDetails";
-const String friends = "Friends";
-const String userFriends = "UserFriends";
-const String userRequests = "UserRequests";
 
 class UserDatabase {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -22,7 +12,7 @@ class UserDatabase {
   Future<void> createUser(String _uid, String _username, String _name,
       String _number, String _email, String _imageURL) async {
     if (kDebugMode) {
-      print("database_service.dart - createUser()");
+      print("user_database.dart - createUser()");
     }
     try {
       await _db.collection(users).doc(_uid).set(
@@ -46,15 +36,15 @@ class UserDatabase {
   // Get User By ID
   Future<DocumentSnapshot> getUserByID(String _uid) {
     if (kDebugMode) {
-      print("database_service.dart - getUserByID()");
+      print("user_database.dart - getUserByID()");
     }
     return _db.collection(users).doc(_uid).get();
   }
 
-  // Get All Users
+  // Get All Users - Allows for searching
   Future<QuerySnapshot> getAllUsers({String? name}) {
     if (kDebugMode) {
-      print("database_service.dart - getAllUsers()");
+      print("user_database.dart - getAllUsers()");
     }
     Query _query = _db.collection(users);
     if (name != null) {
@@ -68,7 +58,7 @@ class UserDatabase {
   // Update Last Active time for user
   Future<void> updateLastActive(String _uid) async {
     if (kDebugMode) {
-      print("database_service.dart - updateLastActive()");
+      print("user_database.dart - updateLastActive()");
     }
     try {
       await _db.collection(users).doc(_uid).update(
@@ -76,6 +66,20 @@ class UserDatabase {
           "lastActive": DateTime.now().toUtc(),
         },
       );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  // Delete Date Session
+  Future<void> deleteUserByID(String _uid) async {
+    if (kDebugMode) {
+      print("user_database.dart - deleteUserByID()");
+    }
+    try {
+      await _db.collection(users).doc(_uid).delete();
     } catch (e) {
       if (kDebugMode) {
         print(e);

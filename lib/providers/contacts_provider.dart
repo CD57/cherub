@@ -31,6 +31,80 @@ class ContactsProvider extends ChangeNotifier {
     getUsers();
   }
 
+  void createAndGoToChat() async {
+    if (kDebugMode) {
+      print("contacts_provider.dart - createAndGoToChat()");
+    }
+    try {
+      //Create Chat
+      List<String> _contactsIds =
+          _selectedUsers.map((_user) => _user.userId).toList();
+      _contactsIds.add(_auth.user.userId);
+      bool _isGroup = _selectedUsers.length > 1;
+      DocumentReference? _doc = await _database.chatDb.createDateChat(
+        {
+          "isGroup": _isGroup,
+          "isTyping": false,
+          "contacts": _contactsIds,
+        },
+      );
+      //Navigate To Chat Page
+      List<UserModel> _contacts = [];
+      for (var _uid in _contactsIds) {
+        DocumentSnapshot _userSnapshot =
+            await _database.userDb.getUserByID(_uid);
+        Map<String, dynamic> _userData =
+            _userSnapshot.data() as Map<String, dynamic>;
+        _userData["userId"] = _userSnapshot.id;
+        _contacts.add(
+          UserModel.fromJSON(
+            _userData,
+          ),
+        );
+      }
+      DateChatPage _dateChatPage = DateChatPage(
+        dateChat: DateChat(
+            uid: _doc!.id,
+            userId: _auth.user.userId,
+            contacts: _contacts,
+            messages: [],
+            isTyping: false,
+            isGroup: _isGroup),
+      );
+      _selectedUsers = [];
+      notifyListeners();
+      _navigation.goToPage(_dateChatPage);
+    } catch (e) {
+      if (kDebugMode) {
+        print("contacts_provider.dart - createChat() - Error");
+        print(e);
+      }
+    }
+  }
+
+  void addToCherubList(String dateUid) async {
+    if (kDebugMode) {
+      print("contacts_provider.dart - addToCherubList()");
+    }
+    try {
+      //Create Cherub List
+      List<String> _contactsIds =
+          _selectedUsers.map((_user) => _user.userId).toList();
+      _contactsIds.add(_auth.user.userId);
+      await _database.dateDb.createCherubList(_auth.user.userId, dateUid, {
+        "cherubs": _contactsIds,
+      });
+
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) {
+        print("contacts_provider.dart - createChat() - Error");
+        print(e);
+      }
+    }
+  }
+
+
   void getUsers({String? name}) async {
     _selectedUsers = [];
     try {
@@ -98,56 +172,7 @@ class ContactsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void createAndGoToChat() async {
-    if (kDebugMode) {
-      print("contacts_provider.dart - createChat()");
-    }
-    try {
-      //Create Chat
-      List<String> _contactsIds =
-          _selectedUsers.map((_user) => _user.userId).toList();
-      _contactsIds.add(_auth.user.userId);
-      bool _isGroup = _selectedUsers.length > 1;
-      DocumentReference? _doc = await _database.chatDb.createDateChat(
-        {
-          "isGroup": _isGroup,
-          "isTyping": false,
-          "contacts": _contactsIds,
-        },
-      );
-      //Navigate To Chat Page
-      List<UserModel> _contacts = [];
-      for (var _uid in _contactsIds) {
-        DocumentSnapshot _userSnapshot = await _database.userDb.getUserByID(_uid);
-        Map<String, dynamic> _userData =
-            _userSnapshot.data() as Map<String, dynamic>;
-        _userData["userId"] = _userSnapshot.id;
-        _contacts.add(
-          UserModel.fromJSON(
-            _userData,
-          ),
-        );
-      }
-      DateChatPage _dateChatPage = DateChatPage(
-        dateChat: DateChat(
-            uid: _doc!.id,
-            userId: _auth.user.userId,
-            contacts: _contacts,
-            messages: [],
-            isTyping: false,
-            isGroup: _isGroup),
-      );
-      _selectedUsers = [];
-      notifyListeners();
-      _navigation.goToPage(_dateChatPage);
-    } catch (e) {
-      if (kDebugMode) {
-        print("contacts_provider.dart - createChat() - Error");
-        print(e);
-      }
-    }
-  }
-
+  
   void createChatWithId(String contactId) async {
     if (kDebugMode) {
       print("contacts_provider.dart - createChat()");

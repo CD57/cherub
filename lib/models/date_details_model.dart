@@ -2,8 +2,10 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class DateDetailsModel {
+  late String uid = Random().nextInt(1000).toString();
   late String hostUid;
   late String dateUid;
   late String datePlan;
@@ -11,8 +13,9 @@ class DateDetailsModel {
   late Timestamp dateTime;
   late Timestamp checkInTime;
   late String dateGPS;
-
+  
   DateDetailsModel({
+    required this.uid,
     required this.hostUid,
     required this.dateUid,
     required this.datePlan,
@@ -24,30 +27,32 @@ class DateDetailsModel {
 
   factory DateDetailsModel.fromJSON(Map<String, dynamic> _json) {
     return DateDetailsModel(
-      hostUid: _json["hostUid"],
-      dateUid: _json["dateUid"],
-      datePlan: _json["datePlan"],
-      dayOfDate: _json["dayOfDate"],
-      dateTime: _json["dateTime"],
-      checkInTime: _json["checkInTime"],
-      dateGPS: _json["dateGPS"],
-    );
+        uid: _json["uid"],
+        hostUid: _json["hostUid"],
+        dateUid: _json["dateUid"],
+        datePlan: _json["datePlan"],
+        dayOfDate: _json["dayOfDate"],
+        dateTime: _json["dateTime"],
+        checkInTime: _json["checkInTime"],
+        dateGPS: _json["dateGPS"],
+        );
   }
 
   factory DateDetailsModel.fromDocument(DocumentSnapshot _doc) {
     return DateDetailsModel(
-      hostUid: _doc["hostUid"],
-      dateUid: _doc["dateUid"],
-      datePlan: _doc["datePlan"],
-      dayOfDate: _doc["dayOfDate"],
-      dateTime: _doc["dateTime"],
-      checkInTime: _doc["checkInTime"],
-      dateGPS: _doc["dateGPS"],
-    );
+        uid: _doc["uid"],
+        hostUid: _doc["hostUid"],
+        dateUid: _doc["dateUid"],
+        datePlan: _doc["datePlan"],
+        dayOfDate: _doc["dayOfDate"],
+        dateTime: _doc["dateTime"],
+        checkInTime: _doc["checkInTime"],
+        dateGPS: _doc["dateGPS"]);
   }
 
   Map<String, dynamic> toMap() {
     return {
+      "uid": uid,
       "hostUid": hostUid,
       "dateUid": dateUid,
       "datePlan": datePlan,
@@ -62,6 +67,6 @@ class DateDetailsModel {
 
   @override
   String toString() {
-    return 'DateDetailsModel(hostUid: $hostUid, dateUid: $dateUid, datePlan: $datePlan, dayOfDate: $dayOfDate, dateTime: $dateTime, checkInTime: $checkInTime, dateGPS: $dateGPS)';
+    return "DateDetailsModel(hostUid: $hostUid, dateUid: $dateUid, datePlan: $datePlan, dayOfDate: $dayOfDate, dateTime: $dateTime, checkInTime: $checkInTime, dateGPS: $dateGPS";
   }
 }

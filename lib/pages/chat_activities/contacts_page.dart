@@ -19,8 +19,9 @@ late List<String> usersFriendUids = [];
 late String _uid;
 
 class ContactsPage extends StatefulWidget {
-  const ContactsPage({Key? key, required this.dateId}) : super(key: key);
-  final String dateId;
+  final String dateUid;
+  const ContactsPage({Key? key, required this.dateUid}) : super(key: key);
+  
   @override
   State<StatefulWidget> createState() {
     return _ContactsPageState();
@@ -28,12 +29,12 @@ class ContactsPage extends StatefulWidget {
 }
 
 class _ContactsPageState extends State<ContactsPage> {
+  late final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  final TextEditingController _searchController = TextEditingController();
+  late ContactsProvider _contactsProvider;
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
-  late final NavigationService _nav = GetIt.instance.get<NavigationService>();
-  late ContactsProvider _contactsProvider;
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void didChangeDependencies() {
@@ -173,9 +174,7 @@ class _ContactsPageState extends State<ContactsPage> {
         height: _deviceHeight * 0.08,
         width: _deviceWidth * 0.80,
         onPressed: () {
-          if (widget.dateId != "None") {
-            _contactsProvider.createChatWithId(widget.dateId);
-          }
+          _contactsProvider.addToCherubList(widget.dateUid);
           _contactsProvider.createAndGoToChat();
         },
       ),

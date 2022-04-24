@@ -1,9 +1,11 @@
 // custom_tile_list_widget.dart - Custom widget for listview of tiles, with date or chat details
 
 import 'package:cherub/widgets/custom_message_widget.dart';
+import 'package:cherub/widgets/session_update_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../models/date_message_model.dart';
+import '../models/location_data_model.dart';
 import '../models/user_model.dart';
 import 'profile_picture_widget.dart';
 
@@ -172,6 +174,39 @@ class CustomTileListViewChat extends StatelessWidget {
                   height: deviceHeight * 0.30,
                   width: deviceWidth * 0.55,
                 ),
+        ],
+      ),
+    );
+  }
+}
+
+class SessionListViewTileUpdates extends StatelessWidget {
+  final double deviceWidth;
+  final double deviceHeight;
+  final LocationData locationUpdate;
+
+  const SessionListViewTileUpdates({
+    Key? key,
+    required this.deviceWidth,
+    required this.deviceHeight,
+    required this.locationUpdate,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 10),
+      width: deviceWidth,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          SessionUpdate(
+            location: locationUpdate,
+            height: deviceHeight * 0.06,
+            width: deviceWidth,
+          )
         ],
       ),
     );

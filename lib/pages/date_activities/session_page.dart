@@ -1,39 +1,36 @@
 // date_chat_page.dart - App page containing a users chat with either their date or their contacts
 
-import 'package:cherub/models/date_chat_model.dart';
-import 'package:cherub/widgets/user_input_widget.dart';
+import 'package:cherub/models/date_session_model.dart';
+import 'package:cherub/models/location_data_model.dart';
+import 'package:cherub/providers/session_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/date_message_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/date_chat_provider.dart';
 import '../../widgets/custom_tile_list_widget.dart';
 import '../../widgets/top_bar_widget.dart';
 
-class DateChatPage extends StatefulWidget {
-  final DateChat dateChat;
-  const DateChatPage({Key? key, required this.dateChat}) : super(key: key);
+class SessionPage extends StatefulWidget {
+  final DateSession dateSession;
+  const SessionPage({Key? key, required this.dateSession}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return _DateChatPageState();
+    return _SessionPageState();
   }
 }
 
-class _DateChatPageState extends State<DateChatPage> {
+class _SessionPageState extends State<SessionPage> {
   late double _deviceHeight;
   late double _deviceWidth;
-
   late AuthProvider _auth;
-  late DateChatProvider _pageProvider;
-
-  late GlobalKey<FormState> _messageFormState;
-  late ScrollController _messagesListViewController;
+  late SessionProvider _sessionProvider;
+  late GlobalKey<FormState> _updateFormState;
+  late ScrollController _locationsListViewController;
 
   @override
   void initState() {
     super.initState();
-    _messageFormState = GlobalKey<FormState>();
-    _messagesListViewController = ScrollController();
+    _updateFormState = GlobalKey<FormState>();
+    _locationsListViewController = ScrollController();
   }
 
   @override
@@ -43,9 +40,9 @@ class _DateChatPageState extends State<DateChatPage> {
     _auth = Provider.of<AuthProvider>(context);
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<DateChatProvider>(
-          create: (_) => DateChatProvider(
-              widget.dateChat.uid, _auth, _messagesListViewController),
+        ChangeNotifierProvider<SessionProvider>(
+          create: (_) => SessionProvider(
+              widget.dateSession.dateUid, _locationsListViewController),
         ),
       ],
       child: _buildUI(),
@@ -55,7 +52,7 @@ class _DateChatPageState extends State<DateChatPage> {
   Widget _buildUI() {
     return Builder(
       builder: (BuildContext _context) {
-        _pageProvider = _context.watch<DateChatProvider>();
+        _sessionProvider = _context.watch<SessionProvider>();
         return Scaffold(
           body: SingleChildScrollView(
             child: Container(
@@ -71,7 +68,7 @@ class _DateChatPageState extends State<DateChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TopBar(
-                    widget.dateChat.title(),
+                    widget.dateSession.sessionUid,
                     fontSize: 25,
                     primaryAction: IconButton(
                       icon: const Icon(
@@ -79,7 +76,7 @@ class _DateChatPageState extends State<DateChatPage> {
                         color: Color.fromARGB(255, 20, 133, 43),
                       ),
                       onPressed: () {
-                        _pageProvider.deleteChat();
+                        _sessionProvider.deleteSession();
                       },
                     ),
                     secondaryAction: IconButton(
@@ -88,12 +85,12 @@ class _DateChatPageState extends State<DateChatPage> {
                         color: Color.fromARGB(255, 20, 133, 43),
                       ),
                       onPressed: () {
-                        _pageProvider.goBack();
+                        _sessionProvider.goBack();
                       },
                     ),
                   ),
-                  _messagesListView(),
-                  _sendMessageForm(),
+                  _updatesListView(),
+                  _sendUpdateForm(),
                 ],
               ),
             ),
@@ -103,25 +100,20 @@ class _DateChatPageState extends State<DateChatPage> {
     );
   }
 
-  Widget _messagesListView() {
-    if (_pageProvider.messages != null) {
-      if (_pageProvider.messages!.isNotEmpty) {
+  Widget _updatesListView() {
+    if (_sessionProvider.locations != null) {
+      if (_sessionProvider.locations!.isNotEmpty) {
         return SizedBox(
           height: _deviceHeight * 0.74,
           child: ListView.builder(
-            controller: _messagesListViewController,
-            itemCount: _pageProvider.messages!.length,
+            controller: _locationsListViewController,
+            itemCount: _sessionProvider.locations!.length,
             itemBuilder: (BuildContext _context, int _index) {
-              DateMessage _message = _pageProvider.messages![_index];
-              bool _isOwnMessage = _message.senderID == _auth.user.userId;
-              return CustomTileListViewChat(
+              LocationData _locationData = _sessionProvider.locations![_index];
+              return SessionListViewTileUpdates(
                 deviceHeight: _deviceHeight,
                 deviceWidth: _deviceWidth * 0.80,
-                message: _message,
-                isOwnMessage: _isOwnMessage,
-                sender: widget.dateChat.contacts
-                    .where((_user) => _user.userId == _message.senderID)
-                    .first,
+                locationUpdate: _locationData,
               );
             },
           ),
@@ -130,11 +122,11 @@ class _DateChatPageState extends State<DateChatPage> {
         return Align(
           alignment: Alignment.center,
           child: Text(
-            "Say Hi!",
+            "Provide an Update!",
             style: TextStyle(color: Colors.green.shade900),
           ),
         );
-      } 
+      }
     } else {
       return Center(
         child: CircularProgressIndicator(
@@ -144,7 +136,7 @@ class _DateChatPageState extends State<DateChatPage> {
     }
   }
 
-  Widget _sendMessageForm() {
+  Widget _sendUpdateForm() {
     return Container(
       height: _deviceHeight * 0.06,
       decoration: BoxDecoration(
@@ -156,66 +148,36 @@ class _DateChatPageState extends State<DateChatPage> {
         vertical: _deviceHeight * 0.03,
       ),
       child: Form(
-        key: _messageFormState,
+        key: _updateFormState,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _messageTextField(),
-            _sendMessageButton(),
-            _imageMessageButton(),
+            _sendUpdateButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _messageTextField() {
-    return SizedBox(
-      width: _deviceWidth * 0.65,
-      child: CustomInputForm(
-          onSaved: (_value) {
-            _pageProvider.message = _value;
-          },
-          regex: r"^(?!\s*$).+",
-          hint: "Type a message",
-          hidden: false),
-    );
-  }
-
-  Widget _sendMessageButton() {
+  Widget _sendUpdateButton() {
     double _size = _deviceHeight * 0.05;
     return SizedBox(
       height: _size,
       width: _size,
       child: IconButton(
         icon: const Icon(
-          Icons.send,
+          Icons.location_pin,
           color: Colors.white,
         ),
         onPressed: () {
-          if (_messageFormState.currentState!.validate()) {
-            _messageFormState.currentState!.save();
-            _pageProvider.sendTextMessage();
-            _messageFormState.currentState!.reset();
+          if (_updateFormState.currentState!.validate()) {
+            _updateFormState.currentState!.save();
+            _sessionProvider.sendLocationData();
+            _updateFormState.currentState!.reset();
           }
         },
-      ),
-    );
-  }
-
-  Widget _imageMessageButton() {
-    double _size = _deviceHeight * 0.04;
-    return SizedBox(
-      height: _size,
-      width: _size,
-      child: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 20, 133, 43),
-        onPressed: () {
-          _pageProvider.sendImageMessage();
-        },
-        child: const Icon(Icons.camera_enhance),
       ),
     );
   }

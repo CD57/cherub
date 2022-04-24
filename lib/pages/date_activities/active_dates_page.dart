@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:cherub/providers/auth_provider.dart';
 import '../../services/navigation_service.dart';
 import '../../widgets/top_bar_widget.dart';
+import 'session_page.dart';
 
 class ActiveDatesPage extends StatefulWidget {
   const ActiveDatesPage({Key? key}) : super(key: key);
@@ -149,9 +150,9 @@ class _ActiveDatesPageState extends State<ActiveDatesPage> {
       subtitle: _subtitle,
       isActive: _isActive,
       onTap: () {
-        // _nav.goToPage(
-        //   DateSessionPage(DateSession: _dateSession),
-        // );
+        _nav.goToPage(
+          SessionPage(dateSession: _dateSession),
+        );
       },
     );
   }

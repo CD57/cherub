@@ -1,4 +1,6 @@
 // date_setup_page.dart - App page containing forms for user to enter details of date
+import 'dart:math';
+
 import 'package:cherub/pages/chat_activities/contacts_page.dart';
 import 'package:cherub/pages/date_activities/date_map_page.dart';
 import 'package:cherub/services/navigation_service.dart';
@@ -31,6 +33,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late NavigationService _nav;
   late DatabaseService _dbService;
 
+  final String _randomUid = Random().nextInt(1000).toString();
   String _datePlan = "None";
   String _dayOfDateText = "None Selected";
   String _dateTimeText = "None Selected";
@@ -243,7 +246,8 @@ class _DateSetupPageState extends State<DateSetupPage> {
           );
           try {
             //Create Date Details
-            await _dbService.dateDb.createDateDetails(_auth.user.userId, {
+            await _dbService.dateDb.createDateDetails(_auth.user.userId, _randomUid, {
+              "uid": _randomUid,
               "hostUid": _auth.user.userId,
               "dateUid": widget.dateID,
               "datePlan": _datePlan,
@@ -256,7 +260,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
               print(
                   "date_setup_page.dart - createDate() - Date Details Created");
             }
-            _nav.removeAndGoToPage(ContactsPage(dateId: widget.dateID));
+            _nav.removeAndGoToPage(ContactsPage(dateUid: _randomUid));
           } catch (e) {
             if (kDebugMode) {
               print("contacts_provider.dart - createDate() - Error");

@@ -78,12 +78,15 @@ class SessionProvider extends ChangeNotifier {
       },
     );
     if (kDebugMode) {
-      print("date_chat_provider.dart - listenToKeyboardChanges(): " +
+      print("session_provider.dart - listenToKeyboardChanges(): " +
           _keyboardVisibilityStream.toString());
     }
   }
 
   Future<void> sendLocationData() async {
+    if (kDebugMode) {
+      print("session_prover.dart - sendLocationData");
+    }
     if (_location != null) {
       LocationData _locationData = LocationData(
         dateUid: _dateId,
@@ -95,8 +98,11 @@ class SessionProvider extends ChangeNotifier {
   }
 
   void deleteSession() {
+    if (kDebugMode) {
+      print("session_prover.dart - deleteSession");
+    }
     goBack();
-    _db.sessionDb.deleteDateSession(_dateId);
+    _db.sessionDb.deleteSession(_dateId);
   }
 
   void goBack() {
@@ -108,4 +114,5 @@ class SessionProvider extends ChangeNotifier {
     _locationStream.cancel();
     super.dispose();
   }
+
 }

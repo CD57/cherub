@@ -31,7 +31,7 @@ class SessionsPageProvider extends ChangeNotifier {
   void getDateSessions() async {
     try {
       _dateSessionsStream =
-          _db.sessionDb.getDateSessions(_auth.user.userId).listen((_snapshot) async {
+          _db.sessionDb.getSessions(_auth.user.userId).listen((_snapshot) async {
         dates = await Future.wait(
           _snapshot.docs.map(
             (_d) async {

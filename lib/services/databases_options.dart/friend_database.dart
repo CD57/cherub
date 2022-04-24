@@ -1,15 +1,8 @@
-// database_service.dart - Service to manage database connection and actions
+// friend_database.dart - Service to manage friends database connections and actions
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-const String users = "Users";
-const String dates = "Dates";
-const String chats = "Chats";
-const String messages = "Messages";
-const String sessions = "Sessions";
-const String locations = "Locations";
-const String dateDetails = "DateDetails";
 const String friends = "Friends";
 const String userFriends = "UserFriends";
 const String userRequests = "UserRequests";
@@ -18,78 +11,11 @@ class FriendDatabase {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   FriendDatabase();
 
-  // Get Friend
-  Future<List<String>> getFriendsID(String uid) async {
-    if (kDebugMode) {
-      print("database_service.dart - getFriendsID()");
-    }
-
-    QuerySnapshot querySnapshot =
-        await _db.collection(friends).doc(uid).collection(userFriends).get();
-
-    List<String> result = <String>[];
-    for (var doc in querySnapshot.docs) {
-      if (kDebugMode) {
-        print(doc["FriendId"]);
-      }
-      result.add(doc["FriendId"]);
-    }
-    return result;
-  }
-
-  // Delete Friend
-  Future<void> deleteFriend(String userID, String friendID) async {
-    if (kDebugMode) {
-      print("database_service.dart - deleteFriend()");
-    }
-    try {
-      QuerySnapshot userSnapshot = await _db
-          .collection(friends)
-          .doc(userID)
-          .collection(userFriends)
-          .where("FriendId", isGreaterThanOrEqualTo: friendID)
-          .where("FriendId", isLessThanOrEqualTo: friendID + "z")
-          .get();
-
-      for (var doc1 in userSnapshot.docs) {
-        var friendDocID = doc1.id;
-        await _db
-            .collection(friends)
-            .doc(userID)
-            .collection(userFriends)
-            .doc(friendDocID)
-            .delete();
-      }
-
-      QuerySnapshot friendSnapshot = await _db
-          .collection(friends)
-          .doc(friendID)
-          .collection(userFriends)
-          .where("FriendId", isGreaterThanOrEqualTo: userID)
-          .where("FriendId", isLessThanOrEqualTo: userID + "z")
-          .get();
-
-      for (var doc2 in friendSnapshot.docs) {
-        var friendDocID2 = doc2.id;
-        await _db
-            .collection(friends)
-            .doc(friendID)
-            .collection(userRequests)
-            .doc(friendDocID2)
-            .delete();
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("deleteFriendRequest() - ERROR: " + e.toString());
-      }
-    }
-  }
-
   // Create Friend Request
   Future<DocumentReference?> createFriendRequest(
       Map<String, dynamic> _data) async {
     if (kDebugMode) {
-      print("database_service.dart - createFriendRequest()");
+      print("friend_database.dart - createFriendRequest()");
     }
     try {
       DocumentReference _friendRequestDoc = await _db
@@ -105,7 +31,7 @@ class FriendDatabase {
       return _friendRequestDoc;
     } catch (e) {
       if (kDebugMode) {
-        print("createFriendRequest: Error - " + e.toString());
+        print("friend_database - createFriendRequest: Error - " + e.toString());
       }
       return null;
     }
@@ -114,7 +40,7 @@ class FriendDatabase {
   // Get Friend Requests
   Future<List<String>> getFriendRequests(String uid) async {
     if (kDebugMode) {
-      print("database_service.dart - getFriendRequests()");
+      print("friend_database.dart - getFriendRequests()");
     }
 
     QuerySnapshot querySnapshot = await _db
@@ -139,7 +65,7 @@ class FriendDatabase {
   Future<DocumentReference?> acceptFriendRequest(String _uid, String _username,
       String _friendRequestID, String _friendName) async {
     if (kDebugMode) {
-      print("database_service.dart - acceptFriendRequest()");
+      print("friend_database.dart - acceptFriendRequest()");
     }
     try {
       DocumentReference _friendAcceptDoc = await _db
@@ -177,7 +103,7 @@ class FriendDatabase {
   // Delete Friend Request
   Future<void> deleteFriendRequest(String userID, String friendID) async {
     if (kDebugMode) {
-      print("database_service.dart - deleteFriendRequest()");
+      print("friend_database.dart - deleteFriendRequest()");
     }
     try {
       QuerySnapshot fromSnapshot = await _db
@@ -217,7 +143,75 @@ class FriendDatabase {
       }
     } catch (e) {
       if (kDebugMode) {
-        print("deleteFriendRequest() - ERROR: " + e.toString());
+        print(
+            "friend_database - deleteFriendRequest() - ERROR: " + e.toString());
+      }
+    }
+  }
+
+  // Get Friend's userId
+  Future<List<String>> getFriendsID(String uid) async {
+    if (kDebugMode) {
+      print("friend_database.dart - getFriendsID()");
+    }
+    QuerySnapshot querySnapshot =
+        await _db.collection(friends).doc(uid).collection(userFriends).get();
+
+    List<String> result = <String>[];
+    for (var doc in querySnapshot.docs) {
+      if (kDebugMode) {
+        print(doc["FriendId"]);
+      }
+      result.add(doc["FriendId"]);
+    }
+    return result;
+  }
+
+  // Delete Friend from Friends List
+  Future<void> deleteFriend(String userID, String friendID) async {
+    if (kDebugMode) {
+      print("friend_database.dart - deleteFriend()");
+    }
+    try {
+      QuerySnapshot userSnapshot = await _db
+          .collection(friends)
+          .doc(userID)
+          .collection(userFriends)
+          .where("FriendId", isGreaterThanOrEqualTo: friendID)
+          .where("FriendId", isLessThanOrEqualTo: friendID + "z")
+          .get();
+
+      for (var doc1 in userSnapshot.docs) {
+        var friendDocID = doc1.id;
+        await _db
+            .collection(friends)
+            .doc(userID)
+            .collection(userFriends)
+            .doc(friendDocID)
+            .delete();
+      }
+
+      QuerySnapshot friendSnapshot = await _db
+          .collection(friends)
+          .doc(friendID)
+          .collection(userFriends)
+          .where("FriendId", isGreaterThanOrEqualTo: userID)
+          .where("FriendId", isLessThanOrEqualTo: userID + "z")
+          .get();
+
+      for (var doc2 in friendSnapshot.docs) {
+        var friendDocID2 = doc2.id;
+        await _db
+            .collection(friends)
+            .doc(friendID)
+            .collection(userRequests)
+            .doc(friendDocID2)
+            .delete();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(
+            "friend_database - deleteFriendRequest() - ERROR: " + e.toString());
       }
     }
   }

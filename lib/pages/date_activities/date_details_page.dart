@@ -1,4 +1,5 @@
 import 'package:cherub/models/date_details_model.dart';
+import 'package:cherub/providers/date_details_provider.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -12,47 +13,73 @@ class DateDetailsPage extends StatefulWidget {
   const DateDetailsPage({Key? key, required this.aDate}) : super(key: key);
 
   @override
-  _DateDetailsState createState() => _DateDetailsState();
+  _DateDetailsState createState() {
+    return _DateDetailsState();
+  }
 }
 
 class _DateDetailsState extends State<DateDetailsPage> {
-  final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  late final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  late DateDetailsProvider _dateProvider;
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
   bool loadingBool = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    if (kDebugMode) {
+      print("date_details_page.dart - didChangeDependencies()");
+    }
+    super.didChangeDependencies();
+    _auth = Provider.of<AuthProvider>(context);
+    setState(() {
+      _deviceHeight = MediaQuery.of(context).size.height;
+      _deviceWidth = MediaQuery.of(context).size.width;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _auth = Provider.of<AuthProvider>(context);
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: _deviceWidth * 0.03,
-          vertical: _deviceHeight * 0.02,
+    if (kDebugMode) {
+      print("date_details_page.dart - build");
+    }
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DateDetailsProvider>(
+          create: (_) => DateDetailsProvider(_auth),
         ),
-        height: _deviceHeight * 0.98,
-        width: _deviceWidth * 0.97,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            TopBar(widget.aDate.datePlan, primaryAction: topBarButton()),
-            buildProfile(),
-          ],
-        ),
-      ),
+      ],
+      child: _buildUI(),
     );
+  }
+
+  Widget _buildUI() {
+    return Material(child: Builder(
+      builder: (BuildContext _context) {
+        _dateProvider = _context.watch<DateDetailsProvider>();
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: _deviceWidth * 0.03,
+              vertical: _deviceHeight * 0.02,
+            ),
+            height: _deviceHeight * 0.98,
+            width: _deviceWidth * 0.97,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                TopBar(widget.aDate.datePlan, primaryAction: topBarButton()),
+                buildProfile(),
+              ],
+            ),
+          ),
+        );
+      },
+    ));
   }
 
   buildProfile() {
@@ -67,16 +94,11 @@ class _DateDetailsState extends State<DateDetailsPage> {
                 flex: 1,
                 child: Column(
                   children: <Widget>[
+                    const Text("Date Details"),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const <Widget>[Text("Date Details")],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        profileButton(),
-                      ],
+                      children: profileButton(),
                     ),
                   ],
                 ),
@@ -119,9 +141,12 @@ class _DateDetailsState extends State<DateDetailsPage> {
   profileButton() {
     bool isDateOwner = _auth.user.userId == widget.aDate.hostUid;
     if (isDateOwner) {
-      return buildButton(text: "Edit Date", function: editDate);
+      return <Widget>[
+        buildButton(text: "Start Date", function: startDate),
+        buildButton(text: "Cancel Date", function: cancelDate)
+      ];
     } else {
-      return buildButton(text: "Leave Date", function: cancelDate);
+      return <Widget>[buildButton(text: "Leave Date", function: leaveDate)];
     }
   }
 
@@ -142,7 +167,7 @@ class _DateDetailsState extends State<DateDetailsPage> {
     return TextButton(
       onPressed: function,
       child: Container(
-        width: 200.0,
+        width: 125.0,
         height: 30.0,
         child: Text(
           text,
@@ -163,15 +188,22 @@ class _DateDetailsState extends State<DateDetailsPage> {
     );
   }
 
-  editDate() {
+  startDate() {
     if (kDebugMode) {
-      print("Date Edit Button Pressed");
+      print("Start Date Button Pressed");
     }
+    _dateProvider.createAndGoToSession(widget.aDate.uid);
   }
 
   cancelDate() {
     if (kDebugMode) {
       print("Cancel Button Pressed");
+    }
+  }
+
+  leaveDate() {
+    if (kDebugMode) {
+      print("Leave Button Pressed");
     }
   }
 }
