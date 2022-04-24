@@ -127,18 +127,18 @@ class _DateChatPageState extends State<DateChatPage> {
           ),
         );
       } else {
-        return const Align(
+        return Align(
           alignment: Alignment.center,
           child: Text(
             "Say Hi!",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.green.shade900),
           ),
         );
       }
     } else {
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(
-          color: Colors.white,
+          color: Colors.green.shade900,
         ),
       );
     }

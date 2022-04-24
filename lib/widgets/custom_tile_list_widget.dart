@@ -31,7 +31,7 @@ class CustomTileListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       trailing:
-          isSelected ? const Icon(Icons.check, color: Colors.white) : null,
+          isSelected ? const Icon(Icons.check, color: Color.fromARGB(255, 20, 221, 2)) : null,
       onTap: () => onTap(),
       minVerticalPadding: height * 0.20,
       leading: ProfilePictureStatus(

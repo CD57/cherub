@@ -1,4 +1,4 @@
-// date_chat_model.dart - Model class containing the details of a users chat, either with their date or with their contacts
+// date_chat_model.dart - Model class containing the details of a users chat, either with their date or with their contacts 
 
 import '/models/user_model.dart';
 import 'date_message_model.dart';

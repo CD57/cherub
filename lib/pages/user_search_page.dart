@@ -144,7 +144,7 @@ class _UserSearchState extends State<UserSearchPage> {
   // Retrieves requested display name from database using usersRef
   getSearchResults(String query) {
     if (kDebugMode) {
-      print("user_search_page.dart - handleSearch() - Search: $query");
+      print("user_search_page.dart - getSearchResults() - Search: $query");
     }
     Future<QuerySnapshot> users =
         usersRef.where("username", isEqualTo: query).get();

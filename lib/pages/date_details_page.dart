@@ -1,21 +1,38 @@
 import 'package:cherub/models/date_details_model.dart';
+import 'package:cherub/services/navigation_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import '../services/navigation_service.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import '../providers/auth_provider.dart';
 
-late double _deviceHeight;
-late double _deviceWidth;
-
-class DateDetailsPage extends StatelessWidget {
+class DateDetailsPage extends StatefulWidget {
   final DateDetailsModel aDate;
   const DateDetailsPage({Key? key, required this.aDate}) : super(key: key);
 
   @override
+  _DateDetailsState createState() => _DateDetailsState();
+}
+
+class _DateDetailsState extends State<DateDetailsPage> {
+  final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  late double _deviceHeight;
+  late double _deviceWidth;
+  late AuthProvider _auth;
+  bool loadingBool = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    late NavigationService _nav = GetIt.instance.get<NavigationService>();
+    _auth = Provider.of<AuthProvider>(context);
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -29,28 +46,132 @@ class DateDetailsPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TopBar(
-              'Date Details',
-              primaryAction: IconButton(
-                icon: const Icon(
-                  Icons.keyboard_return_rounded,
-                  color: Color.fromARGB(255, 20, 133, 43),
-                ),
-                onPressed: () {
-                  _nav.goBack();
-                },
-              ),
-            ),
-            Text(aDate.hostUid),
-            Text(aDate.datePlan),
-            Text(aDate.dateGPS),
-            Text(aDate.dayOfDate.toString()),
-            Text(aDate.dateTime.toString()),
-            Text(aDate.checkInTime.toString()),
+          children: <Widget>[
+            TopBar(widget.aDate.datePlan, primaryAction: topBarButton()),
+            buildProfile(),
           ],
         ),
       ),
     );
+  }
+
+  buildProfile() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              // GOOGLE MAPS SCREENSHOT
+              Expanded(
+                flex: 1,
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const <Widget>[Text("Date Details")],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        profileButton(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(top: 12.0),
+            child: Text(
+              "Date Plan: " + widget.aDate.datePlan,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Text(
+              "Date Time: " + widget.aDate.dateTime.toString(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(top: 2.0),
+            child: Text(
+              "Date with " + widget.aDate.dateUid,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  profileButton() {
+    bool isDateOwner = _auth.user.userId == widget.aDate.hostUid;
+    if (isDateOwner) {
+      return buildButton(text: "Edit Date", function: editDate);
+    } else {
+      return buildButton(text: "Leave Date", function: cancelDate);
+    }
+  }
+
+  topBarButton() {
+    return IconButton(
+      icon: const Icon(
+        Icons.keyboard_return_rounded,
+        color: Color.fromARGB(255, 20, 133, 43),
+      ),
+      onPressed: () {
+        _nav.goBack();
+      },
+    );
+  }
+
+  TextButton buildButton(
+      {required String text, required Function()? function}) {
+    return TextButton(
+      onPressed: function,
+      child: Container(
+        width: 200.0,
+        height: 30.0,
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.green.shade700,
+          border: Border.all(
+            color: Colors.green.shade700,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+      ),
+    );
+  }
+
+  editDate() {
+    if (kDebugMode) {
+      print("Date Edit Button Pressed");
+    }
+  }
+
+  cancelDate() {
+    if (kDebugMode) {
+      print("Cancel Button Pressed");
+    }
   }
 }

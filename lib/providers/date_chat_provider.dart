@@ -1,4 +1,4 @@
-// date_chat_provider.dart - Provider for the date chats, sending and retrieving relevant message data
+// date_chat_provider.dart - Provider for the date chats, sending and retrieving relevant message data 
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
@@ -99,7 +99,7 @@ class DateChatProvider extends ChangeNotifier {
     }
   }
 
-  void sendTextMessage() {
+  Future<void> sendTextMessage() async {
     if (_message != null) {
       DateMessage _messageToSend = DateMessage(
         content: _message!,
@@ -107,7 +107,7 @@ class DateChatProvider extends ChangeNotifier {
         senderID: _auth.user.userId,
         sentTime: DateTime.now(),
       );
-      _db.addMessage(_chatId, _messageToSend);
+      await _db.addMessage(_chatId, _messageToSend);
     }
   }
 

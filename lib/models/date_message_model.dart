@@ -1,4 +1,4 @@
-// date_message_model.dart - Model class containing the details of a users message, which can be either text or media
+// date_message_model.dart - Model class containing the details of a users message, which can be either text or media 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 

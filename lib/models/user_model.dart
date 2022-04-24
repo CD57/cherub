@@ -69,31 +69,6 @@ class UserModel {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-  
-    return other is UserModel &&
-      other.userId == userId &&
-      other.username == username &&
-      other.name == name &&
-      other.number == number &&
-      other.email == email &&
-      other.imageURL == imageURL &&
-      other.lastActive == lastActive;
-  }
-
-  @override
-  int get hashCode {
-    return userId.hashCode ^
-      username.hashCode ^
-      name.hashCode ^
-      number.hashCode ^
-      email.hashCode ^
-      imageURL.hashCode ^
-      lastActive.hashCode;
-  }
-
-  @override
   String toString() {
     return 'UserModel(userId: $userId, username: $username, name: $name, number: $number, email: $email, imageURL: $imageURL, lastActive: $lastActive)';
   }

@@ -26,8 +26,8 @@ class TextNotification extends StatelessWidget {
             const Color.fromARGB(174, 25, 218, 0)
           ]
         : [
-            const Color.fromARGB(255, 49, 68, 53),
-            const Color.fromARGB(255, 49, 68, 55),
+            const Color.fromARGB(255, 43, 126, 69),
+            const Color.fromARGB(255, 43, 126, 69),
           ];
     return Container(
       height: height + (message.content.length / 20 * 6.0),

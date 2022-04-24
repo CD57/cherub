@@ -113,46 +113,6 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
     ));
   }
 
-  // // Display image and text while no users displayed
-  // Center buildNoContent() {
-  //   if (kDebugMode) {
-  //     print("view_dates_page.dart - buildNoContent()");
-  //   }
-  //   return Center(
-  //     child: Column(
-  //       children: [
-  //         TopBar(
-  //           'Your Date Details',
-  //           primaryAction: IconButton(
-  //             icon: const Icon(
-  //               Icons.keyboard_return_rounded,
-  //               color: Color.fromARGB(255, 20, 133, 43),
-  //             ),
-  //             onPressed: () {
-  //               _nav.goBack();
-  //             },
-  //           ),
-  //         ),
-  //         ListView(
-  //           shrinkWrap: true,
-  //           children: <Widget>[
-  //             Text(
-  //               "No Dates Available",
-  //               textAlign: TextAlign.center,
-  //               style: TextStyle(
-  //                 color: Colors.green.shade900,
-  //                 fontStyle: FontStyle.italic,
-  //                 fontWeight: FontWeight.w600,
-  //                 fontSize: 60.0,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   _datesList(BuildContext context) {
     if (kDebugMode) {
       print("view_dates_page.dart - _datesList()");
