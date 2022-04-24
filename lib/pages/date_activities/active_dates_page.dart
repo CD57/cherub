@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cherub/providers/auth_provider.dart';
-import '../services/navigation_service.dart';
-import '../widgets/top_bar_widget.dart';
+import '../../services/navigation_service.dart';
+import '../../widgets/top_bar_widget.dart';
 
 class ActiveDatesPage extends StatefulWidget {
   const ActiveDatesPage({Key? key}) : super(key: key);

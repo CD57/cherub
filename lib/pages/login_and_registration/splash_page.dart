@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:get_it/get_it.dart';
-import '../services/storage_service.dart';
-import '../services/database_service.dart';
-import '../services/media_service.dart';
-import '../services/navigation_service.dart';
+import '../../services/storage_service.dart';
+import '../../services/database_service.dart';
+import '../../services/media_service.dart';
+import '../../services/navigation_service.dart';
 
 class SplashPage extends StatefulWidget {
   final VoidCallback onInitializationComplete;

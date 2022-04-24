@@ -1,23 +1,21 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cherub/models/user_model.dart';
+import 'package:cherub/models/date_details_model.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import '../providers/auth_provider.dart';
+import '../../providers/auth_provider.dart';
 
-class UserProfilePage extends StatefulWidget {
-  //final NavigationService _nav = GetIt.instance.get<NavigationService>();
-  final UserModel aUser;
-  const UserProfilePage({Key? key, required this.aUser}) : super(key: key);
+class DateDetailsPage extends StatefulWidget {
+  final DateDetailsModel aDate;
+  const DateDetailsPage({Key? key, required this.aDate}) : super(key: key);
 
   @override
-  _UserProfileState createState() => _UserProfileState();
+  _DateDetailsState createState() => _DateDetailsState();
 }
 
-class _UserProfileState extends State<UserProfilePage> {
+class _DateDetailsState extends State<DateDetailsPage> {
   final NavigationService _nav = GetIt.instance.get<NavigationService>();
   late double _deviceHeight;
   late double _deviceWidth;
@@ -49,10 +47,7 @@ class _UserProfileState extends State<UserProfilePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            TopBar(
-              widget.aUser.name,
-              primaryAction: topBarButton()
-            ),
+            TopBar(widget.aDate.datePlan, primaryAction: topBarButton()),
             buildProfile(),
           ],
         ),
@@ -67,12 +62,7 @@ class _UserProfileState extends State<UserProfilePage> {
         children: <Widget>[
           Row(
             children: <Widget>[
-              CircleAvatar(
-                radius: 40.0,
-                backgroundColor: Colors.grey,
-                backgroundImage:
-                    CachedNetworkImageProvider(widget.aUser.imageURL),
-              ),
+              // GOOGLE MAPS SCREENSHOT
               Expanded(
                 flex: 1,
                 child: Column(
@@ -80,7 +70,7 @@ class _UserProfileState extends State<UserProfilePage> {
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const <Widget>[Text("Friends")],
+                      children: const <Widget>[Text("Date Details")],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -97,7 +87,7 @@ class _UserProfileState extends State<UserProfilePage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 12.0),
             child: Text(
-              widget.aUser.username,
+              "Date Plan: " + widget.aDate.datePlan,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,
@@ -108,7 +98,7 @@ class _UserProfileState extends State<UserProfilePage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 4.0),
             child: Text(
-              widget.aUser.username,
+              "Date Time: " + widget.aDate.dateTime.toString(),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -118,7 +108,7 @@ class _UserProfileState extends State<UserProfilePage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              widget.aUser.email,
+              "Date with " + widget.aDate.dateUid,
             ),
           ),
         ],
@@ -127,37 +117,24 @@ class _UserProfileState extends State<UserProfilePage> {
   }
 
   profileButton() {
-    bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
-    if (isProfileOwner) {
-      return buildButton(text: "Edit Profile", function: editProfile);
+    bool isDateOwner = _auth.user.userId == widget.aDate.hostUid;
+    if (isDateOwner) {
+      return buildButton(text: "Edit Date", function: editDate);
     } else {
-      return buildButton(text: "Send Message", function: sendMessage);
+      return buildButton(text: "Leave Date", function: cancelDate);
     }
   }
 
   topBarButton() {
-    bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
-    if (isProfileOwner) {
-      return IconButton(
-        icon: const Icon(
-          Icons.logout_sharp,
-          color: Color.fromARGB(255, 20, 133, 43),
-        ),
-        onPressed: () {
-          _auth.logout();
-        },
-      );
-    } else {
-      return IconButton(
-        icon: const Icon(
-          Icons.keyboard_return_rounded,
-          color: Color.fromARGB(255, 20, 133, 43),
-        ),
-        onPressed: () {
-          _nav.goBack();
-        },
-      );
-    }
+    return IconButton(
+      icon: const Icon(
+        Icons.keyboard_return_rounded,
+        color: Color.fromARGB(255, 20, 133, 43),
+      ),
+      onPressed: () {
+        _nav.goBack();
+      },
+    );
   }
 
   TextButton buildButton(
@@ -186,15 +163,15 @@ class _UserProfileState extends State<UserProfilePage> {
     );
   }
 
-  editProfile() {
+  editDate() {
     if (kDebugMode) {
-      print("User Profile Edit Button Pressed");
+      print("Date Edit Button Pressed");
     }
   }
 
-  sendMessage() {
+  cancelDate() {
     if (kDebugMode) {
-      print("User Profile Message Button Pressed");
+      print("Cancel Button Pressed");
     }
   }
 }

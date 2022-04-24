@@ -6,11 +6,11 @@ import 'package:provider/provider.dart';
 
 import 'package:cherub/models/date_details_model.dart';
 
-import '../providers/auth_provider.dart';
-import '../services/database_service.dart';
-import '../services/navigation_service.dart';
-import '../widgets/date_details_widget.dart';
-import '../widgets/top_bar_widget.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/database_service.dart';
+import '../../services/navigation_service.dart';
+import '../../widgets/date_details_widget.dart';
+import '../../widgets/top_bar_widget.dart';
 
 DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 

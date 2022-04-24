@@ -2,11 +2,11 @@ import 'package:cherub/providers/auth_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
+import '../../models/user_model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import '../services/database_service.dart';
-import '../widgets/user_search_result_widget.dart';
+import '../../services/database_service.dart';
+import '../../widgets/user_search_result_widget.dart';
 
 final DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 late Future<QuerySnapshot>? _searchResultsFuture;

@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../services/media_service.dart';
-import '../widgets/custom_button_widget.dart';
-import '../widgets/profile_picture_widget.dart';
-import '../widgets/user_input_widget.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/media_service.dart';
+import '../../widgets/custom_button_widget.dart';
+import '../../widgets/profile_picture_widget.dart';
+import '../../widgets/user_input_widget.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);

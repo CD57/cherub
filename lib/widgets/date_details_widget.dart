@@ -1,6 +1,6 @@
 //Displays and holds user search results
 import 'package:cherub/models/date_details_model.dart';
-import 'package:cherub/pages/date_details_page.dart';
+import 'package:cherub/pages/date_activities/date_details_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

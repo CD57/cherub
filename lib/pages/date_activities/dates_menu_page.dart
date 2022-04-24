@@ -1,16 +1,16 @@
 // create_date_page.dart - App page containing option to set up a new date
 
-import 'package:cherub/pages/active_dates_page.dart';
-import 'package:cherub/pages/date_setup_page.dart';
-import 'package:cherub/pages/view_dates_page.dart';
+import 'package:cherub/pages/date_activities/active_dates_page.dart';
+import 'package:cherub/pages/date_activities/date_setup_page.dart';
+import 'package:cherub/pages/date_activities/view_dates_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../services/navigation_service.dart';
-import '../widgets/custom_button_widget.dart';
-import '../widgets/top_bar_widget.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/navigation_service.dart';
+import '../../widgets/custom_button_widget.dart';
+import '../../widgets/top_bar_widget.dart';
 
 class DatesMenuPage extends StatefulWidget {
   const DatesMenuPage({Key? key}) : super(key: key);

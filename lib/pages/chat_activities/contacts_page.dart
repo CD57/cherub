@@ -7,12 +7,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
-import '../providers/auth_provider.dart';
-import '../services/database_service.dart';
-import '../services/navigation_service.dart';
-import '../widgets/custom_tile_list_widget.dart';
-import '../widgets/top_bar_widget.dart';
-import '../widgets/user_input_widget.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/database_service.dart';
+import '../../services/navigation_service.dart';
+import '../../widgets/custom_tile_list_widget.dart';
+import '../../widgets/top_bar_widget.dart';
+import '../../widgets/user_input_widget.dart';
 
 final DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 late List<String> usersFriendUids = [];

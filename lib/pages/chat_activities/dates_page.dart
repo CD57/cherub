@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cherub/providers/auth_provider.dart';
 
-import '../models/date_chat_model.dart';
-import '../models/date_message_model.dart';
-import '../providers/dates_page_provider.dart';
-import '../services/navigation_service.dart';
-import '../widgets/top_bar_widget.dart';
+import '../../models/date_chat_model.dart';
+import '../../models/date_message_model.dart';
+import '../../providers/dates_page_provider.dart';
+import '../../services/navigation_service.dart';
+import '../../widgets/top_bar_widget.dart';
 import 'date_chat_page.dart';
 
 class DatesPage extends StatefulWidget {

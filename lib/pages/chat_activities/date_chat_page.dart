@@ -4,11 +4,11 @@ import 'package:cherub/models/date_chat_model.dart';
 import 'package:cherub/widgets/user_input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/date_message_model.dart';
-import '../providers/auth_provider.dart';
-import '../providers/date_chat_provider.dart';
-import '../widgets/custom_tile_list_widget.dart';
-import '../widgets/top_bar_widget.dart';
+import '../../models/date_message_model.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/date_chat_provider.dart';
+import '../../widgets/custom_tile_list_widget.dart';
+import '../../widgets/top_bar_widget.dart';
 
 class DateChatPage extends StatefulWidget {
   final DateChat dateChat;

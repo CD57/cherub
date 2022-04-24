@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import '../models/date_chat_model.dart';
-import '../pages/date_chat_page.dart';
+import '../pages/chat_activities/date_chat_page.dart';
 import '../services/database_service.dart';
 import '../services/navigation_service.dart';
 import 'auth_provider.dart';

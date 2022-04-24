@@ -1,14 +1,14 @@
 // main.dart - Cherub Application - C18465384
 
 // ignore: unused_import
-import 'package:cherub/pages/contacts_page.dart';
+import 'package:cherub/pages/chat_activities/contacts_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
-import './pages/splash_page.dart';
-import './pages/login_page.dart';
-import './pages/registration_page.dart';
+import 'pages/login_and_registration/splash_page.dart';
+import 'pages/login_and_registration/login_page.dart';
+import 'pages/login_and_registration/registration_page.dart';
 import 'providers/auth_provider.dart';
 import 'services/navigation_service.dart';
 

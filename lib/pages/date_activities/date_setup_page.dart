@@ -1,6 +1,6 @@
 // date_setup_page.dart - App page containing forms for user to enter details of date
-import 'package:cherub/pages/contacts_page.dart';
-import 'package:cherub/pages/date_map_page.dart';
+import 'package:cherub/pages/chat_activities/contacts_page.dart';
+import 'package:cherub/pages/date_activities/date_map_page.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../providers/auth_provider.dart';
-import '../services/database_service.dart';
-import '../widgets/top_bar_widget.dart';
-import '../widgets/user_input_widget.dart';
-import '../widgets/custom_button_widget.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/database_service.dart';
+import '../../widgets/top_bar_widget.dart';
+import '../../widgets/user_input_widget.dart';
+import '../../widgets/custom_button_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateSetupPage extends StatefulWidget {

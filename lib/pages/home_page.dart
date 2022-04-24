@@ -1,14 +1,14 @@
 // home_page.dart - App page containing main menu of app, containing a scaffold of displaying other app pages
 
-import 'package:cherub/pages/dates_menu_page.dart';
-import 'package:cherub/pages/user_profile_page.dart';
-import 'package:cherub/pages/user_search_page.dart';
+import 'package:cherub/pages/date_activities/dates_menu_page.dart';
+import 'package:cherub/pages/users_activities/user_profile_page.dart';
+import 'package:cherub/pages/users_activities/user_search_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../providers/auth_provider.dart';
-import 'dates_page.dart';
+import 'chat_activities/dates_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
