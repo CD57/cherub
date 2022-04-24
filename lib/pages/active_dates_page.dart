@@ -1,35 +1,32 @@
-// dates_page.dart - App page containing display for all users availiable dates.
+// active_dates_page.dart - App page containing display for all users availiable date sessions.
 
+import 'package:cherub/models/date_session_model.dart';
 import 'package:cherub/models/user_model.dart';
+import 'package:cherub/providers/sessions_page_provider.dart';
 import 'package:cherub/widgets/custom_tile_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cherub/providers/auth_provider.dart';
-
-import '../models/date_chat_model.dart';
-import '../models/date_message_model.dart';
-import '../providers/dates_page_provider.dart';
 import '../services/navigation_service.dart';
 import '../widgets/top_bar_widget.dart';
-import 'date_chat_page.dart';
 
-class DatesPage extends StatefulWidget {
-  const DatesPage({Key? key}) : super(key: key);
+class ActiveDatesPage extends StatefulWidget {
+  const ActiveDatesPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _DatesPageState();
+    return _ActiveDatesPageState();
   }
 }
 
-class _DatesPageState extends State<DatesPage> {
+class _ActiveDatesPageState extends State<ActiveDatesPage> {
   late double _deviceHeight;
   late double _deviceWidth;
 
   late AuthProvider _auth;
   late NavigationService _nav;
-  late DatesPageProvider _pageProvider;
+  late SessionsPageProvider _pageProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +36,8 @@ class _DatesPageState extends State<DatesPage> {
     _nav = GetIt.instance.get<NavigationService>();
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<DatesPageProvider>(
-          create: (_) => DatesPageProvider(_auth),
+        ChangeNotifierProvider<SessionsPageProvider>(
+          create: (_) => SessionsPageProvider(_auth),
         ),
       ],
       child: _buildUI(),
@@ -50,7 +47,7 @@ class _DatesPageState extends State<DatesPage> {
   Widget _buildUI() {
     return Builder(
       builder: (BuildContext _context) {
-        _pageProvider = _context.watch<DatesPageProvider>();
+        _pageProvider = _context.watch<SessionsPageProvider>();
         return Container(
           padding: EdgeInsets.symmetric(
             horizontal: _deviceWidth * 0.03,
@@ -64,7 +61,7 @@ class _DatesPageState extends State<DatesPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TopBar(
-                'My Date Chats',
+                'My Active Dates',
                 primaryAction: IconButton(
                   icon: const Icon(
                     Icons.logout_sharp,
@@ -84,7 +81,7 @@ class _DatesPageState extends State<DatesPage> {
   }
 
   _datesList() {
-    List<DateChat>? _dateChat = _pageProvider.dates;
+    List<DateSession>? _dateChat = _pageProvider.dates;
     return Expanded(
       child: (() {
         if (_dateChat != null) {
@@ -92,7 +89,7 @@ class _DatesPageState extends State<DatesPage> {
             return ListView.builder(
               itemCount: _dateChat.length,
               itemBuilder: (BuildContext _context, int _index) {
-                return _chatTile(
+                return _sessionTile(
                   _dateChat[_index],
                 );
               },
@@ -116,26 +113,22 @@ class _DatesPageState extends State<DatesPage> {
     );
   }
 
-  Widget _chatTile(DateChat _dateChat) {
-    List<UserModel> _recepients = _dateChat.received();
+  Widget _sessionTile(DateSession _dateSession) {
+    List<UserModel> _recepients = _dateSession.received();
     bool _isActive = _recepients.any((_d) => _d.wasRecentlyActive());
     String _subtitle = "";
-    if (_dateChat.messages.isNotEmpty) {
-      _subtitle = _dateChat.messages.first.type != MessageContentType.text
-          ? "Media Attachment"
-          : _dateChat.messages.first.content;
+    if (_dateSession.locations.isNotEmpty) {
+      _subtitle = "Active at " + _dateSession.locations.first.timeOfUpdate.toString();
     }
-    return CustomTileListViewWithActivity(
+    return SessionListViewTile(
       height: _deviceHeight * 0.10,
-      title: _dateChat.title(),
+      title: _dateSession.sessionUid,
       subtitle: _subtitle,
-      imagePath: _dateChat.imageURL(),
       isActive: _isActive,
-      isTyping: _dateChat.isTyping,
       onTap: () {
-        _nav.goToPage(
-          DateChatPage(dateChat: _dateChat),
-        );
+        // _nav.goToPage(
+        //   DateSessionPage(DateSession: _dateSession),
+        // );
       },
     );
   }

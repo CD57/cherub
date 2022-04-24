@@ -1,5 +1,6 @@
 // create_date_page.dart - App page containing option to set up a new date
 
+import 'package:cherub/pages/active_dates_page.dart';
 import 'package:cherub/pages/date_setup_page.dart';
 import 'package:cherub/pages/view_dates_page.dart';
 import 'package:flutter/foundation.dart';
@@ -73,7 +74,11 @@ class DatesMenuState extends State<DatesMenuPage> {
             SizedBox(
               height: _deviceHeight * 0.02,
             ),
-            _viewDatesButton(),
+            _viewActiveDatesButton(),
+            SizedBox(
+              height: _deviceHeight * 0.02,
+            ),
+            _viewFutureDatesButton(),
             SizedBox(
               height: _deviceHeight * 0.02,
             ),
@@ -99,7 +104,19 @@ class DatesMenuState extends State<DatesMenuPage> {
     });
   }
 
-  Widget _viewDatesButton() {
+  Widget _viewActiveDatesButton() {
+    return Builder(builder: (context) {
+      return CustomButton(
+          name: "Active Dates",
+          height: _deviceHeight * 0.065,
+          width: _deviceWidth * 0.8,
+          onPressed: () {
+            _nav.goToPage(const ActiveDatesPage());
+          });
+    });
+  }
+
+  Widget _viewFutureDatesButton() {
     return Builder(builder: (context) {
       return CustomButton(
           name: "Upcoming Dates",

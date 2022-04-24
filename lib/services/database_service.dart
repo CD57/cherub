@@ -257,7 +257,7 @@ class DatabaseService {
     } catch (e) {
       if (kDebugMode) {
         print(
-            "database_service.dart - getDateChats() - FAILED: " + e.toString());
+            "database_service.dart - getDateSessions() - FAILED: " + e.toString());
       }
       return _db
           .collection(sessions)
@@ -587,6 +587,14 @@ class DatabaseService {
       }
       return null;
     }
+  }
+
+  // Get Date Details By ID
+  Future<DocumentSnapshot> getDateDetailsByID(String _uid) {
+    if (kDebugMode) {
+      print("database_service.dart - getDateDetailsByID()");
+    }
+    return _db.collection(dates).doc(_uid).get();
   }
 
   // Delete Date Details

@@ -1,23 +1,24 @@
+import 'package:cherub/models/user_model.dart';
+
 import 'location_data_model.dart';
 
 class DateSession {
+  final String sessionUid;
   final String dateUid;
-  final String gpsLocation;
-  final String lastDateUpdate;
-  final bool isActive;
+  final List<UserModel> cherubs;
   final List<LocationData> locations;
-  late final List<LocationData> _received;
 
-  DateSession( 
-      {required this.dateUid,
-      required this.gpsLocation,
-      required this.lastDateUpdate,
-      required this.isActive,
+  late final List<UserModel> _received;
+
+  DateSession(
+      {required this.sessionUid,
+      required this.dateUid,
+      required this.cherubs,
       required this.locations}) {
-    _received = locations.where((_data) => _data.dateUid != dateUid).toList();
+    _received = cherubs.where((_data) => _data.userId != dateUid).toList();
   }
 
-  List<LocationData> received() {
+  List<UserModel> received() {
     return _received;
   }
 }

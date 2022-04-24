@@ -30,8 +30,9 @@ class CustomTileListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      trailing:
-          isSelected ? const Icon(Icons.check, color: Color.fromARGB(255, 20, 221, 2)) : null,
+      trailing: isSelected
+          ? const Icon(Icons.check, color: Color.fromARGB(255, 20, 221, 2))
+          : null,
       onTap: () => onTap(),
       minVerticalPadding: height * 0.20,
       leading: ProfilePictureStatus(
@@ -172,6 +173,46 @@ class CustomTileListViewChat extends StatelessWidget {
                   width: deviceWidth * 0.55,
                 ),
         ],
+      ),
+    );
+  }
+}
+
+class SessionListViewTile extends StatelessWidget {
+  final double height;
+  final String title;
+  final String subtitle;
+  final bool isActive;
+  final Function onTap;
+
+  const SessionListViewTile({
+    Key? key,
+    required this.height,
+    required this.title,
+    required this.subtitle,
+    required this.isActive,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () => onTap(),
+      minVerticalPadding: height * 0.20,
+      title: Text(
+        title,
+        style: TextStyle(
+          color: Colors.green.shade900,
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+            color: Colors.green.shade900,
+            fontSize: 12,
+            fontWeight: FontWeight.w400),
       ),
     );
   }
