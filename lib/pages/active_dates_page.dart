@@ -15,15 +15,12 @@ class ActiveDatesPage extends StatefulWidget {
   const ActiveDatesPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return _ActiveDatesPageState();
-  }
+  State<StatefulWidget> createState() => _ActiveDatesPageState();
 }
 
 class _ActiveDatesPageState extends State<ActiveDatesPage> {
   late double _deviceHeight;
   late double _deviceWidth;
-
   late AuthProvider _auth;
   late NavigationService _nav;
   late SessionsPageProvider _pageProvider;
@@ -48,32 +45,44 @@ class _ActiveDatesPageState extends State<ActiveDatesPage> {
     return Builder(
       builder: (BuildContext _context) {
         _pageProvider = _context.watch<SessionsPageProvider>();
-        return Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: _deviceWidth * 0.03,
-            vertical: _deviceHeight * 0.02,
-          ),
-          height: _deviceHeight * 0.98,
-          width: _deviceWidth * 0.97,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TopBar(
-                'My Active Dates',
-                primaryAction: IconButton(
-                  icon: const Icon(
-                    Icons.logout_sharp,
-                    color: Color.fromARGB(255, 20, 133, 43),
+        return Scaffold(
+          body: Container(
+            color: Theme.of(context).backgroundColor,
+            padding: EdgeInsets.symmetric(
+              horizontal: _deviceWidth * 0.03,
+              vertical: _deviceHeight * 0.02,
+            ),
+            height: _deviceHeight * 0.98,
+            width: _deviceWidth * 0.97,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TopBar(
+                  'My Active Dates',
+                  primaryAction: IconButton(
+                    icon: const Icon(
+                      Icons.keyboard_return_rounded,
+                      color: Color.fromARGB(255, 20, 133, 43),
+                    ),
+                    onPressed: () {
+                      _nav.goBack();
+                    },
                   ),
-                  onPressed: () {
-                    _auth.logout();
-                  },
+                  secondaryAction: IconButton(
+                    icon: const Icon(
+                      Icons.refresh_sharp,
+                      color: Color.fromARGB(255, 20, 133, 43),
+                    ),
+                    onPressed: () {
+                      setState(() {});
+                    },
+                  ),
                 ),
-              ),
-              _datesList(),
-            ],
+                _datesList(),
+              ],
+            ),
           ),
         );
       },
@@ -97,17 +106,30 @@ class _ActiveDatesPageState extends State<ActiveDatesPage> {
           } else {
             return const Center(
               child: Text(
-                "No Dates Available",
+                "No Active Dates",
                 style: TextStyle(color: Color.fromARGB(255, 20, 133, 43)),
               ),
             );
           }
         } else {
           return Center(
-            child: CircularProgressIndicator(
-              color: Colors.green.shade900,
-            ),
-          );
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Text(
+                "Loading...",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.green.shade900,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 40.0,
+                ),
+              ),
+              const CircularProgressIndicator()
+            ],
+          ),
+        );
         }
       })(),
     );
@@ -118,7 +140,8 @@ class _ActiveDatesPageState extends State<ActiveDatesPage> {
     bool _isActive = _recepients.any((_d) => _d.wasRecentlyActive());
     String _subtitle = "";
     if (_dateSession.locations.isNotEmpty) {
-      _subtitle = "Active at " + _dateSession.locations.first.timeOfUpdate.toString();
+      _subtitle =
+          "Active at " + _dateSession.locations.first.timeOfUpdate.toString();
     }
     return SessionListViewTile(
       height: _deviceHeight * 0.10,

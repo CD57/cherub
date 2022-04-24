@@ -16,12 +16,10 @@ class DatesMenuPage extends StatefulWidget {
   const DatesMenuPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return DatesMenuState();
-  }
+  State<StatefulWidget> createState() => _DatesMenuState();
 }
 
-class DatesMenuState extends State<DatesMenuPage> {
+class _DatesMenuState extends State<DatesMenuPage> {
   late final AuthProvider _auth =
       Provider.of<AuthProvider>(context, listen: false);
   late NavigationService _nav;

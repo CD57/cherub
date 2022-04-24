@@ -15,11 +15,12 @@ import '../widgets/top_bar_widget.dart';
 DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 
 class DisplayDatesPage extends StatefulWidget {
+  final bool pastDates;
   const DisplayDatesPage({
     Key? key,
     required this.pastDates,
   }) : super(key: key);
-  final bool pastDates;
+
   @override
   State<DisplayDatesPage> createState() => _DisplayDatesPageState();
 }
@@ -114,10 +115,6 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
   }
 
   _datesList(BuildContext context) {
-    if (kDebugMode) {
-      print("view_dates_page.dart - _datesList()");
-    }
-
     return FutureBuilder<QuerySnapshot>(
       future: dateDetailsRef.get(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -177,7 +174,6 @@ class _DisplayDatesPageState extends State<DisplayDatesPage> {
             );
           }
         }
-
         return Center(
           child: ListView(
             shrinkWrap: true,
