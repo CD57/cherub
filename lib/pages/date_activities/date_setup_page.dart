@@ -243,7 +243,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
           );
           try {
             //Create Date Details
-            await _dbService.createDateDetails(_auth.user.userId, {
+            await _dbService.dateDb.createDateDetails(_auth.user.userId, {
               "hostUid": _auth.user.userId,
               "dateUid": widget.dateID,
               "datePlan": _datePlan,

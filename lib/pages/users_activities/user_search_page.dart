@@ -48,13 +48,13 @@ class _UserSearchState extends State<UserSearchPage> {
       print("user_search_page.dart - handleFriendRequests()");
     }
     // Get list of User ID's that sent a friend request and empty current friendRequestWidgetList
-    List<String> friendRequests = await _dbService.getFriendRequests(_uid);
+    List<String> friendRequests = await _dbService.friendDb.getFriendRequests(_uid);
     List<UserModel> tempFriendRequestsUsersList = [];
     friendRequestWidgetList = [];
 
     // For each friend request, get user using userId and add to temp list
     for (String friend in friendRequests) {
-      await _dbService.getUserByID(friend).then(
+      await _dbService.userDb.getUserByID(friend).then(
         (_snapshot) {
           if (_snapshot.data() != null) {
             // DocumentSnapshot _userData = _snapshot.data()! as DocumentSnapshot;
@@ -97,13 +97,13 @@ class _UserSearchState extends State<UserSearchPage> {
       print("user_search_page.dart - getUsersFriends()");
     }
     // Get list of current user's friend Uids and empty current friendsWidgetList
-    List<String> usersFriendUids = await _dbService.getFriendsID(_uid);
+    List<String> usersFriendUids = await _dbService.friendDb.getFriendsID(_uid);
     List<UserModel> tempFriendsList = [];
     friendsWidgetList = [];
 
     // For each friend, get user using Uid and add to temp list
     for (String friend in usersFriendUids) {
-      await _dbService.getUserByID(friend).then(
+      await _dbService.userDb.getUserByID(friend).then(
         (_snapshot) {
           if (_snapshot.data() != null) {
             // DocumentSnapshot _userFriendData = _snapshot.data()! as DocumentSnapshot;

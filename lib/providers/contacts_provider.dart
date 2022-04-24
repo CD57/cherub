@@ -34,7 +34,7 @@ class ContactsProvider extends ChangeNotifier {
   void getUsers({String? name}) async {
     _selectedUsers = [];
     try {
-      _database.getAllUsers(name: name).then(
+      _database.userDb.getAllUsers(name: name).then(
         (_snapshot) {
           users = _snapshot.docs.map(
             (_doc) {
@@ -56,7 +56,7 @@ class ContactsProvider extends ChangeNotifier {
 
   void getUser({String? uid}) async {
     try {
-      _database.getUserByID(uid!).then(
+      _database.userDb.getUserByID(uid!).then(
         (_snapshot) {
           if (_snapshot.data() != null) {
             Map<String, dynamic> _userData =
@@ -108,7 +108,7 @@ class ContactsProvider extends ChangeNotifier {
           _selectedUsers.map((_user) => _user.userId).toList();
       _contactsIds.add(_auth.user.userId);
       bool _isGroup = _selectedUsers.length > 1;
-      DocumentReference? _doc = await _database.createDateChat(
+      DocumentReference? _doc = await _database.chatDb.createDateChat(
         {
           "isGroup": _isGroup,
           "isTyping": false,
@@ -118,7 +118,7 @@ class ContactsProvider extends ChangeNotifier {
       //Navigate To Chat Page
       List<UserModel> _contacts = [];
       for (var _uid in _contactsIds) {
-        DocumentSnapshot _userSnapshot = await _database.getUserByID(_uid);
+        DocumentSnapshot _userSnapshot = await _database.userDb.getUserByID(_uid);
         Map<String, dynamic> _userData =
             _userSnapshot.data() as Map<String, dynamic>;
         _userData["userId"] = _userSnapshot.id;
@@ -158,7 +158,7 @@ class ContactsProvider extends ChangeNotifier {
       _contactsIds.add(contactId);
       _contactsIds.add(_auth.user.userId);
       bool _isGroup = false;
-      await _database.createDateChat(
+      await _database.chatDb.createDateChat(
         {
           "isGroup": _isGroup,
           "isTyping": false,

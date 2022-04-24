@@ -58,7 +58,7 @@ class DateChatProvider extends ChangeNotifier {
 
   void listenToMessages() {
     try {
-      _messagesStream = _db.streamMessages(_chatId).listen(
+      _messagesStream = _db.chatDb.streamMessages(_chatId).listen(
         (_snapshot) {
           List<DateMessage> _messages = _snapshot.docs.map(
             (_m) {
@@ -90,7 +90,7 @@ class DateChatProvider extends ChangeNotifier {
   void listenToKeyboardChanges() {
     _keyboardVisibilityStream = _keyboardVisibilityController.onChange.listen(
       (_event) {
-        _db.updateDateChat(_chatId, {"isTyping": _event});
+        _db.chatDb.updateDateChat(_chatId, {"isTyping": _event});
       },
     );
     if (kDebugMode) {
@@ -107,7 +107,7 @@ class DateChatProvider extends ChangeNotifier {
         senderID: _auth.user.userId,
         sentTime: DateTime.now(),
       );
-      await _db.addMessage(_chatId, _messageToSend);
+      await _db.chatDb.addMessage(_chatId, _messageToSend);
     }
   }
 
@@ -123,7 +123,7 @@ class DateChatProvider extends ChangeNotifier {
           senderID: _auth.user.userId,
           sentTime: DateTime.now(),
         );
-        _db.addMessage(_chatId, _messageToSend);
+        _db.chatDb.addMessage(_chatId, _messageToSend);
       }
     } catch (e) {
       if (kDebugMode) {
@@ -135,7 +135,7 @@ class DateChatProvider extends ChangeNotifier {
 
   void deleteChat() {
     goBack();
-    _db.deleteDateChat(_chatId);
+    _db.chatDb.deleteDateChat(_chatId);
   }
 
   void goBack() {

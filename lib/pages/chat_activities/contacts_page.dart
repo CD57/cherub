@@ -81,7 +81,7 @@ class _ContactsPageState extends State<ContactsPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TopBar(
-                'Contacts',
+                'My Friends',
                 primaryAction: IconButton(
                   icon: const Icon(
                     Icons.keyboard_return_rounded,
@@ -183,7 +183,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   void getFriends() async {
-    usersFriendUids = await _dbService.getFriendsID(_uid);
+    usersFriendUids = await _dbService.friendDb.getFriendsID(_uid);
     if (mounted) {
       setState(() {
         usersFriendUids = usersFriendUids;

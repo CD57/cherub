@@ -7,8 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
-import '../services/database_service.dart';
 import '../providers/auth_provider.dart';
+import '../services/database_service.dart';
 
 class SessionsPageProvider extends ChangeNotifier {
   final AuthProvider _auth;
@@ -31,7 +31,7 @@ class SessionsPageProvider extends ChangeNotifier {
   void getDateSessions() async {
     try {
       _dateSessionsStream =
-          _db.getDateSessions(_auth.user.userId).listen((_snapshot) async {
+          _db.sessionDb.getDateSessions(_auth.user.userId).listen((_snapshot) async {
         dates = await Future.wait(
           _snapshot.docs.map(
             (_d) async {
@@ -40,7 +40,7 @@ class SessionsPageProvider extends ChangeNotifier {
               //Get Users In Session
               List<UserModel> _cherubs = [];
               for (var _uid in _sessionData["cherubs"]) {
-                DocumentSnapshot _userSnapshot = await _db.getUserByID(_uid);
+                DocumentSnapshot _userSnapshot = await _db.userDb.getUserByID(_uid);
                 Map<String, dynamic> _userData =
                     _userSnapshot.data() as Map<String, dynamic>;
                 _userData["userId"] = _userSnapshot.id;
@@ -50,7 +50,7 @@ class SessionsPageProvider extends ChangeNotifier {
               }
               //Get Last Update for Session
               List<LocationData> _locations = [];
-              QuerySnapshot _lastLocation = await _db.getLastLocation(_d.id);
+              QuerySnapshot _lastLocation = await _db.sessionDb.getLastLocation(_d.id);
               if (_lastLocation.docs.isNotEmpty) {
                 Map<String, dynamic> _locationData =
                     _lastLocation.docs.first.data()! as Map<String, dynamic>;

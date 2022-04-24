@@ -32,8 +32,8 @@ class AuthProvider extends ChangeNotifier {
           print("auth_provider.dart - AuthProvider() - User Found");
         }
         authorised = true;
-        _dbService.updateLastActive(_user.uid);
-        _dbService.getUserByID(_user.uid).then(
+        _dbService.userDb.updateLastActive(_user.uid);
+        _dbService.userDb.getUserByID(_user.uid).then(
           (_snapshot) {
             if (_snapshot.data() != null) {
               Map<String, dynamic> _userData =
@@ -142,7 +142,7 @@ class AuthProvider extends ChangeNotifier {
       }
 
       // Create User in Firebase Database
-      await _dbService.createUser(
+      await _dbService.userDb.createUser(
           _credentials.user!.uid, _username, _name, _number, _email, _imageURL);
       if (kDebugMode) {
         print(

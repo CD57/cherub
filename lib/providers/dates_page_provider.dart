@@ -31,7 +31,7 @@ class DatesPageProvider extends ChangeNotifier {
   void getDateChats() async {
     try {
       _dateChatsStream =
-          _db.getDateChats(_auth.user.userId).listen((_snapshot) async {
+          _db.chatDb.getDateChats(_auth.user.userId).listen((_snapshot) async {
         dates = await Future.wait(
           _snapshot.docs.map(
             (_d) async {
@@ -40,7 +40,7 @@ class DatesPageProvider extends ChangeNotifier {
               //Get Users In Chat
               List<UserModel> _contacts = [];
               for (var _uid in _chatData["contacts"]) {
-                DocumentSnapshot _userSnapshot = await _db.getUserByID(_uid);
+                DocumentSnapshot _userSnapshot = await _db.userDb.getUserByID(_uid);
                 Map<String, dynamic> _userData =
                     _userSnapshot.data() as Map<String, dynamic>;
                 _userData["userId"] = _userSnapshot.id;
@@ -50,7 +50,7 @@ class DatesPageProvider extends ChangeNotifier {
               }
               //Get Last Message For Chat
               List<DateMessage> _messages = [];
-              QuerySnapshot _chatMessage = await _db.getLastMessage(_d.id);
+              QuerySnapshot _chatMessage = await _db.chatDb.getLastMessage(_d.id);
               if (_chatMessage.docs.isNotEmpty) {
                 Map<String, dynamic> _messageData =
                     _chatMessage.docs.first.data()! as Map<String, dynamic>;

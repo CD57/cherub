@@ -41,7 +41,7 @@ class SessionProvider extends ChangeNotifier {
 
   void listenToLocationUpdates() {
     try {
-      _locationStream = _db.streamLocations(_dateId).listen(
+      _locationStream = _db.sessionDb.streamLocations(_dateId).listen(
         (_snapshot) {
           List<LocationData> _locations = _snapshot.docs.map(
             (_m) {
@@ -74,7 +74,7 @@ class SessionProvider extends ChangeNotifier {
   void listenToKeyboardChanges() {
     _keyboardVisibilityStream = _keyboardVisibilityController.onChange.listen(
       (_event) {
-        _db.updateLastActiveSessionTime(_dateId);
+        _db.sessionDb.updateLastActiveSessionTime(_dateId);
       },
     );
     if (kDebugMode) {
@@ -90,13 +90,13 @@ class SessionProvider extends ChangeNotifier {
         gpsLocation: _location!,
         timeOfUpdate: DateTime.now(),
       );
-      await _db.addLocationData(_dateId, _locationData);
+      await _db.sessionDb.addLocationData(_dateId, _locationData);
     }
   }
 
   void deleteSession() {
     goBack();
-    _db.deleteDateSession(_dateId);
+    _db.sessionDb.deleteDateSession(_dateId);
   }
 
   void goBack() {

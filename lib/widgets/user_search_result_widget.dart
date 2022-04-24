@@ -61,7 +61,7 @@ class UserSearchResultsWidget extends StatelessWidget {
                   print(
                       "contactOptions - Request from $_uid to $_requestedUsersId");
                 }
-                await _dbService.createFriendRequest({
+                await _dbService.friendDb.createFriendRequest({
                   "From": _uid.toString(),
                   "To": _requestedUsersId.toString()
                 });
@@ -118,7 +118,7 @@ class FriendRequestListWidget extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () async {
-                await _dbService.acceptFriendRequest(currentUserId,
+                await _dbService.friendDb.acceptFriendRequest(currentUserId,
                     _auth.user.username, aUser.userId, aUser.username);
                 Navigator.pop(context);
               },
@@ -126,7 +126,7 @@ class FriendRequestListWidget extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                await _dbService.deleteFriendRequest(
+                await _dbService.friendDb.deleteFriendRequest(
                     currentUserId, aUser.userId);
                 Navigator.pop(context);
               },
@@ -193,7 +193,7 @@ class FriendListWidget extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () async {
-                      await dbService.deleteFriend(currentUserId, aUser.userId);
+                      await dbService.friendDb.deleteFriend(currentUserId, aUser.userId);
                       Navigator.pop(context);
                     },
                     child: const Text('Delete Contact'),
