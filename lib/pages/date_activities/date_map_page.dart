@@ -1,21 +1,50 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:get_it/get_it.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class DateMap extends StatefulWidget {
-  const DateMap({Key? key}) : super(key: key);
+import '../../services/location_service.dart';
 
+class DateMap extends StatefulWidget {
+  const DateMap({Key? key, required this.currentPosition}) : super(key: key);
+  final LatLng currentPosition;
   @override
   State<DateMap> createState() => _DateMapState();
 }
 
 class _DateMapState extends State<DateMap> {
+  late LocationService _locationService;
   String location = "Choose a location";
+  String selectedLocation = "10,10";
   GoogleMapController? mapController;
   CameraPosition? cameraPosition;
-  LatLng selectedLocation = const LatLng(0.0, 0.0);
-  LatLng beginLocation = const LatLng(53.23934, -7.76989);
+  late LatLng beginLocation = const LatLng(10.10, -10.10);
+
+  @override
+  void initState() {
+    if (kDebugMode) {
+      print("date_map_page.dart - initState");
+    }
+    super.initState();
+    _locationService = GetIt.instance.get<LocationService>();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    if (kDebugMode) {
+      print("date_details_page.dart - didChangeDependencies()");
+    }
+    super.didChangeDependencies();
+    String location = await _locationService.getCurrentLocation();
+    List<String> latLng = location.split(",");
+    LatLng _locationLatLng = LatLng(double.parse(latLng[0]), double.parse(latLng[1]));
+
+    setState(() {
+      beginLocation = _locationLatLng;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +62,7 @@ class _DateMapState extends State<DateMap> {
               GoogleMap(
                 zoomGesturesEnabled: true,
                 initialCameraPosition: CameraPosition(
-                  target: beginLocation,
+                  target: widget.currentPosition,
                   zoom: 7.0,
                 ),
                 mapType: MapType.normal,
@@ -67,9 +96,10 @@ class _DateMapState extends State<DateMap> {
                         if (kDebugMode) {
                           print("Map.dart - onCameraIdle - setState");
                         }
-                        selectedLocation = LatLng(
-                            cameraPosition!.target.latitude,
-                            cameraPosition!.target.longitude);
+                        selectedLocation =
+                            cameraPosition!.target.latitude.toString() +
+                                "," +
+                                cameraPosition!.target.longitude.toString();
                         location = stringLocation;
                       });
                     }
@@ -120,7 +150,7 @@ class _DateMapState extends State<DateMap> {
                               if (kDebugMode) {
                                 print(
                                     "Map.dart - ElevatedButton - onPressed - Sending: " +
-                                        selectedLocation.toString());
+                                        selectedLocation);
                               }
                               WidgetsBinding.instance!
                                   .addPostFrameCallback((_) {
@@ -139,13 +169,5 @@ class _DateMapState extends State<DateMap> {
                     ),
                   ))
             ])));
-  }
-
-  @override
-  void initState() {
-    if (kDebugMode) {
-      print("Map.dart - initState");
-    }
-    super.initState();
   }
 }

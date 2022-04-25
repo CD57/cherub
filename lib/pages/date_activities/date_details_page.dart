@@ -5,6 +5,7 @@ import 'package:cherub/widgets/top_bar_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import '../../providers/auth_provider.dart';
 
@@ -72,7 +73,7 @@ class _DateDetailsState extends State<DateDetailsPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                TopBar(widget.aDate.datePlan, primaryAction: topBarButton()),
+                TopBar("Date Info", primaryAction: topBarButton()),
                 buildProfile(),
               ],
             ),
@@ -83,27 +84,27 @@ class _DateDetailsState extends State<DateDetailsPage> {
   }
 
   buildProfile() {
+    List<String> latLng = widget.aDate.dateGPS.split(",");
+    double latitude = double.parse(latLng[0]);
+    double longitude = double.parse(latLng[1]);
+    LatLng _location = LatLng(latitude, longitude);
+    
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              // GOOGLE MAPS SCREENSHOT
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: <Widget>[
-                    const Text("Date Details"),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.max,
-                      children: profileButton(),
-                    ),
-                  ],
-                ),
+          SizedBox(
+            width: 300.0,
+            height: 300.0,
+            child: GoogleMap(
+              scrollGesturesEnabled: false,
+              zoomControlsEnabled: true,
+              mapType: MapType.hybrid,
+              initialCameraPosition: CameraPosition(
+                target: _location,
+                zoom: 20.0,
               ),
-            ],
+            ),
           ),
           Container(
             alignment: Alignment.centerLeft,
@@ -120,9 +121,21 @@ class _DateDetailsState extends State<DateDetailsPage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 4.0),
             child: Text(
-              "Date Time: " + widget.aDate.dateTime.toString(),
+              "Date Time: " + widget.aDate.dateTime.toDate().toString(),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Text(
+              "Check-In Time: " + widget.aDate.checkInTime.toDate().toString(),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
               ),
             ),
           ),
@@ -130,8 +143,28 @@ class _DateDetailsState extends State<DateDetailsPage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              "Date with " + widget.aDate.dateUid,
+              "Date with: " + widget.aDate.dateUid,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
             ),
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: profileButton(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -192,7 +225,7 @@ class _DateDetailsState extends State<DateDetailsPage> {
     if (kDebugMode) {
       print("Start Date Button Pressed");
     }
-    _dateProvider.createAndGoToSession(widget.aDate.uid);
+    //_dateProvider.createAndGoToSession(widget.aDate.uid);
   }
 
   cancelDate() {

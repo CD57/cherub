@@ -1,6 +1,7 @@
 //custom_message_widget.dart
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:timeago/timeago.dart' as time_ago;
 import '../models/date_message_model.dart';
 
@@ -68,14 +69,14 @@ class MessageBubble extends StatelessWidget {
 
 class MediaBubble extends StatelessWidget {
   final bool isOwnMessage;
-  final DateMessage message;
+  final DateMessage media;
   final double height;
   final double width;
 
   const MediaBubble(
       {Key? key,
       required this.isOwnMessage,
-      required this.message,
+      required this.media,
       required this.height,
       required this.width})
       : super(key: key);
@@ -92,7 +93,7 @@ class MediaBubble extends StatelessWidget {
             const Color.fromRGBO(51, 49, 68, 1.0),
           ];
     DecorationImage _image = DecorationImage(
-      image: NetworkImage(message.content),
+      image: NetworkImage(media.content),
       fit: BoxFit.cover,
     );
     return Container(
@@ -124,10 +125,82 @@ class MediaBubble extends StatelessWidget {
           ),
           SizedBox(height: height * 0.03),
           Text(
-            time_ago.format(message.sentTime),
+            time_ago.format(media.sentTime),
             textAlign: TextAlign.right,
             style: const TextStyle(
               color: Colors.white60,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class UpdateBubble extends StatelessWidget {
+  final bool isOwnMessage;
+  final DateMessage update;
+  final double height;
+  final double width;
+
+  const UpdateBubble(
+      {Key? key,
+      required this.isOwnMessage,
+      required this.update,
+      required this.height,
+      required this.width})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> latLng = update.content.split(",");
+    double latitude = double.parse(latLng[0]);
+    double longitude = double.parse(latLng[1]);
+    LatLng _location = LatLng(latitude, longitude);
+
+    List<Color> _colorScheme = isOwnMessage
+        ? [
+            const Color.fromARGB(255, 42, 100, 0),
+            const Color.fromARGB(255, 14, 161, 1),
+          ]
+        : [
+            const Color.fromRGBO(51, 49, 68, 1.0),
+            const Color.fromRGBO(51, 49, 68, 1.0),
+          ];
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(1),
+        gradient: LinearGradient(
+          colors: _colorScheme,
+          stops: const [0.30, 0.70],
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          SizedBox(
+            width: 300.0,
+            height: 300.0,
+            child: GoogleMap(
+              scrollGesturesEnabled: false,
+              zoomControlsEnabled: true,
+              mapType: MapType.hybrid,
+              initialCameraPosition: CameraPosition(
+                target: _location,
+                zoom: 20.0,
+              ),
+            ),
+          ),
+          SizedBox(height: height * 0.03),
+          Text(
+            time_ago.format(update.sentTime),
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              color: Colors.white,
             ),
           ),
         ],

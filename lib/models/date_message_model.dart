@@ -1,10 +1,11 @@
-// date_message_model.dart - Model class containing the details of a users message, which can be either text or media 
+// date_message_model.dart - Model class containing the details of a users message, which can be either text or media
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum MessageContentType {
   text,
   media,
+  update,
   unknown,
 }
 
@@ -29,6 +30,9 @@ class DateMessage {
       case "media":
         _contentType = MessageContentType.media;
         break;
+      case "update":
+        _contentType = MessageContentType.update;
+        break;
       default:
         _contentType = MessageContentType.unknown;
     }
@@ -48,6 +52,9 @@ class DateMessage {
         break;
       case MessageContentType.media:
         _contentType = "media";
+        break;
+      case MessageContentType.update:
+        _contentType = "update";
         break;
       default:
         _contentType = "";

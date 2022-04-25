@@ -73,7 +73,7 @@ class ContactsProvider extends ChangeNotifier {
       );
       _selectedUsers = [];
       notifyListeners();
-      _navigation.goToPage(_dateChatPage);
+      _navigation.removeAndGoToPage(_dateChatPage);
     } catch (e) {
       if (kDebugMode) {
         print("contacts_provider.dart - createChat() - Error");

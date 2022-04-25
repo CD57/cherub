@@ -3,15 +3,16 @@ import 'dart:math';
 
 import 'package:cherub/pages/chat_activities/contacts_page.dart';
 import 'package:cherub/pages/date_activities/date_map_page.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/database_service.dart';
+import '../../services/location_service.dart';
 import '../../widgets/top_bar_widget.dart';
 import '../../widgets/user_input_widget.dart';
 import '../../widgets/custom_button_widget.dart';
@@ -32,6 +33,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late AuthProvider _auth;
   late NavigationService _nav;
   late DatabaseService _dbService;
+  late LocationService _locationService;
 
   final String _randomUid = Random().nextInt(1000).toString();
   String _datePlan = "None";
@@ -42,9 +44,18 @@ class _DateSetupPageState extends State<DateSetupPage> {
   Timestamp _dateTimeTS = Timestamp.fromDate(DateTime.now());
   Timestamp _checkinTimeTS = Timestamp.fromDate(DateTime.now());
   DateTime? _dayOfDateDT;
-  late LatLng _pickedLocation;
-
+  late String _pickedLocation;
+  late LatLng _currentLocation;
   final _dateDetailsFormKey = GlobalKey<FormState>();
+
+  @override
+  void didChangeDependencies() {
+    _dbService = GetIt.instance.get<DatabaseService>();
+    _nav = GetIt.instance.get<NavigationService>();
+    _locationService = GetIt.instance.get<LocationService>();
+    super.didChangeDependencies();
+    getLocation();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +64,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
     }
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-    _dbService = GetIt.instance.get<DatabaseService>();
-    _nav = GetIt.instance.get<NavigationService>();
     _auth = Provider.of<AuthProvider>(context);
-
     return _buildUI();
   }
 
@@ -242,11 +250,14 @@ class _DateSetupPageState extends State<DateSetupPage> {
           _dateDetailsFormKey.currentState!.save();
           _pickedLocation = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const DateMap()),
+            MaterialPageRoute(
+                builder: (context) =>
+                    DateMap(currentPosition: _currentLocation)),
           );
           try {
             //Create Date Details
-            await _dbService.dateDb.createDateDetails(_auth.user.userId, _randomUid, {
+            await _dbService.dateDb
+                .createDateDetails(_auth.user.userId, _randomUid, {
               "uid": _randomUid,
               "hostUid": _auth.user.userId,
               "dateUid": widget.dateID,
@@ -254,7 +265,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
               "dayOfDate": _dayOfDateTS,
               "dateTime": _dateTimeTS,
               "checkInTime": _checkinTimeTS,
-              "dateGPS": _pickedLocation.toString(),
+              "dateGPS": _pickedLocation,
             });
             if (kDebugMode) {
               print(
@@ -269,6 +280,13 @@ class _DateSetupPageState extends State<DateSetupPage> {
           }
         },
       );
+    });
+  }
+
+  void getLocation() async {
+    LatLng location = await _locationService.getCurrentLocationLatLng();
+    setState(() {
+      _currentLocation = location;
     });
   }
 }

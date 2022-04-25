@@ -121,9 +121,11 @@ class _DatesPageState extends State<DatesPage> {
     bool _isActive = _recepients.any((_d) => _d.wasRecentlyActive());
     String _subtitle = "";
     if (_dateChat.messages.isNotEmpty) {
-      _subtitle = _dateChat.messages.first.type != MessageContentType.text
-          ? "Media Attachment"
-          : _dateChat.messages.first.content;
+      _subtitle = _dateChat.messages.first.type == MessageContentType.text
+          ? _dateChat.messages.first.content
+          : _dateChat.messages.first.type == MessageContentType.media
+              ? "Image Sent"
+              : "Location Update";
     }
     return CustomTileListViewWithActivity(
       height: _deviceHeight * 0.10,

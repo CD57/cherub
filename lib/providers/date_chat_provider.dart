@@ -1,6 +1,7 @@
-// date_chat_provider.dart - Provider for the date chats, sending and retrieving relevant message data 
+// date_chat_provider.dart - Provider for the date chats, sending and retrieving relevant message data
 
 import 'dart:async';
+import 'package:cherub/services/location_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import '../providers/auth_provider.dart';
 import '../models/date_message_model.dart';
 
 class DateChatProvider extends ChangeNotifier {
+  late LocationService _location;
   late DatabaseService _db;
   late StorageService _storage;
   late MediaService _media;
@@ -45,6 +47,7 @@ class DateChatProvider extends ChangeNotifier {
     _storage = GetIt.instance.get<StorageService>();
     _media = GetIt.instance.get<MediaService>();
     _navigation = GetIt.instance.get<NavigationService>();
+    _location = GetIt.instance.get<LocationService>();
     _keyboardVisibilityController = KeyboardVisibilityController();
     listenToMessages();
     listenToKeyboardChanges();
@@ -81,7 +84,8 @@ class DateChatProvider extends ChangeNotifier {
       );
     } catch (e) {
       if (kDebugMode) {
-        print("date_chat_provider.dart - listenToMessages() - Error getting messages.");
+        print(
+            "date_chat_provider.dart - listenToMessages() - Error getting messages.");
         print(e);
       }
     }
@@ -99,7 +103,7 @@ class DateChatProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> sendTextMessage() async {
+  void sendTextMessage() async {
     if (_message != null) {
       DateMessage _messageToSend = DateMessage(
         content: _message!,
@@ -108,6 +112,25 @@ class DateChatProvider extends ChangeNotifier {
         sentTime: DateTime.now(),
       );
       await _db.chatDb.addMessage(_chatId, _messageToSend);
+    }
+  }
+
+  void sendUpdateMessage() async {
+    try {
+      String latLangUpdate = await _location.getCurrentLocation();
+
+      DateMessage _messageToSend = DateMessage(
+        content: latLangUpdate,
+        type: MessageContentType.update,
+        senderID: _auth.user.userId,
+        sentTime: DateTime.now(),
+      );
+      _db.chatDb.addMessage(_chatId, _messageToSend);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error sending image message.");
+        print(e);
+      }
     }
   }
 

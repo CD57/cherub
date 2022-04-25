@@ -134,7 +134,7 @@ class _DateChatPageState extends State<DateChatPage> {
             style: TextStyle(color: Colors.green.shade900),
           ),
         );
-      } 
+      }
     } else {
       return Center(
         child: CircularProgressIndicator(
@@ -147,9 +147,10 @@ class _DateChatPageState extends State<DateChatPage> {
   Widget _sendMessageForm() {
     return Container(
       height: _deviceHeight * 0.06,
+      width: _deviceWidth,
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 20, 133, 43),
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(50),
       ),
       margin: EdgeInsets.symmetric(
         horizontal: _deviceWidth * 0.04,
@@ -165,6 +166,7 @@ class _DateChatPageState extends State<DateChatPage> {
             _messageTextField(),
             _sendMessageButton(),
             _imageMessageButton(),
+            _locationUpdateButton(),
           ],
         ),
       ),
@@ -173,7 +175,7 @@ class _DateChatPageState extends State<DateChatPage> {
 
   Widget _messageTextField() {
     return SizedBox(
-      width: _deviceWidth * 0.65,
+      width: _deviceWidth * 0.5,
       child: CustomInputForm(
           onSaved: (_value) {
             _pageProvider.message = _value;
@@ -206,6 +208,23 @@ class _DateChatPageState extends State<DateChatPage> {
   }
 
   Widget _imageMessageButton() {
+    double _size = _deviceHeight * 0.05;
+    return SizedBox(
+      height: _size,
+      width: _size,
+      child: IconButton(
+        icon: const Icon(
+          Icons.camera_enhance,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          _pageProvider.sendImageMessage();
+        },
+      ),
+    );
+  }
+
+  Widget _locationUpdateButton() {
     double _size = _deviceHeight * 0.04;
     return SizedBox(
       height: _size,
@@ -213,9 +232,9 @@ class _DateChatPageState extends State<DateChatPage> {
       child: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 20, 133, 43),
         onPressed: () {
-          _pageProvider.sendImageMessage();
+          _pageProvider.sendUpdateMessage();
         },
-        child: const Icon(Icons.camera_enhance),
+        child: const Icon(Icons.location_on_rounded),
       ),
     );
   }

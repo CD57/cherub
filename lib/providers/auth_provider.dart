@@ -18,6 +18,7 @@ class AuthProvider extends ChangeNotifier {
   late UserModel user;
   late bool loggedIn = false;
   late bool authorised = false;
+  late bool activeDate = false;
   final CollectionReference<Map<String, dynamic>> usersRef =
       FirebaseFirestore.instance.collection('Users');
 

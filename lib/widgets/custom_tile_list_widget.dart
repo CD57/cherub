@@ -168,12 +168,19 @@ class CustomTileListViewChat extends StatelessWidget {
                   height: deviceHeight * 0.06,
                   width: deviceWidth,
                 )
-              : MediaBubble(
+              : message.type == MessageContentType.media 
+              ? MediaBubble(
                   isOwnMessage: isOwnMessage,
-                  message: message,
+                  media: message,
                   height: deviceHeight * 0.30,
                   width: deviceWidth * 0.55,
-                ),
+                )
+              : UpdateBubble(
+                  isOwnMessage: isOwnMessage,
+                  update: message,
+                  height: deviceHeight * 0.30,
+                  width: deviceWidth * 0.55,
+                )
         ],
       ),
     );
