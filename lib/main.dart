@@ -4,6 +4,7 @@
 import 'package:cherub/pages/chat_activities/contacts_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 import 'pages/login_and_registration/splash_page.dart';
@@ -36,6 +37,7 @@ class MainApp extends StatelessWidget {
       print("main.dart - build");
     }
     // Multiprovider allows access to providers to all widgets within MaterialApp
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(
@@ -48,7 +50,8 @@ class MainApp extends StatelessWidget {
         title: 'Cherub',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
-            primary: const Color.fromARGB(255, 20, 133, 43), secondary: const Color.fromRGBO(163, 235, 177, 1.0)),
+              primary: const Color.fromARGB(255, 20, 133, 43),
+              secondary: const Color.fromRGBO(163, 235, 177, 1.0)),
           primaryColor: Colors.green[900],
           backgroundColor: const Color.fromRGBO(163, 235, 177, 1.0),
           scaffoldBackgroundColor: const Color.fromRGBO(163, 235, 177, 1.0),
@@ -65,5 +68,11 @@ class MainApp extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a background message");
   }
 }

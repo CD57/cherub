@@ -21,7 +21,6 @@ class DateDetailsPage extends StatefulWidget {
 
 class _DateDetailsState extends State<DateDetailsPage> {
   late final NavigationService _nav = GetIt.instance.get<NavigationService>();
-  late DateDetailsProvider _dateProvider;
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
@@ -58,7 +57,6 @@ class _DateDetailsState extends State<DateDetailsPage> {
   Widget _buildUI() {
     return Material(child: Builder(
       builder: (BuildContext _context) {
-        _dateProvider = _context.watch<DateDetailsProvider>();
         return Scaffold(
           resizeToAvoidBottomInset: false,
           body: Container(

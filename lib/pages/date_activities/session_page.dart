@@ -5,7 +5,6 @@ import 'package:cherub/models/location_data_model.dart';
 import 'package:cherub/providers/session_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
 import '../../widgets/custom_tile_list_widget.dart';
 import '../../widgets/top_bar_widget.dart';
 
@@ -21,7 +20,6 @@ class SessionPage extends StatefulWidget {
 class _SessionPageState extends State<SessionPage> {
   late double _deviceHeight;
   late double _deviceWidth;
-  late AuthProvider _auth;
   late SessionProvider _sessionProvider;
   late GlobalKey<FormState> _updateFormState;
   late ScrollController _locationsListViewController;
@@ -37,7 +35,6 @@ class _SessionPageState extends State<SessionPage> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-    _auth = Provider.of<AuthProvider>(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<SessionProvider>(
