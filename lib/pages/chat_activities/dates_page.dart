@@ -50,7 +50,9 @@ class _DatesPageState extends State<DatesPage> {
   Widget _buildUI() {
     return Builder(
       builder: (BuildContext _context) {
-        _pageProvider = _context.watch<DatesPageProvider>();
+        if (mounted) {
+          _pageProvider = _context.watch<DatesPageProvider>();
+        }
         return Container(
           padding: EdgeInsets.symmetric(
             horizontal: _deviceWidth * 0.03,
