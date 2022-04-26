@@ -1,7 +1,6 @@
 // main.dart - Cherub Application - C18465384
 
 import 'package:flutter/foundation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +34,18 @@ class MainApp extends StatelessWidget {
     if (kDebugMode) {
       print("main.dart - build");
     }
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+      if (kDebugMode) {
+        print("New Token Created - " + fcmToken.toString());
+      }
+      // Note: This callback is fired at each app startup and whenever a new
+      // token is generated.
+    }).onError((err) {
+      if (kDebugMode) {
+        print("Messaging Token Error - " + err.toString());
+      }
+    });
+
     //Multiprovider allows access to providers to all widgets within MaterialApp
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     return MultiProvider(

@@ -1,10 +1,10 @@
 // auth_provider.dart - Provider for the apps authentication, managing account data.
 
+import 'package:cherub/services/notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../services/database_service.dart';
@@ -16,6 +16,7 @@ class AuthProvider extends ChangeNotifier {
   late final NavigationService _navService;
   late final DatabaseService _dbService;
   late final StorageService _storageService;
+  late final NotificationService _notificationService;
   late UserModel user;
   late bool loggedIn = false;
   late bool authorised = false;
@@ -28,6 +29,7 @@ class AuthProvider extends ChangeNotifier {
     _navService = GetIt.instance.get<NavigationService>();
     _dbService = GetIt.instance.get<DatabaseService>();
     _storageService = GetIt.instance.get<StorageService>();
+    _notificationService = GetIt.instance.get<NotificationService>();
     _auth.authStateChanges().listen((_user) {
       if (_user != null && (_auth.currentUser?.uid == _user.uid)) {
         if (kDebugMode) {
@@ -181,8 +183,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _auth.currentUser!.updateDisplayName(_displayName);
       await _auth.currentUser!.updatePhotoURL(_photoURL);
-      await _auth.signInWithEmailAndPassword(
-          email: _email, password: _password).then((value) => setToken(value.user!.uid));
+      await _auth
+          .signInWithEmailAndPassword(email: _email, password: _password)
+          .then((value) => _notificationService.setToken(value.user!.uid));
       if (kDebugMode) {
         print("auth_provider.dart - setAccountDetails - " +
             _auth.currentUser!.displayName.toString());
@@ -210,17 +213,5 @@ class AuthProvider extends ChangeNotifier {
         print(e);
       }
     }
-  }
-
-  setToken(String uid) async {
-    await FirebaseMessaging.instance.getToken().then((token) async {
-      if (kDebugMode) {
-        print('token: $token');
-      }
-      await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(uid)
-          .update({'pushToken': token});
-    }).catchError((err) {});
   }
 }

@@ -1,5 +1,6 @@
 // splash_page.dart - App page containing splash screen with initializing app services
 import 'package:cherub/services/location_service.dart';
+import 'package:cherub/services/notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -108,6 +109,12 @@ class _SplashPageState extends State<SplashPage> {
     );
     if (kDebugMode) {
       print("LocationService Ready");
+    }
+    GetIt.instance.registerSingleton<NotificationService>(
+      NotificationService(),
+    );
+    if (kDebugMode) {
+      print("NotificationService Ready");
     }
   }
 }

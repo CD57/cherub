@@ -1,5 +1,4 @@
 import 'package:cherub/models/date_details_model.dart';
-import 'package:cherub/providers/date_details_provider.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -44,14 +43,7 @@ class _DateDetailsState extends State<DateDetailsPage> {
     if (kDebugMode) {
       print("date_details_page.dart - build");
     }
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<DateDetailsProvider>(
-          create: (_) => DateDetailsProvider(_auth),
-        ),
-      ],
-      child: _buildUI(),
-    );
+    return _buildUI();
   }
 
   Widget _buildUI() {
@@ -86,7 +78,7 @@ class _DateDetailsState extends State<DateDetailsPage> {
     double latitude = double.parse(latLng[0]);
     double longitude = double.parse(latLng[1]);
     LatLng _location = LatLng(latitude, longitude);
-    
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(

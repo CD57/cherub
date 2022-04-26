@@ -3,10 +3,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/media_service.dart';
 import '../../widgets/custom_button_widget.dart';
 import '../../widgets/profile_picture_widget.dart';
 import '../../widgets/user_input_widget.dart';
@@ -80,34 +78,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _profilePictureField() {
-    return GestureDetector(
-      onTap: () {
-        GetIt.instance.get<MediaService>().getImageFromGallery().then(
-          (_file) {
-            setState(
-              () {
-                _profileImage = _file;
-              },
-            );
-          },
-        );
-      },
-      child: () {
-        if (_profileImage != null) {
-          return ProfilePictureFile(
-            key: UniqueKey(),
-            image: _profileImage!,
-            size: _deviceHeight * 0.15,
-          );
-        } else {
-          return ProfilePictureNetwork(
-            key: UniqueKey(),
-            image:
-                "https://firebasestorage.googleapis.com/v0/b/cherub-app.appspot.com/o/images%2Fdefault%2FNoPicture%2FUser-NoProfile-PNG.png?alt=media&token=4e098702-0f8c-4eb4-b670-9ac2035dbe3c",
-            size: _deviceHeight * 0.15,
-          );
-        }
-      }(),
+    return ProfilePictureNetwork(
+      key: UniqueKey(),
+      image:
+          "https://firebasestorage.googleapis.com/v0/b/cherub-app.appspot.com/o/images%2Fdefault%2FNoPicture%2FUser-NoProfile-PNG.png?alt=media&token=4e098702-0f8c-4eb4-b670-9ac2035dbe3c",
+      size: _deviceHeight * 0.15,
     );
   }
 

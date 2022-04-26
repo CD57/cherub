@@ -9,8 +9,6 @@ import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../providers/auth_provider.dart';
 import 'chat_activities/dates_page.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -34,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildUI() {
-    UserModel currentUser = _auth.user;
+    late UserModel currentUser = _auth.user;
     late final List<Widget> _pages = [
       const DatesMenuPage(),
       const DatesPage(),

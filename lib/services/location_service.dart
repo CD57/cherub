@@ -4,10 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
 class LocationService {
   late Position _currentPosition;
-  late LatLng _currentLatLng; 
+  late final LatLng _temp = const LatLng(10, 10);
 
   getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -52,11 +51,10 @@ class LocationService {
       await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high)
           .then((Position position) async {
-        _currentLatLng = LatLng(position.latitude, position.longitude);
         if (kDebugMode) {
           print('location_Service - Current Locations: $_currentPosition');
         }
-        return _currentLatLng;
+        return LatLng(position.latitude, position.longitude);
       }).catchError((e) {
         if (kDebugMode) {
           print(e);
@@ -70,6 +68,6 @@ class LocationService {
     if (kDebugMode) {
       print("Failed to get location");
     }
-    return _currentLatLng;
+    return _temp;
   }
 }

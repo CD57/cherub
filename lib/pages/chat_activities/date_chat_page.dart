@@ -2,8 +2,10 @@
 
 import 'package:cherub/models/date_chat_model.dart';
 import 'package:cherub/widgets/user_input_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../models/date_message_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/date_chat_provider.dart';
@@ -34,6 +36,7 @@ class _DateChatPageState extends State<DateChatPage> {
     super.initState();
     _messageFormState = GlobalKey<FormState>();
     _messagesListViewController = ScrollController();
+    subscribeToDate();
   }
 
   @override
@@ -237,5 +240,16 @@ class _DateChatPageState extends State<DateChatPage> {
         child: const Icon(Icons.location_on_rounded),
       ),
     );
+  }
+
+  void subscribeToDate() async {
+    await FirebaseMessaging.instance
+        .subscribeToTopic(widget.dateChat.uid)
+        .then((value) => {
+              // ignore: avoid_print
+              print("subscribeToDate(): User " +
+                  _auth.user.username +
+                  " subscribed to date")
+            });
   }
 }
