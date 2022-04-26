@@ -27,7 +27,7 @@ class _UserSearchState extends State<UserSearchPage> {
   bool loadingBool = true;
   bool searchingBool = false;
   bool loadRequestsBool = false;
- 
+
   @override
   void didChangeDependencies() {
     if (kDebugMode) {
@@ -48,7 +48,8 @@ class _UserSearchState extends State<UserSearchPage> {
       print("user_search_page.dart - handleFriendRequests()");
     }
     // Get list of User ID's that sent a friend request and empty current friendRequestWidgetList
-    List<String> friendRequests = await _dbService.friendDb.getFriendRequests(_uid);
+    List<String> friendRequests =
+        await _dbService.friendDb.getFriendRequests(_uid);
     List<UserModel> tempFriendRequestsUsersList = [];
     friendRequestWidgetList = [];
 
@@ -135,10 +136,12 @@ class _UserSearchState extends State<UserSearchPage> {
       }
     }
     // Update main widget list and set loadingBool to false to indicate data has been retrieved
-    setState(() {
-      friendsWidgetList = friendsWidgetList;
-      loadingBool = false;
-    });
+    if (mounted) {
+      setState(() {
+        friendsWidgetList = friendsWidgetList;
+        loadingBool = false;
+      });
+    }
   }
 
   // Retrieves requested display name from database using usersRef

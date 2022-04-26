@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get_it/get_it.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../services/database_service.dart';
@@ -181,7 +182,7 @@ class AuthProvider extends ChangeNotifier {
       await _auth.currentUser!.updateDisplayName(_displayName);
       await _auth.currentUser!.updatePhotoURL(_photoURL);
       await _auth.signInWithEmailAndPassword(
-          email: _email, password: _password);
+          email: _email, password: _password).then((value) => setToken(value.user!.uid));
       if (kDebugMode) {
         print("auth_provider.dart - setAccountDetails - " +
             _auth.currentUser!.displayName.toString());
@@ -209,5 +210,17 @@ class AuthProvider extends ChangeNotifier {
         print(e);
       }
     }
+  }
+
+  setToken(String uid) async {
+    await FirebaseMessaging.instance.getToken().then((token) async {
+      if (kDebugMode) {
+        print('token: $token');
+      }
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(uid)
+          .update({'pushToken': token});
+    }).catchError((err) {});
   }
 }

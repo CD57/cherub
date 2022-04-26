@@ -1,8 +1,7 @@
 // main.dart - Cherub Application - C18465384
 
-// ignore: unused_import
-import 'package:cherub/pages/chat_activities/contacts_page.dart';
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +35,7 @@ class MainApp extends StatelessWidget {
     if (kDebugMode) {
       print("main.dart - build");
     }
-    // Multiprovider allows access to providers to all widgets within MaterialApp
+    //Multiprovider allows access to providers to all widgets within MaterialApp
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     return MultiProvider(
       providers: [
@@ -73,6 +72,7 @@ class MainApp extends StatelessWidget {
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
-    print("Handling a background message");
+    print(
+        "main.dart - firebaseMessagingBackgroundHandler - Handling a background message");
   }
 }

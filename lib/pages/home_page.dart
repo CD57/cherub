@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../providers/auth_provider.dart';
 import 'chat_activities/dates_page.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -39,6 +41,7 @@ class _HomePageState extends State<HomePage> {
       const UserSearchPage(),
       UserProfilePage(aUser: currentUser)
     ];
+
     return Scaffold(
       body: _pages[_currentPage],
       bottomNavigationBar: BottomNavigationBar(
@@ -52,13 +55,13 @@ class _HomePageState extends State<HomePage> {
         },
         items: const [
           BottomNavigationBarItem(
-            label: "Create Date",
+            label: "Dates Menu",
             icon: Icon(
               Icons.date_range,
             ),
           ),
           BottomNavigationBarItem(
-            label: "Dates",
+            label: "My Dates",
             icon: Icon(
               Icons.chat_bubble_sharp,
             ),
