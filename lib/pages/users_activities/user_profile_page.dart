@@ -1,15 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cherub/models/user_model.dart';
+import 'package:cherub/services/database_service.dart';
+import 'package:cherub/services/media_service.dart';
 import 'package:cherub/services/navigation_service.dart';
+import 'package:cherub/services/storage_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../../providers/auth_provider.dart';
 
 class UserProfilePage extends StatefulWidget {
-  //final NavigationService _nav = GetIt.instance.get<NavigationService>();
   final UserModel aUser;
   const UserProfilePage({Key? key, required this.aUser}) : super(key: key);
 
@@ -19,6 +22,9 @@ class UserProfilePage extends StatefulWidget {
 
 class _UserProfileState extends State<UserProfilePage> {
   final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  final MediaService _media = GetIt.instance.get<MediaService>();
+  final DatabaseService _db = GetIt.instance.get<DatabaseService>();
+  final StorageService _storage = GetIt.instance.get<StorageService>();
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
@@ -49,10 +55,7 @@ class _UserProfileState extends State<UserProfilePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            TopBar(
-              widget.aUser.name,
-              primaryAction: topBarButton()
-            ),
+            TopBar(widget.aUser.name, primaryAction: topBarButton()),
             buildProfile(),
           ],
         ),
@@ -129,7 +132,7 @@ class _UserProfileState extends State<UserProfilePage> {
   profileButton() {
     bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
     if (isProfileOwner) {
-      return buildButton(text: "Edit Profile", function: editProfile);
+      return buildButton(text: "Upload Picture", function: editProfile);
     } else {
       return buildButton(text: "Send Message", function: sendMessage);
     }
@@ -186,9 +189,33 @@ class _UserProfileState extends State<UserProfilePage> {
     );
   }
 
-  editProfile() {
+  editProfile() async {
     if (kDebugMode) {
       print("User Profile Edit Button Pressed");
+    }
+    XFile? image;
+    String? imageURL;
+    await _media.getPhotoFromCamera().then((value) => image = value);
+    if (image != null) {
+      if (kDebugMode) {
+        print("Image Picked");
+      }
+
+      try {
+        await _storage
+            .saveProfilePicture(_auth.user.userId, image!)
+            .then((value) => imageURL = value);
+        await _db.userDb.updateUserPhoto(_auth.user.userId, imageURL!);
+        await _auth.authUser.currentUser!.updatePhotoURL(imageURL!);
+      } on Exception catch (e) {
+        if (kDebugMode) {
+          print("Error: " + e.toString());
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        print("No Image Picked");
+      }
     }
   }
 

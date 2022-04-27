@@ -13,7 +13,8 @@ class MediaService {
 
   Future<XFile?> getPhotoFromCamera() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
     return photo;
   }
 }

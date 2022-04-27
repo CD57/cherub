@@ -73,7 +73,25 @@ class UserDatabase {
     }
   }
 
-  // Delete Date Session
+  // Update User Picture
+  Future<void> updateUserPhoto(String _uid, String _imageURL) async {
+    if (kDebugMode) {
+      print("user_database.dart - updateUserPhoto()");
+    }
+    try {
+      await _db.collection(users).doc(_uid).update(
+        {
+          "imageURL": _imageURL,
+        },
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
+  // Delete User By ID
   Future<void> deleteUserByID(String _uid) async {
     if (kDebugMode) {
       print("user_database.dart - deleteUserByID()");

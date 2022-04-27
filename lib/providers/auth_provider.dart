@@ -12,7 +12,7 @@ import '../services/navigation_service.dart';
 import '../services/storage_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  late final FirebaseAuth _auth;
+  late final FirebaseAuth authUser;
   late final NavigationService _navService;
   late final DatabaseService _dbService;
   late final StorageService _storageService;
@@ -25,13 +25,13 @@ class AuthProvider extends ChangeNotifier {
       FirebaseFirestore.instance.collection('Users');
 
   AuthProvider() {
-    _auth = FirebaseAuth.instance;
+    authUser = FirebaseAuth.instance;
     _navService = GetIt.instance.get<NavigationService>();
     _dbService = GetIt.instance.get<DatabaseService>();
     _storageService = GetIt.instance.get<StorageService>();
     _notificationService = GetIt.instance.get<NotificationService>();
-    _auth.authStateChanges().listen((_user) {
-      if (_user != null && (_auth.currentUser?.uid == _user.uid)) {
+    authUser.authStateChanges().listen((_user) {
+      if (_user != null && (authUser.currentUser?.uid == _user.uid)) {
         if (kDebugMode) {
           print("auth_provider.dart - AuthProvider() - User Found");
         }
@@ -87,11 +87,11 @@ class AuthProvider extends ChangeNotifier {
       print("auth_provider.dart - emailLogin()");
     }
     try {
-      await _auth.signInWithEmailAndPassword(
+      await authUser.signInWithEmailAndPassword(
           email: _email, password: _password);
       if (kDebugMode) {
         print("auth_provider.dart - emailLogin() - Signed In: " +
-            _auth.currentUser!.email.toString());
+            authUser.currentUser!.email.toString());
       }
     } on FirebaseAuthException {
       if (kDebugMode) {
@@ -117,7 +117,7 @@ class AuthProvider extends ChangeNotifier {
         print(
             "auth_provider.dart - userRegister() - Trying to Create New User in Firebase Auth");
       }
-      UserCredential _credentials = await _auth.createUserWithEmailAndPassword(
+      UserCredential _credentials = await authUser.createUserWithEmailAndPassword(
           email: _email, password: _password);
       if (kDebugMode) {
         print(
@@ -181,14 +181,14 @@ class AuthProvider extends ChangeNotifier {
       print("auth_provider.dart - setAccountDetails");
     }
     try {
-      await _auth.currentUser!.updateDisplayName(_displayName);
-      await _auth.currentUser!.updatePhotoURL(_photoURL);
-      await _auth
+      await authUser.currentUser!.updateDisplayName(_displayName);
+      await authUser.currentUser!.updatePhotoURL(_photoURL);
+      await authUser
           .signInWithEmailAndPassword(email: _email, password: _password)
           .then((value) => _notificationService.setToken(value.user!.uid));
       if (kDebugMode) {
         print("auth_provider.dart - setAccountDetails - " +
-            _auth.currentUser!.displayName.toString());
+            authUser.currentUser!.displayName.toString());
       }
     } on FirebaseAuthException {
       if (kDebugMode) {
@@ -207,7 +207,7 @@ class AuthProvider extends ChangeNotifier {
       print("auth_provider.dart - logout()");
     }
     try {
-      await _auth.signOut();
+      await authUser.signOut();
     } catch (e) {
       if (kDebugMode) {
         print(e);
