@@ -117,7 +117,7 @@ class DateChatProvider extends ChangeNotifier {
 
   void sendUpdateMessage() async {
     try {
-      String latLangUpdate = await _location.getCurrentLocation();
+      String latLangUpdate = await _location.getCurrentLocationString();
 
       DateMessage _messageToSend = DateMessage(
         content: latLangUpdate,

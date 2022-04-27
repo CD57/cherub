@@ -37,7 +37,7 @@ class _DateMapState extends State<DateMap> {
       print("date_details_page.dart - didChangeDependencies()");
     }
     super.didChangeDependencies();
-    String location = await _locationService.getCurrentLocation();
+    String location = await _locationService.getCurrentLocationString();
     List<String> latLng = location.split(",");
     LatLng _locationLatLng = LatLng(double.parse(latLng[0]), double.parse(latLng[1]));
 

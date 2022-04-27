@@ -3,6 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 import 'pages/login_and_registration/splash_page.dart';
@@ -12,6 +13,29 @@ import 'providers/auth_provider.dart';
 import 'services/navigation_service.dart';
 
 void main() {
+  AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+            channelGroupKey: 'basic_channel_group',
+            channelKey: 'basic_channel',
+            channelName: 'Basic notifications',
+            channelDescription: 'Notification channel for basic tests',
+            channelShowBadge: true,
+            importance: NotificationImportance.High,
+            defaultColor: const Color.fromARGB(255, 20, 133, 43),
+            ledColor: Colors.white),
+        NotificationChannel(
+          channelKey: 'scheduled_channel',
+          channelName: 'Scheduled Notifications',
+          channelDescription: 'Notification channel for scheduled tests',
+          channelShowBadge: true,
+          defaultColor: const Color.fromARGB(255, 91, 189, 25),
+          locked: true,
+          importance: NotificationImportance.High,
+        ),
+      ],
+      debug: true);
   runApp(
     SplashPage(
         key: UniqueKey(),
@@ -38,11 +62,14 @@ class MainApp extends StatelessWidget {
       if (kDebugMode) {
         print("New Token Created - " + fcmToken.toString());
       }
-      // Note: This callback is fired at each app startup and whenever a new
-      // token is generated.
     }).onError((err) {
       if (kDebugMode) {
         print("Messaging Token Error - " + err.toString());
+      }
+    });
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
       }
     });
 

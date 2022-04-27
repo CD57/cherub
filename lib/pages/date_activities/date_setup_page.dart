@@ -13,6 +13,7 @@ import 'package:get_it/get_it.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/database_service.dart';
 import '../../services/location_service.dart';
+import '../../services/notification_service.dart';
 import '../../widgets/top_bar_widget.dart';
 import '../../widgets/user_input_widget.dart';
 import '../../widgets/custom_button_widget.dart';
@@ -34,26 +35,32 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late NavigationService _nav;
   late DatabaseService _dbService;
   late LocationService _locationService;
+  late NotificationService _notifications;
 
   final String _randomUid = Random().nextInt(1000).toString();
-  String _datePlan = "None";
-  String _dayOfDateText = "None Selected";
-  String _dateTimeText = "None Selected";
-  String _checkInTimeText = "None Selected";
-  Timestamp _dayOfDateTS = Timestamp.fromDate(DateTime.now());
-  Timestamp _dateTimeTS = Timestamp.fromDate(DateTime.now());
-  Timestamp _checkinTimeTS = Timestamp.fromDate(DateTime.now());
-  DateTime? _dayOfDateDT;
+  late String _datePlan = "None";
+  late String _dayOfDateText = "None Selected";
+  late String _dateTimeText = "None Selected";
+  late String _checkInTimeText = "None Selected";
+  late Timestamp _dayOfDateTS = Timestamp.fromDate(DateTime.now());
+  late Timestamp _dateTimeTS = Timestamp.fromDate(DateTime.now());
+  late Timestamp _checkinTimeTS = Timestamp.fromDate(DateTime.now());
+  late DateTime? _dayOfDateDT;
+  late DateTime? _dateDT;
+  late DateTime? _checkinDT;
+  // late TimeOfDay? checkInTime;
+  // late TimeOfDay? dateTime;
   late String _pickedLocation;
   late LatLng _currentLocation;
   final _dateDetailsFormKey = GlobalKey<FormState>();
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     _dbService = GetIt.instance.get<DatabaseService>();
     _nav = GetIt.instance.get<NavigationService>();
     _locationService = GetIt.instance.get<LocationService>();
-    super.didChangeDependencies();
+    _notifications = GetIt.instance.get<NotificationService>();
     getLocation();
   }
 
@@ -182,12 +189,13 @@ class _DateSetupPageState extends State<DateSetupPage> {
                   );
                   setState(() {
                     if (dateTime != null && _dayOfDateDT != null) {
-                      _dateTimeTS = Timestamp.fromDate(DateTime(
+                      _dateDT = DateTime(
                           _dayOfDateDT!.year,
                           _dayOfDateDT!.month,
                           _dayOfDateDT!.day,
                           dateTime.hour,
-                          dateTime.minute));
+                          dateTime.minute);
+                      _dateTimeTS = Timestamp.fromDate(_dateDT!);
                       _dateTimeText = dateTime.hour.toString() +
                           ":" +
                           dateTime.minute.toString();
@@ -214,12 +222,13 @@ class _DateSetupPageState extends State<DateSetupPage> {
                   );
                   setState(() {
                     if (checkInTime != null && _dayOfDateDT != null) {
-                      _checkinTimeTS = Timestamp.fromDate(DateTime(
+                      _checkinDT = DateTime(
                           _dayOfDateDT!.year,
                           _dayOfDateDT!.month,
                           _dayOfDateDT!.day,
                           checkInTime.hour,
-                          checkInTime.minute));
+                          checkInTime.minute);
+                      _checkinTimeTS = Timestamp.fromDate(_checkinDT!);
                       _checkInTimeText = checkInTime.hour.toString() +
                           ":" +
                           checkInTime.minute.toString();
@@ -271,6 +280,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
               print(
                   "date_setup_page.dart - createDate() - Date Details Created");
             }
+            await createNotifications();
             _nav.removeAndGoToPage(ContactsPage(dateUid: _randomUid));
           } catch (e) {
             if (kDebugMode) {
@@ -288,5 +298,30 @@ class _DateSetupPageState extends State<DateSetupPage> {
     setState(() {
       _currentLocation = location;
     });
+  }
+
+  createNotifications() async {
+    String text;
+    try {
+      text = 'Your check-in time is at ' +
+          _checkinDT!.hour.toString() +
+          ":" +
+          _checkinDT!.minute.toString();
+      await _notifications.createScheduledReminder(_checkinDT!, text);
+
+      text = 'Your date starts at ' +
+          _dateDT!.hour.toString() +
+          ":" +
+          _dateDT!.minute.toString();
+      await _notifications.createScheduledReminder(_dateDT!, text);
+      if (kDebugMode) {
+        print("date_setup_page.dart - createNotifications - Notifications set");
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print("date_setup_page.dart - createNotifications - Error: " +
+            e.toString());
+      }
+    }
   }
 }

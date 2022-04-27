@@ -1,5 +1,6 @@
 import 'package:cherub/models/date_details_model.dart';
 import 'package:cherub/services/navigation_service.dart';
+import 'package:cherub/services/notification_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -20,6 +21,8 @@ class DateDetailsPage extends StatefulWidget {
 
 class _DateDetailsState extends State<DateDetailsPage> {
   late final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  late final NotificationService _notifications =
+      GetIt.instance.get<NotificationService>();
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
@@ -211,11 +214,11 @@ class _DateDetailsState extends State<DateDetailsPage> {
     );
   }
 
-  startDate() {
+  startDate() async {
     if (kDebugMode) {
       print("Start Date Button Pressed");
     }
-    //_dateProvider.createAndGoToSession(widget.aDate.uid);
+    await _notifications.createBeginNotification();
   }
 
   cancelDate() {
