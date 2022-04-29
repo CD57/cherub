@@ -48,8 +48,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late DateTime? _dayOfDateDT;
   late DateTime? _dateDT;
   late DateTime? _checkinDT;
-  // late TimeOfDay? checkInTime;
-  // late TimeOfDay? dateTime;
   late String _pickedLocation;
   late LatLng _currentLocation;
   final _dateDetailsFormKey = GlobalKey<FormState>();

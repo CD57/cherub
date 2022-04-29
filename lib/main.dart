@@ -13,29 +13,7 @@ import 'providers/auth_provider.dart';
 import 'services/navigation_service.dart';
 
 void main() {
-  AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-            channelGroupKey: 'basic_channel_group',
-            channelKey: 'basic_channel',
-            channelName: 'Basic notifications',
-            channelDescription: 'Notification channel for basic tests',
-            channelShowBadge: true,
-            importance: NotificationImportance.High,
-            defaultColor: const Color.fromARGB(255, 20, 133, 43),
-            ledColor: Colors.white),
-        NotificationChannel(
-          channelKey: 'scheduled_channel',
-          channelName: 'Scheduled Notifications',
-          channelDescription: 'Notification channel for scheduled tests',
-          channelShowBadge: true,
-          defaultColor: const Color.fromARGB(255, 91, 189, 25),
-          locked: true,
-          importance: NotificationImportance.High,
-        ),
-      ],
-      debug: true);
+  notificationInit();
   runApp(
     SplashPage(
         key: UniqueKey(),
@@ -84,6 +62,7 @@ class MainApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Cherub',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -106,6 +85,32 @@ class MainApp extends StatelessWidget {
       ),
     );
   }
+}
+
+void notificationInit() async {
+  await AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+            channelGroupKey: 'basic_channel_group',
+            channelKey: 'basic_channel',
+            channelName: 'Basic notifications',
+            channelDescription: 'Notification channel for basic tests',
+            channelShowBadge: true,
+            importance: NotificationImportance.High,
+            defaultColor: const Color.fromARGB(255, 20, 133, 43),
+            ledColor: Colors.white),
+        NotificationChannel(
+          channelKey: 'scheduled_channel',
+          channelName: 'Scheduled Notifications',
+          channelDescription: 'Notification channel for scheduled tests',
+          channelShowBadge: true,
+          defaultColor: const Color.fromARGB(255, 91, 189, 25),
+          locked: true,
+          importance: NotificationImportance.High,
+        ),
+      ],
+      debug: true);
 }
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {

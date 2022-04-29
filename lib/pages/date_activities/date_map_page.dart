@@ -65,7 +65,7 @@ class _DateMapState extends State<DateMap> {
                   target: widget.currentPosition,
                   zoom: 7.0,
                 ),
-                mapType: MapType.normal,
+                mapType: MapType.hybrid,
                 onMapCreated: (controller) {
                   if (mounted) {
                     if (kDebugMode) {

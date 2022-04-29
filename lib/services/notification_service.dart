@@ -1,4 +1,3 @@
-import 'package:cherub/models/notification_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -107,78 +106,5 @@ class NotificationService {
 
   Future<void> cancelScheduledNotifications() async {
     await AwesomeNotifications().cancelAllSchedules();
-  }
-
-  Future<ScheduledReminder?> pickSchedule(
-    BuildContext context,
-  ) async {
-    List<String> days = [
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
-      'Sun',
-    ];
-    TimeOfDay? timeOfDay;
-    DateTime now = DateTime.now();
-    int? selectedDay;
-
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text(
-              'I want to be reminded every:',
-              textAlign: TextAlign.center,
-            ),
-            content: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 3,
-              children: [
-                for (int index = 0; index < days.length; index++)
-                  ElevatedButton(
-                    onPressed: () {
-                      selectedDay = index + 1;
-                      Navigator.pop(context);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                        Colors.green.shade900,
-                      ),
-                    ),
-                    child: Text(days[index]),
-                  ),
-              ],
-            ),
-          );
-        });
-
-    if (selectedDay != null) {
-      timeOfDay = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.fromDateTime(
-            now.add(
-              const Duration(minutes: 1),
-            ),
-          ),
-          builder: (BuildContext context, Widget? child) {
-            return Theme(
-              data: ThemeData(
-                colorScheme: ColorScheme.light(
-                  primary: Colors.green.shade900,
-                ),
-              ),
-              child: child!,
-            );
-          });
-
-      if (timeOfDay != null) {
-        return ScheduledReminder(
-            dayOfTheWeek: selectedDay!, timeOfDay: timeOfDay);
-      }
-    }
-    return null;
   }
 }

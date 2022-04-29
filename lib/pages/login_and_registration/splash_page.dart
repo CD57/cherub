@@ -1,4 +1,7 @@
 // splash_page.dart - App page containing splash screen with initializing app services
+import 'dart:io';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cherub/services/location_service.dart';
 import 'package:cherub/services/notification_service.dart';
 import 'package:flutter/foundation.dart';
@@ -44,6 +47,7 @@ class _SplashPageState extends State<SplashPage> {
       print("splash_page.dart - build - begin");
     }
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Cherub',
       theme: ThemeData(
         backgroundColor: const Color.fromRGBO(163, 235, 177, 1.0),
@@ -74,6 +78,7 @@ class _SplashPageState extends State<SplashPage> {
       const PhoneProviderConfiguration(),
     ]);
     _registerServices();
+    _initAwesomeNotifications();
     if (kDebugMode) {
       print("Service Set Up Complete");
     }
@@ -116,5 +121,66 @@ class _SplashPageState extends State<SplashPage> {
     if (kDebugMode) {
       print("NotificationService Ready");
     }
+  }
+
+  void _initAwesomeNotifications() {
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Allow Notifications'),
+            content: const Text('Our app would like to send you notifications'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Don\'t Allow',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              TextButton(
+                  onPressed: () => AwesomeNotifications()
+                      .requestPermissionToSendNotifications()
+                      .then((_) => Navigator.pop(context)),
+                  child: const Text(
+                    'Allow',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ))
+            ],
+          ),
+        );
+      } else {
+        if (kDebugMode) {
+          print("home_page.dart - notifications allowed");
+        }
+      }
+    });
+
+    AwesomeNotifications().createdStream.listen((notification) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Notification Created on ${notification.channelKey}',
+        ),
+      ));
+    });
+
+    AwesomeNotifications().actionStream.listen((notification) {
+      if (notification.channelKey == 'basic_channel' && Platform.isIOS) {
+        AwesomeNotifications().getGlobalBadgeCounter().then(
+              (value) =>
+                  AwesomeNotifications().setGlobalBadgeCounter(value - 1),
+            );
+      }
+    });
   }
 }

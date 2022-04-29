@@ -5,11 +5,9 @@ import 'dart:io';
 import 'package:cherub/pages/date_activities/dates_menu_page.dart';
 import 'package:cherub/pages/users_activities/user_profile_page.dart';
 import 'package:cherub/pages/users_activities/user_search_page.dart';
-import 'package:cherub/services/notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:get_it/get_it.dart';
 import '../models/user_model.dart';
 import '../providers/auth_provider.dart';
 import 'chat_activities/dates_page.dart';
@@ -26,69 +24,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late AuthProvider _auth;
   int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-      if (!isAllowed) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Allow Notifications'),
-            content: const Text('Our app would like to send you notifications'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text(
-                  'Don\'t Allow',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-              TextButton(
-                  onPressed: () => AwesomeNotifications()
-                      .requestPermissionToSendNotifications()
-                      .then((_) => Navigator.pop(context)),
-                  child: const Text(
-                    'Allow',
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ))
-            ],
-          ),
-        );
-      } else {
-        if (kDebugMode) {
-          print("home_page.dart - notifications allowed");
-        }
-      }
-    });
-
-    AwesomeNotifications().createdStream.listen((notification) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          'Notification Created on ${notification.channelKey}',
-        ),
-      ));
-    });
-
-    AwesomeNotifications().actionStream.listen((notification) {
-      if (notification.channelKey == 'basic_channel' && Platform.isIOS) {
-        AwesomeNotifications().getGlobalBadgeCounter().then(
-              (value) =>
-                  AwesomeNotifications().setGlobalBadgeCounter(value - 1),
-            );
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
