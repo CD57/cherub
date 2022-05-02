@@ -188,7 +188,7 @@ class FriendListWidget extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () =>
-                        _nav.removeAndGoToPage(DateSetupPage(dateID: aUser.userId,)),
+                        _nav.removeAndGoToPage(DateSetupPage(datesUserId: aUser.userId,)),
                     child: const Text('Create Date'),
                   ),
                   TextButton(

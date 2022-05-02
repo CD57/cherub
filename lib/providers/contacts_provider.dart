@@ -19,6 +19,7 @@ class ContactsProvider extends ChangeNotifier {
   List<UserModel>? users;
   late UserModel _selectedUser;
   late List<UserModel> _selectedUsers;
+  late String recentDateId;
 
   List<UserModel> get selectedUsers {
     return _selectedUsers;
@@ -43,6 +44,8 @@ class ContactsProvider extends ChangeNotifier {
       bool _isGroup = _selectedUsers.length > 1;
       DocumentReference? _doc = await _database.chatDb.createDateChat(
         {
+          "hostId": _auth.user.userId,
+          "dateId": recentDateId,
           "isGroup": _isGroup,
           "isTyping": false,
           "contacts": _contactsIds,
@@ -65,37 +68,18 @@ class ContactsProvider extends ChangeNotifier {
       DateChatPage _dateChatPage = DateChatPage(
         dateChat: DateChat(
             uid: _doc!.id,
-            userId: _auth.user.userId,
+            dateId: recentDateId,
+            hostId: _auth.user.userId,
+            currrentUserId: _auth.user.userId,
             contacts: _contacts,
             messages: [],
             isTyping: false,
             isGroup: _isGroup),
       );
       _selectedUsers = [];
+      recentDateId = "";
       notifyListeners();
       _navigation.removeAndGoToPage(_dateChatPage);
-    } catch (e) {
-      if (kDebugMode) {
-        print("contacts_provider.dart - createChat() - Error");
-        print(e);
-      }
-    }
-  }
-
-  void addToCherubList(String dateUid) async {
-    if (kDebugMode) {
-      print("contacts_provider.dart - addToCherubList()");
-    }
-    try {
-      //Create Cherub List
-      List<String> _contactsIds =
-          _selectedUsers.map((_user) => _user.userId).toList();
-      _contactsIds.add(_auth.user.userId);
-      await _database.dateDb.createCherubList(_auth.user.userId, dateUid, {
-        "cherubs": _contactsIds,
-      });
-
-      notifyListeners();
     } catch (e) {
       if (kDebugMode) {
         print("contacts_provider.dart - createChat() - Error");

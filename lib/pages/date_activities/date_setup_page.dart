@@ -20,8 +20,8 @@ import '../../widgets/custom_button_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DateSetupPage extends StatefulWidget {
-  const DateSetupPage({Key? key, required this.dateID}) : super(key: key);
-  final String dateID;
+  const DateSetupPage({Key? key, required this.datesUserId}) : super(key: key);
+  final String datesUserId;
   @override
   State<StatefulWidget> createState() {
     return _DateSetupPageState();
@@ -37,7 +37,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
   late LocationService _locationService;
   late NotificationService _notifications;
 
-  final String _randomUid = Random().nextInt(1000).toString();
   late String _datePlan = "None";
   late String _dayOfDateText = "None Selected";
   late String _dateTimeText = "None Selected";
@@ -59,7 +58,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
     _nav = GetIt.instance.get<NavigationService>();
     _locationService = GetIt.instance.get<LocationService>();
     _notifications = GetIt.instance.get<NotificationService>();
-    getLocation();
   }
 
   @override
@@ -154,6 +152,8 @@ class _DateSetupPageState extends State<DateSetupPage> {
                 height: _deviceHeight * 0.065,
                 width: _deviceWidth * 0.65,
                 onPressed: () async {
+                  _currentLocation =
+                      await _locationService.getCurrentLocationLatLng();
                   _dayOfDateDT = (await showDatePicker(
                     context: context,
                     initialDate: DateTime.now(),
@@ -263,23 +263,23 @@ class _DateSetupPageState extends State<DateSetupPage> {
           );
           try {
             //Create Date Details
-            await _dbService.dateDb
-                .createDateDetails(_auth.user.userId, _randomUid, {
-              "uid": _randomUid,
+            DocumentReference dateRef =
+                await _dbService.dateDb.createDateDetails(_auth.user.userId, {
               "hostUid": _auth.user.userId,
-              "dateUid": widget.dateID,
+              "datesUserId": widget.datesUserId,
               "datePlan": _datePlan,
               "dayOfDate": _dayOfDateTS,
               "dateTime": _dateTimeTS,
               "checkInTime": _checkinTimeTS,
               "dateGPS": _pickedLocation,
             });
+            String dateId = dateRef.id;
             if (kDebugMode) {
               print(
                   "date_setup_page.dart - createDate() - Date Details Created");
             }
             await createNotifications();
-            _nav.removeAndGoToPage(ContactsPage(dateUid: _randomUid));
+            _nav.removeAndGoToPage(ContactsPage(dateUid: dateId));
           } catch (e) {
             if (kDebugMode) {
               print("contacts_provider.dart - createDate() - Error");
@@ -288,13 +288,6 @@ class _DateSetupPageState extends State<DateSetupPage> {
           }
         },
       );
-    });
-  }
-
-  void getLocation() async {
-    LatLng location = await _locationService.getCurrentLocationLatLng();
-    setState(() {
-      _currentLocation = location;
     });
   }
 

@@ -1,15 +1,21 @@
 // date_chat_page.dart - App page containing a users chat with either their date or their contacts
 
 import 'package:cherub/models/date_chat_model.dart';
+import 'package:cherub/models/date_details_model.dart';
+import 'package:cherub/services/database_service.dart';
 import 'package:cherub/widgets/user_input_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../models/date_message_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/date_chat_provider.dart';
+import '../../services/navigation_service.dart';
 import '../../widgets/custom_tile_list_widget.dart';
 import '../../widgets/top_bar_widget.dart';
+import '../date_activities/date_details_page.dart';
 
 class DateChatPage extends StatefulWidget {
   final DateChat dateChat;
@@ -25,6 +31,8 @@ class _DateChatPageState extends State<DateChatPage> {
   late double _deviceWidth;
 
   late AuthProvider _auth;
+  late DatabaseService _db;
+  late NavigationService _nav;
   late DateChatProvider _pageProvider;
 
   late GlobalKey<FormState> _messageFormState;
@@ -35,6 +43,8 @@ class _DateChatPageState extends State<DateChatPage> {
     super.initState();
     _messageFormState = GlobalKey<FormState>();
     _messagesListViewController = ScrollController();
+    _db = GetIt.instance.get<DatabaseService>();
+    _nav = GetIt.instance.get<NavigationService>();
     subscribeToDate();
   }
 
@@ -77,11 +87,13 @@ class _DateChatPageState extends State<DateChatPage> {
                     fontSize: 25,
                     primaryAction: IconButton(
                       icon: const Icon(
-                        Icons.delete,
+                        Icons.info,
                         color: Color.fromARGB(255, 20, 133, 43),
                       ),
-                      onPressed: () {
-                        _pageProvider.deleteChat();
+                      onPressed: () async {
+                        DocumentSnapshot dbRef = await _db.dateDb.getDateDetails(widget.dateChat.hostId, widget.dateChat.dateId);
+                        DateDetailsModel aDate = DateDetailsModel.fromDocument(dbRef);
+                        _nav.goToPage(DateDetailsPage(aDate: aDate));
                       },
                     ),
                     secondaryAction: IconButton(

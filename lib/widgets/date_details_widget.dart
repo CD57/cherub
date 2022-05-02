@@ -26,10 +26,10 @@ class DateDetailsListWidget extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () =>
-                dateOptions(context, _dbService, _currentUserId, aDate.dateUid),
+                dateOptions(context, _dbService, _currentUserId, aDate.datesUserId),
             child: ListTile(
               title: Text(
-                "Date with " + aDate.dateUid,
+                "Date with " + aDate.datesUserId,
                 style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold),
               ),

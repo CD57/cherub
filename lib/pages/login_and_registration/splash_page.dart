@@ -166,13 +166,7 @@ class _SplashPageState extends State<SplashPage> {
       }
     });
 
-    AwesomeNotifications().createdStream.listen((notification) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          'Notification Created on ${notification.channelKey}',
-        ),
-      ));
-    });
+    AwesomeNotifications().createdStream.listen((notification) {});
 
     AwesomeNotifications().actionStream.listen((notification) {
       if (notification.channelKey == 'basic_channel' && Platform.isIOS) {

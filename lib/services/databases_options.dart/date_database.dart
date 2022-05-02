@@ -7,117 +7,42 @@ import 'package:flutter/foundation.dart';
 const String users = "Users";
 const String dates = "Dates";
 const String dateDetails = "DateDetails";
-const String cherubs = "Cherubs";
 
 class DateDatabase {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   DateDatabase();
 
   // Create Date Details
-  createDateDetails(
-      String _userId, String _dateId, Map<String, dynamic> _data) async {
+  createDateDetails(String _userId, Map<String, dynamic> _data) async {
     if (kDebugMode) {
       print("date_database.dart - createDateDetails()");
     }
     try {
-      await _db
+      DocumentReference docRef = await _db
           .collection(dates)
           .doc(_userId)
           .collection(dateDetails)
-          .doc(_dateId)
-          .set(_data);
+          .add(_data);
+      return docRef;
     } catch (e) {
       if (kDebugMode) {
         print("date_database - createDateDetails: Error - " + e.toString());
       }
-      return null;
-    }
-  }
-
-  // Create Cherub List
-  createCherubList(
-      String _userId, String _dateId, Map<String, dynamic> _data) async {
-    if (kDebugMode) {
-      print("date_database.dart - createDateDetails()");
-    }
-    try {
-      await _db
+      DocumentReference docRef = await _db
           .collection(dates)
           .doc(_userId)
           .collection(dateDetails)
-          .doc(_dateId)
-          .collection(cherubs)
-          .doc("Cherubs")
-          .set(_data);
-    } catch (e) {
-      if (kDebugMode) {
-        print("date_database - createDateDetails: Error - " + e.toString());
-      }
-      return null;
-    }
-    return null;
-  }
-
-  // // Get Cherub List User Id's
-  // Future<List<String>> getCherubsIds(String _userId, String _dateId) async {
-  //   if (kDebugMode) {
-  //     print("friend_database.dart - getFriendsID()");
-  //   }
-  //   DocumentSnapshot<Map<String, dynamic>> querySnapshot =
-  //       await _db
-  //         .collection(dates)
-  //         .doc(_userId)
-  //         .collection(dateDetails)
-  //         .doc(_dateId)
-  //         .collection(cherubs)
-  //         .doc("Cherubs").get();
-
-  //   List<Date> result = <String>[];
-  //   for (var doc in querySnapshot) {
-  //     if (kDebugMode) {
-  //       print(doc["CherubID"]);
-  //     }
-  //     result.add(doc["CherubID"]);
-  //   }
-  //   return result;
-  // }
-
-  // Get Cherub List
-  Future<DocumentSnapshot<Object?>> getCherubList(
-      String _userId, String _dateId) async {
-    if (kDebugMode) {
-      print("date_database.dart - createDateDetails()");
-    }
-    try {
-      return await _db
-          .collection(dates)
-          .doc(_userId)
-          .collection(dateDetails)
-          .doc(_dateId)
-          .collection(cherubs)
-          .doc("Cherubs")
-          .get();
-    } catch (e) {
-      if (kDebugMode) {
-        print("date_database - createDateDetails: Error - " + e.toString());
-      }
-      return await _db
-          .collection(dates)
-          .doc(_userId)
-          .collection(dateDetails)
-          .doc(_dateId)
-          .collection(cherubs)
-          .doc("Cherubs")
-          .get();
+          .add(_data);
+      return docRef;
     }
   }
 
   // Get Date Details
-  Future<DocumentSnapshot> getDateDetails(String _uid) {
+  Future<DocumentSnapshot> getDateDetails(String _hostUid, String _dateUid) {
     if (kDebugMode) {
       print("date_database.dart - getDateDetailsByID()");
     }
-    return _db.collection(dates).doc(_uid).get();
+    return _db.collection(dates).doc(_hostUid).collection(dateDetails).doc(_dateUid).get();
   }
 
   // Update date chat

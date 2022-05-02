@@ -37,17 +37,19 @@ class DatesPageProvider extends ChangeNotifier {
             (_d) async {
               Map<String, dynamic> _chatData =
                   _d.data() as Map<String, dynamic>;
+
               //Get Users In Chat
               List<UserModel> _contacts = [];
               for (var _uid in _chatData["contacts"]) {
                 DocumentSnapshot _userSnapshot = await _db.userDb.getUserByID(_uid);
                 Map<String, dynamic> _userData =
                     _userSnapshot.data() as Map<String, dynamic>;
-                _userData["userId"] = _userSnapshot.id;
+                _userData["currrentUserId"] = _userSnapshot.id;
                 _contacts.add(
                   UserModel.fromJSON(_userData),
                 );
               }
+
               //Get Last Message For Chat
               List<DateMessage> _messages = [];
               QuerySnapshot _chatMessage = await _db.chatDb.getLastMessage(_d.id);
@@ -60,7 +62,9 @@ class DatesPageProvider extends ChangeNotifier {
               //Return Chat Instance
               return DateChat(
                 uid: _d.id,
-                userId: _auth.user.userId,
+                dateId: _chatData["dateId"],
+                hostId: _chatData["hostId"],
+                currrentUserId: _auth.user.userId,
                 contacts: _contacts,
                 messages: _messages,
                 isTyping: _chatData["isTyping"],

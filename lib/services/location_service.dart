@@ -5,74 +5,40 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationService {
-  late Position _currentPosition;
-  late final LatLng _temp = const LatLng(10, 10);
-
-  getCurrentLocationString() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    } else {
-    String locationString = "10,10";
-    try {
-      await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high)
-          .then((Position position) async {
-        _currentPosition = position;
-        if (kDebugMode) {
-          print('location_Service - Current Locations: $_currentPosition');
-        }
-        locationString = _currentPosition.latitude.toString() +
-            "," +
-            _currentPosition.longitude.toString();
-        return locationString;
-      }).catchError((e) {
-        if (kDebugMode) {
-          print(e);
-        }
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-    if (kDebugMode) {
-      print("Failed to get location, returning 10,10");
-    }
-    return locationString;
-    }
-  }
-
-  getCurrentLocationLatLng() async {
+  Future<LatLng> getCurrentLocationLatLng() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
+    LatLng currentLatLng = const LatLng(10, 10);
     try {
       await Geolocator.getCurrentPosition(
               desiredAccuracy: LocationAccuracy.high)
           .then((Position position) async {
         if (kDebugMode) {
-          print('location_Service - Current Locations: $_currentPosition');
+          print(
+              'location_Service - getCurrentLocationLatLng - Current Locations: $position');
+          print(position.latitude);
         }
-        return LatLng(position.latitude, position.longitude);
+
+        currentLatLng = LatLng(position.latitude, position.longitude);
+        return currentLatLng;
       }).catchError((e) {
         if (kDebugMode) {
-          print(e);
+          print("location_service.dart - getCurrentLocationLatLng: " + e);
         }
       });
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print("location_service.dart - getCurrentLocationLatLng: " +
+            e.toString());
       }
     }
     if (kDebugMode) {
-      print("Failed to get location");
+      print("Returning: $currentLatLng");
     }
-    return _temp;
+    return currentLatLng;
   }
-
-  
 }
 
 class UserLocation {

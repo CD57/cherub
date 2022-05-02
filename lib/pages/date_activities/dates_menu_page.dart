@@ -92,7 +92,7 @@ class _DatesMenuState extends State<DatesMenuPage> {
           height: _deviceHeight * 0.065,
           width: _deviceWidth * 0.8,
           onPressed: () {
-            _nav.goToPage(const DateSetupPage(dateID: "None"));
+            _nav.goToPage(const DateSetupPage(datesUserId: "None"));
           });
     });
   }

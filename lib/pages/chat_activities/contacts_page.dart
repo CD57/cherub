@@ -16,12 +16,11 @@ import '../../widgets/user_input_widget.dart';
 
 final DatabaseService _dbService = GetIt.instance.get<DatabaseService>();
 late List<String> usersFriendUids = [];
-late String _uid;
 
 class ContactsPage extends StatefulWidget {
   final String dateUid;
   const ContactsPage({Key? key, required this.dateUid}) : super(key: key);
-  
+
   @override
   State<StatefulWidget> createState() {
     return _ContactsPageState();
@@ -46,9 +45,8 @@ class _ContactsPageState extends State<ContactsPage> {
     setState(() {
       _deviceHeight = MediaQuery.of(context).size.height;
       _deviceWidth = MediaQuery.of(context).size.width;
-      _uid = _auth.user.userId;
     });
-    getFriends();
+    getFriends(_auth.user.userId);
   }
 
   @override
@@ -174,14 +172,14 @@ class _ContactsPageState extends State<ContactsPage> {
         height: _deviceHeight * 0.08,
         width: _deviceWidth * 0.80,
         onPressed: () {
-          _contactsProvider.addToCherubList(widget.dateUid);
+          _contactsProvider.recentDateId = widget.dateUid;
           _contactsProvider.createAndGoToChat();
         },
       ),
     );
   }
 
-  void getFriends() async {
+  void getFriends(String _uid) async {
     usersFriendUids = await _dbService.friendDb.getFriendsID(_uid);
     if (mounted) {
       setState(() {

@@ -19,7 +19,7 @@ class _DateMapState extends State<DateMap> {
   String location = "Choose a location";
   String selectedLocation = "10,10";
   GoogleMapController? mapController;
-  CameraPosition? cameraPosition;
+  late CameraPosition cameraPosition;
   late LatLng beginLocation = const LatLng(10.10, -10.10);
 
   @override
@@ -28,6 +28,10 @@ class _DateMapState extends State<DateMap> {
       print("date_map_page.dart - initState");
     }
     super.initState();
+    cameraPosition = CameraPosition(
+      target: widget.currentPosition,
+      zoom: 7.0,
+    );
     _locationService = GetIt.instance.get<LocationService>();
   }
 
@@ -37,10 +41,7 @@ class _DateMapState extends State<DateMap> {
       print("date_details_page.dart - didChangeDependencies()");
     }
     super.didChangeDependencies();
-    String location = await _locationService.getCurrentLocationString();
-    List<String> latLng = location.split(",");
-    LatLng _locationLatLng = LatLng(double.parse(latLng[0]), double.parse(latLng[1]));
-
+    LatLng _locationLatLng = await _locationService.getCurrentLocationLatLng();
     setState(() {
       beginLocation = _locationLatLng;
     });
@@ -61,10 +62,7 @@ class _DateMapState extends State<DateMap> {
             body: Stack(children: [
               GoogleMap(
                 zoomGesturesEnabled: true,
-                initialCameraPosition: CameraPosition(
-                  target: widget.currentPosition,
-                  zoom: 7.0,
-                ),
+                initialCameraPosition: cameraPosition,
                 mapType: MapType.hybrid,
                 onMapCreated: (controller) {
                   if (mounted) {
@@ -84,8 +82,8 @@ class _DateMapState extends State<DateMap> {
                   String stringLocation = "No Data on Location";
                   try {
                     newPlace = await placemarkFromCoordinates(
-                        cameraPosition!.target.latitude,
-                        cameraPosition!.target.longitude,
+                        cameraPosition.target.latitude,
+                        cameraPosition.target.longitude,
                         localeIdentifier: "en");
                     stringLocation = newPlace.first.street.toString();
                     if (kDebugMode) {
@@ -97,9 +95,9 @@ class _DateMapState extends State<DateMap> {
                           print("Map.dart - onCameraIdle - setState");
                         }
                         selectedLocation =
-                            cameraPosition!.target.latitude.toString() +
+                            cameraPosition.target.latitude.toString() +
                                 "," +
-                                cameraPosition!.target.longitude.toString();
+                                cameraPosition.target.longitude.toString();
                         location = stringLocation;
                       });
                     }

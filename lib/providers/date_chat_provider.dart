@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:cherub/services/location_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -117,10 +118,11 @@ class DateChatProvider extends ChangeNotifier {
 
   void sendUpdateMessage() async {
     try {
-      String latLangUpdate = await _location.getCurrentLocationString();
+      LatLng latLngUpdate = await _location.getCurrentLocationLatLng();
+      String latLangUpdateString = latLngUpdate.latitude.toString() + "," + latLngUpdate.longitude.toString();
 
       DateMessage _messageToSend = DateMessage(
-        content: latLangUpdate,
+        content: latLangUpdateString,
         type: MessageContentType.update,
         senderID: _auth.user.userId,
         sentTime: DateTime.now(),

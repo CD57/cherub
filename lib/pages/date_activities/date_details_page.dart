@@ -136,7 +136,7 @@ class _DateDetailsState extends State<DateDetailsPage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              "Date with: " + widget.aDate.dateUid,
+              "Date with: " + widget.aDate.datesUserId,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,

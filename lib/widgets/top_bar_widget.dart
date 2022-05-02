@@ -47,6 +47,7 @@ class TopBar extends StatelessWidget {
   Widget _titleBar() {
     return Text(
       _barTitle,
+      softWrap: true,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         color: const Color.fromARGB(255, 20, 133, 43),

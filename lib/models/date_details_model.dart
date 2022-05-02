@@ -2,12 +2,10 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:math';
 
 class DateDetailsModel {
-  late String uid = Random().nextInt(1000).toString();
   late String hostUid;
-  late String dateUid;
+  late String datesUserId;
   late String datePlan;
   late Timestamp dayOfDate;
   late Timestamp dateTime;
@@ -15,9 +13,8 @@ class DateDetailsModel {
   late String dateGPS;
   
   DateDetailsModel({
-    required this.uid,
     required this.hostUid,
-    required this.dateUid,
+    required this.datesUserId,
     required this.datePlan,
     required this.dayOfDate,
     required this.dateTime,
@@ -27,9 +24,8 @@ class DateDetailsModel {
 
   factory DateDetailsModel.fromJSON(Map<String, dynamic> _json) {
     return DateDetailsModel(
-        uid: _json["uid"],
         hostUid: _json["hostUid"],
-        dateUid: _json["dateUid"],
+        datesUserId: _json["datesUserId"],
         datePlan: _json["datePlan"],
         dayOfDate: _json["dayOfDate"],
         dateTime: _json["dateTime"],
@@ -40,9 +36,8 @@ class DateDetailsModel {
 
   factory DateDetailsModel.fromDocument(DocumentSnapshot _doc) {
     return DateDetailsModel(
-        uid: _doc["uid"],
         hostUid: _doc["hostUid"],
-        dateUid: _doc["dateUid"],
+        datesUserId: _doc["datesUserId"],
         datePlan: _doc["datePlan"],
         dayOfDate: _doc["dayOfDate"],
         dateTime: _doc["dateTime"],
@@ -52,9 +47,8 @@ class DateDetailsModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "uid": uid,
       "hostUid": hostUid,
-      "dateUid": dateUid,
+      "datesUserId": datesUserId,
       "datePlan": datePlan,
       "dayOfDate": dayOfDate,
       "dateTime": dateTime,
@@ -67,6 +61,6 @@ class DateDetailsModel {
 
   @override
   String toString() {
-    return "DateDetailsModel(hostUid: $hostUid, dateUid: $dateUid, datePlan: $datePlan, dayOfDate: $dayOfDate, dateTime: $dateTime, checkInTime: $checkInTime, dateGPS: $dateGPS";
+    return "DateDetailsModel(hostUid: $hostUid, datesUserId: $datesUserId, datePlan: $datePlan, dayOfDate: $dayOfDate, dateTime: $dateTime, checkInTime: $checkInTime, dateGPS: $dateGPS";
   }
 }
