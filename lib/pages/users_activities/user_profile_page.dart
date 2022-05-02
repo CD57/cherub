@@ -6,12 +6,14 @@ import 'package:cherub/services/media_service.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:cherub/services/storage_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
+import 'package:cherub/widgets/user_input_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../../providers/auth_provider.dart';
+import '../date_activities/date_setup_page.dart';
 
 class UserProfilePage extends StatefulWidget {
   final UserModel aUser;
@@ -29,6 +31,7 @@ class _UserProfileState extends State<UserProfilePage> {
   late double _deviceHeight;
   late double _deviceWidth;
   late AuthProvider _auth;
+  late String _report;
   bool loadingBool = false;
 
   @override
@@ -66,14 +69,14 @@ class _UserProfileState extends State<UserProfilePage> {
 
   buildProfile() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         children: <Widget>[
           Row(
             children: <Widget>[
               CircleAvatar(
-                radius: 40.0,
-                backgroundColor: Colors.grey,
+                radius: 60.0,
+                backgroundColor: Colors.green,
                 backgroundImage:
                     CachedNetworkImageProvider(widget.aUser.imageURL),
               ),
@@ -81,11 +84,6 @@ class _UserProfileState extends State<UserProfilePage> {
                 flex: 1,
                 child: Column(
                   children: <Widget>[
-                    // Row(
-                    //   mainAxisSize: MainAxisSize.max,
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: const <Widget>[Text("Friends")],
-                    // ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
@@ -107,7 +105,7 @@ class _UserProfileState extends State<UserProfilePage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 12.0),
             child: Text(
-              widget.aUser.username,
+              "Name: " + widget.aUser.name,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,
@@ -119,9 +117,6 @@ class _UserProfileState extends State<UserProfilePage> {
             padding: const EdgeInsets.only(top: 4.0),
             child: Text(
               "Username: " + widget.aUser.username,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
             ),
           ),
           Container(
@@ -137,6 +132,12 @@ class _UserProfileState extends State<UserProfilePage> {
             child: Text(
               "Verified Phone Number: " + widget.aUser.number,
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              reportButton(),
+            ],
           ),
         ],
       ),
@@ -158,6 +159,13 @@ class _UserProfileState extends State<UserProfilePage> {
       return buildButton(text: "Account Options", function: editProfile);
     } else {
       return buildButton(text: "Remove Friend", function: removeFriend);
+    }
+  }
+
+  reportButton() {
+    bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
+    if (!isProfileOwner) {
+      return buildButton(text: "Report Account", function: reportAccount);
     }
   }
 
@@ -239,22 +247,76 @@ class _UserProfileState extends State<UserProfilePage> {
     }
   }
 
-  editProfile()  {
+  editProfile() {
     _nav.goToPage(const AccountOptionsPage());
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   createDate() {
-    if (kDebugMode) {
-      print("User Profile Message Button Pressed");
-    }
+    _nav.removeAndGoToPage(DateSetupPage(datesUserId: widget.aUser.userId));
   }
 
-  removeFriend() {
-    if (kDebugMode) {
-      print("User Profile Message Button Pressed");
-    }
+  removeFriend() async {
+    await _db.friendDb.deleteFriend(_auth.user.userId, widget.aUser.userId);
+    Navigator.pop(context);
+  }
+
+  reportAccount() async {
+    showDialog(
+      context: context,
+      builder: (_) {
+        final _inputFormKey2 = GlobalKey<FormState>();
+        return AlertDialog(
+          title: const Text('Report User?'),
+          actions: [
+            Form(
+              key: _inputFormKey2,
+              child: CustomInputForm(
+                  onSaved: (_value) {
+                    setState(() {
+                      _report = _value;
+                    });
+                  },
+                  regex: r'.{10,}',
+                  hint: "Details of Report",
+                  hidden: false),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (_inputFormKey2.currentState!.validate()) {
+                  _inputFormKey2.currentState!.save();
+                  await _db.friendDb
+                      .createReport(_auth.user.userId, widget.aUser, _report);
+                  setState(() {});
+                  Navigator.pop(context);
+                  return showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Report Sent"),
+                          content: const Text(
+                              "You're report has been sent, please conact our email for further information"),
+                          actions: [
+                            ElevatedButton(
+                              child: const Text("Continue"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        );
+                      });
+                }
+              },
+              child: const Text('Submit Report'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            )
+          ],
+        );
+      },
+    );
   }
 }

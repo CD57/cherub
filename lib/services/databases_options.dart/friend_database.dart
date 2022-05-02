@@ -1,11 +1,13 @@
 // friend_database.dart - Service to manage friends database connections and actions
 
+import 'package:cherub/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 const String friends = "Friends";
 const String userFriends = "UserFriends";
 const String userRequests = "UserRequests";
+const String userReports = "UserReports";
 
 class FriendDatabase {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -213,6 +215,29 @@ class FriendDatabase {
         print(
             "friend_database - deleteFriendRequest() - ERROR: " + e.toString());
       }
+    }
+  }
+
+  createReport(String userId, UserModel aUser, String report) async {
+    try {
+      DocumentReference _friendRequestDoc = await _db
+          .collection(friends)
+          .doc(userId)
+          .collection(userReports)
+          .add({
+        "reportedAccountId": aUser.userId,
+        "reportedAccountEmail": aUser.email,
+        "reportedAccountPhoneNum": aUser.number,
+        "report": report,
+        "timeOfReport": DateTime.now()
+      });
+
+      return _friendRequestDoc;
+    } catch (e) {
+      if (kDebugMode) {
+        print("friend_database - createReport: Error - " + e.toString());
+      }
+      return null;
     }
   }
 }

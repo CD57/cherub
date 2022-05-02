@@ -126,8 +126,8 @@ class FriendRequestListWidget extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                await _dbService.friendDb.deleteFriendRequest(
-                    currentUserId, aUser.userId);
+                await _dbService.friendDb
+                    .deleteFriendRequest(currentUserId, aUser.userId);
                 Navigator.pop(context);
               },
               child: const Text('Dismiss Request'),
@@ -185,18 +185,6 @@ class FriendListWidget extends StatelessWidget {
                     onPressed: () =>
                         _nav.removeAndGoToPage(UserProfilePage(aUser: aUser)),
                     child: const Text('View Profile'),
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        _nav.removeAndGoToPage(DateSetupPage(datesUserId: aUser.userId,)),
-                    child: const Text('Create Date'),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await dbService.friendDb.deleteFriend(currentUserId, aUser.userId);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Delete Contact'),
                   ),
                   TextButton(
                     onPressed: () {
