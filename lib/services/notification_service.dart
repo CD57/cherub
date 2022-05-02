@@ -50,6 +50,9 @@ class NotificationService {
   }
 
   setToken(String uid) async {
+    if (kDebugMode) {
+      print("notification_service.dart - setToken");
+    }
     await FirebaseMessaging.instance.getToken().then((token) async {
       if (kDebugMode) {
         print('token: $token');
@@ -58,7 +61,15 @@ class NotificationService {
           .collection('Users')
           .doc(uid)
           .update({'pushToken': token});
-    }).catchError((err) {});
+      if (kDebugMode) {
+        print("notification_service.dart - setToken - Notification Token Set");
+      }
+    }).catchError((err) {
+      if (kDebugMode) {
+        print(
+            "notification_service.dart - setToken - Error: " + err.toString());
+      }
+    });
   }
 
   Future<void> createScheduledReminder(DateTime aDate, String _text) async {
@@ -95,6 +106,18 @@ class NotificationService {
         channelKey: 'basic_channel',
         title: 'Date Started',
         body: 'Youre has started',
+        notificationLayout: NotificationLayout.Default,
+      ),
+    );
+  }
+
+  Future<void> createEndNotification() async {
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: createUniqueId(),
+        channelKey: 'basic_channel',
+        title: 'Date Ended',
+        body: 'Youre has ended',
         notificationLayout: NotificationLayout.Default,
       ),
     );

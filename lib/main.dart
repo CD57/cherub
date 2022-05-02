@@ -7,7 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
-import 'pages/login_and_registration/splash_page.dart';
+import 'pages/splash_page.dart';
 import 'pages/login_and_registration/login_page.dart';
 import 'pages/login_and_registration/registration_page.dart';
 import 'providers/auth_provider.dart';

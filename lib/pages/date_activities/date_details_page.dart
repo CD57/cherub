@@ -1,4 +1,5 @@
 import 'package:cherub/models/date_details_model.dart';
+import 'package:cherub/services/database_service.dart';
 import 'package:cherub/services/navigation_service.dart';
 import 'package:cherub/services/notification_service.dart';
 import 'package:cherub/widgets/top_bar_widget.dart';
@@ -21,6 +22,7 @@ class DateDetailsPage extends StatefulWidget {
 
 class _DateDetailsState extends State<DateDetailsPage> {
   late final NavigationService _nav = GetIt.instance.get<NavigationService>();
+  late final DatabaseService _db = GetIt.instance.get<DatabaseService>();
   late final NotificationService _notifications =
       GetIt.instance.get<NotificationService>();
   late double _deviceHeight;
@@ -152,7 +154,12 @@ class _DateDetailsState extends State<DateDetailsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       mainAxisSize: MainAxisSize.max,
-                      children: profileButton(),
+                      children: dateButtons(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: dateButton(),
                     ),
                   ],
                 ),
@@ -164,15 +171,26 @@ class _DateDetailsState extends State<DateDetailsPage> {
     );
   }
 
-  profileButton() {
+  dateButtons() {
     bool isDateOwner = _auth.user.userId == widget.aDate.hostUid;
     if (isDateOwner) {
       return <Widget>[
-        buildButton(text: "Start Date", function: startDate),
-        buildButton(text: "Cancel Date", function: cancelDate)
+        buildButton(text: "Start of Date Alert", function: startDate),
+        buildButton(text: "End of Date Alert", function: endDate),
       ];
     } else {
-      return <Widget>[buildButton(text: "Leave Date", function: leaveDate)];
+      return <Widget>[];
+    }
+  }
+
+  dateButton() {
+    bool isDateOwner = _auth.user.userId == widget.aDate.hostUid;
+    if (isDateOwner) {
+      return <Widget>[
+        buildButton(text: "Cancel Date", function: cancelDate),
+      ];
+    } else {
+      return <Widget>[];
     }
   }
 
@@ -215,21 +233,19 @@ class _DateDetailsState extends State<DateDetailsPage> {
   }
 
   startDate() async {
-    if (kDebugMode) {
-      print("Start Date Button Pressed");
-    }
     await _notifications.createBeginNotification();
+    await _db.dateDb
+        .updateDateStarted(_auth.user.userId, widget.aDate.uid, true);
   }
 
-  cancelDate() {
-    if (kDebugMode) {
-      print("Cancel Button Pressed");
-    }
+  endDate() async {
+    await _notifications.createEndNotification();
+    await _db.dateDb
+        .updateDateStarted(_auth.user.userId, widget.aDate.uid, false);
   }
 
-  leaveDate() {
-    if (kDebugMode) {
-      print("Leave Button Pressed");
-    }
+  cancelDate() async {
+    await _db.dateDb.deleteDateDetails(_auth.user.userId, widget.aDate);
+    _nav.goBack();
   }
 }

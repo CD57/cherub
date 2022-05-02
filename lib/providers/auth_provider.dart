@@ -1,6 +1,7 @@
 // auth_provider.dart - Provider for the apps authentication, managing account data.
 
 import 'package:cherub/services/notification_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,6 +31,7 @@ class AuthProvider extends ChangeNotifier {
     _dbService = GetIt.instance.get<DatabaseService>();
     _storageService = GetIt.instance.get<StorageService>();
     _notificationService = GetIt.instance.get<NotificationService>();
+    
     authUser.authStateChanges().listen((_user) {
       if (_user != null && (authUser.currentUser?.uid == _user.uid)) {
         if (kDebugMode) {
@@ -119,7 +121,6 @@ class AuthProvider extends ChangeNotifier {
         print(
             "auth_provider.dart - userRegister() - Trying to Create New User in Firebase Auth");
       }
-      // ADD ERROR MESSAGE
       UserCredential _credentials = await authUser
           .createUserWithEmailAndPassword(email: _email, password: _password);
       if (kDebugMode) {
@@ -155,6 +156,16 @@ class AuthProvider extends ChangeNotifier {
         print(
             "auth_provider.dart - userRegister() - User Created in Firebase Database");
       }
+
+      // Subscribe to friends request updates
+      await FirebaseMessaging.instance
+          .subscribeToTopic(_credentials.user!.uid)
+          .then((value) => {
+                // ignore: avoid_print
+                print("auth_provider.dart -  User " +
+                    _credentials.user!.uid +
+                    " subscribed to friend updates")
+              });
 
       //Set Account Details for Firebase Auth
       await setAccountDetails(_username, _imageURL, _email, _password);

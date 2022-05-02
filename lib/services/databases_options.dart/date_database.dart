@@ -40,19 +40,57 @@ class DateDatabase {
   // Get Date Details
   Future<DocumentSnapshot> getDateDetails(String _hostUid, String _dateUid) {
     if (kDebugMode) {
-      print("date_database.dart - getDateDetailsByID()");
+      print("date_database.dart - getDateDetails()");
     }
-    return _db.collection(dates).doc(_hostUid).collection(dateDetails).doc(_dateUid).get();
+    return _db
+        .collection(dates)
+        .doc(_hostUid)
+        .collection(dateDetails)
+        .doc(_dateUid)
+        .get();
   }
 
-  // Update date chat
-  Future<void> updateDateDetails(
-      String _dateID, Map<String, dynamic> _data) async {
+  // Starts date so friends can be notified
+  Future<void> updateDateUid(String _userId, String _dateID) async {
     if (kDebugMode) {
-      print("date_database.dart - updateDateDetails()");
+      print("user_database.dart - updateDateStarted()");
     }
     try {
-      await _db.collection(dates).doc(_dateID).update(_data);
+      await _db
+          .collection(dates)
+          .doc(_userId)
+          .collection(dateDetails)
+          .doc(_dateID)
+          .update(
+        {
+          "uid": _dateID,
+        },
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print("user_database.dart - updateDateStarted() - Error: " +
+            e.toString());
+      }
+    }
+  }
+
+  // Starts date so friends can be notified
+  Future<void> updateDateStarted(
+      String _userId, String _dateID, bool _dateStatus) async {
+    if (kDebugMode) {
+      print("user_database.dart - updateDateStarted()");
+    }
+    try {
+      await _db
+          .collection(dates)
+          .doc(_userId)
+          .collection(dateDetails)
+          .doc(_dateID)
+          .update(
+        {
+          "dateStarted": _dateStatus,
+        },
+      );
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -67,27 +105,18 @@ class DateDatabase {
       print("date_database.dart - deleteDateDetails()");
     }
     try {
-      QuerySnapshot datesSnapshot = await _db
+      await _db
           .collection(dates)
           .doc(_uid)
           .collection(dateDetails)
-          .where("dateGPS", isGreaterThanOrEqualTo: _dateDetails.dateGPS)
-          .where("dateGPS", isLessThanOrEqualTo: _dateDetails.dateGPS + "z")
-          .get();
-
-      for (var dateDoc in datesSnapshot.docs) {
-        var dateDocID = dateDoc.id;
-        await _db
-            .collection(dates)
-            .doc(_uid)
-            .collection(dateDetails)
-            .doc(dateDocID)
-            .delete();
-      }
+          .doc(_dateDetails.uid)
+          .delete();
     } catch (e) {
       if (kDebugMode) {
         print(e);
       }
     }
   }
+
+  getDateId() {}
 }

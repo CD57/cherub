@@ -1,7 +1,5 @@
 // home_page.dart - App page containing main menu of app, containing a scaffold of displaying other app pages
 
-import 'dart:io';
-
 import 'package:cherub/pages/date_activities/dates_menu_page.dart';
 import 'package:cherub/pages/users_activities/user_profile_page.dart';
 import 'package:cherub/pages/users_activities/user_search_page.dart';

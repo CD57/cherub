@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
     return GestureDetector(
       onTap: () => _nav.goToRoute('/registration'),
       child: Text(
-        'Create A New Account',
+        'Create A Cherub Account',
         style: TextStyle(
           color: Colors.green.shade900,
         ),

@@ -27,8 +27,8 @@ class MessageBubble extends StatelessWidget {
             const Color.fromARGB(255, 42, 100, 0)
           ]
         : [
-            const Color.fromRGBO(51, 49, 68, 1.0),
-            const Color.fromRGBO(51, 49, 68, 1.0),
+            const Color.fromARGB(255, 32, 75, 34),
+            const Color.fromARGB(255, 69, 192, 75),
           ];
     return Container(
       height: height + (message.content.length / 20 * 6.0),
@@ -85,12 +85,12 @@ class MediaBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Color> _colorScheme = isOwnMessage
         ? [
-            const Color.fromARGB(255, 42, 100, 0),
             const Color.fromARGB(255, 14, 161, 1),
+            const Color.fromARGB(255, 42, 100, 0)
           ]
         : [
-            const Color.fromRGBO(51, 49, 68, 1.0),
-            const Color.fromRGBO(51, 49, 68, 1.0),
+            const Color.fromARGB(255, 32, 75, 34),
+            const Color.fromARGB(255, 69, 192, 75),
           ];
     DecorationImage _image = DecorationImage(
       image: NetworkImage(media.content),
@@ -160,12 +160,12 @@ class UpdateBubble extends StatelessWidget {
 
     List<Color> _colorScheme = isOwnMessage
         ? [
-            const Color.fromARGB(255, 42, 100, 0),
             const Color.fromARGB(255, 14, 161, 1),
+            const Color.fromARGB(255, 42, 100, 0)
           ]
         : [
-            const Color.fromRGBO(51, 49, 68, 1.0),
-            const Color.fromRGBO(51, 49, 68, 1.0),
+            const Color.fromARGB(255, 32, 75, 34),
+            const Color.fromARGB(255, 69, 192, 75),
           ];
     return Container(
       decoration: BoxDecoration(
@@ -191,7 +191,7 @@ class UpdateBubble extends StatelessWidget {
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
                 target: _location,
-                zoom: 20.0,
+                zoom: 25.0,
               ),
             ),
           ),

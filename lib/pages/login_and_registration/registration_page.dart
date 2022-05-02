@@ -1,6 +1,5 @@
 // registraion_page.dart - App page containing forms for user to enter details of registration.
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -133,18 +132,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
             SizedBox(
               height: _deviceHeight * 0.01,
             ),
-            // CustomInputForm(
-            //     onSaved: (_value) {
-            //       setState(() {
-            //         _number = _value;
-            //       });
-            //     },
-            //     regex: r".{8,}",
-            //     hint: "Phone Number",
-            //     hidden: false),
-            // SizedBox(
-            //   height: _deviceHeight * 0.01,
-            // ),
             CustomInputForm(
                 onSaved: (_value) {
                   setState(() {

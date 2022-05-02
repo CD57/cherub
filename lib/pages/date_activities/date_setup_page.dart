@@ -1,5 +1,4 @@
 // date_setup_page.dart - App page containing forms for user to enter details of date
-import 'dart:math';
 
 import 'package:cherub/pages/chat_activities/contacts_page.dart';
 import 'package:cherub/pages/date_activities/date_map_page.dart';
@@ -265,6 +264,7 @@ class _DateSetupPageState extends State<DateSetupPage> {
             //Create Date Details
             DocumentReference dateRef =
                 await _dbService.dateDb.createDateDetails(_auth.user.userId, {
+              "uid": "temp",
               "hostUid": _auth.user.userId,
               "datesUserId": widget.datesUserId,
               "datePlan": _datePlan,
@@ -272,8 +272,11 @@ class _DateSetupPageState extends State<DateSetupPage> {
               "dateTime": _dateTimeTS,
               "checkInTime": _checkinTimeTS,
               "dateGPS": _pickedLocation,
+              "dateStarted": false,
             });
             String dateId = dateRef.id;
+            // Update Uid in database
+            await _dbService.dateDb.updateDateUid(_auth.user.userId, dateId);
             if (kDebugMode) {
               print(
                   "date_setup_page.dart - createDate() - Date Details Created");

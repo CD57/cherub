@@ -5,6 +5,7 @@ import 'package:cherub/models/date_details_model.dart';
 import 'package:cherub/services/database_service.dart';
 import 'package:cherub/widgets/user_input_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -91,9 +92,49 @@ class _DateChatPageState extends State<DateChatPage> {
                         color: Color.fromARGB(255, 20, 133, 43),
                       ),
                       onPressed: () async {
-                        DocumentSnapshot dbRef = await _db.dateDb.getDateDetails(widget.dateChat.hostId, widget.dateChat.dateId);
-                        DateDetailsModel aDate = DateDetailsModel.fromDocument(dbRef);
-                        _nav.goToPage(DateDetailsPage(aDate: aDate));
+                        bool valid = false;
+                        try {
+                          DocumentSnapshot dbRef = await _db.dateDb
+                              .getDateDetails(widget.dateChat.hostId,
+                                  widget.dateChat.dateId);
+                          if (dbRef.exists && dbRef.data() != null) {
+                            DateDetailsModel aDate =
+                                DateDetailsModel.fromDocument(dbRef);
+                            _nav.goToPage(DateDetailsPage(aDate: aDate));
+                            valid = true;
+                          } else {
+                            valid = false;
+                          }
+                        } on Exception catch (e) {
+                          if (kDebugMode) {
+                            print(
+                                "date_chat_page.dart - Date has been deleted - " +
+                                    e.toString());
+                          }
+                          valid = false;
+                        }
+                        if (mounted) {
+                          if (!valid) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text("Error"),
+                                  content: const Text(
+                                      "Host has deleted the date details"),
+                                  actions: [
+                                    ElevatedButton(
+                                      child: const Text("Continue"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        }
                       },
                     ),
                     secondaryAction: IconButton(
@@ -254,13 +295,27 @@ class _DateChatPageState extends State<DateChatPage> {
   }
 
   void subscribeToDate() async {
+    if (kDebugMode) {
+      print("dateChat Uid: " +
+          widget.dateChat.uid +
+          ", dateDetails Uid: " +
+          widget.dateChat.dateId);
+    }
     await FirebaseMessaging.instance
         .subscribeToTopic(widget.dateChat.uid)
         .then((value) => {
               // ignore: avoid_print
               print("subscribeToDate(): User " +
                   _auth.user.username +
-                  " subscribed to date")
+                  " subscribed to date chat notifications")
+            });
+    await FirebaseMessaging.instance
+        .subscribeToTopic(widget.dateChat.dateId)
+        .then((value) => {
+              // ignore: avoid_print
+              print("subscribeToDate(): User " +
+                  _auth.user.username +
+                  " subscribed to date started/ended notifications")
             });
   }
 }
