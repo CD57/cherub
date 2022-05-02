@@ -91,6 +91,24 @@ class UserDatabase {
     }
   }
 
+  // Update User Picture
+  Future<void> updateUserPhoneNumber(String _uid, String _phoneNumber) async {
+    if (kDebugMode) {
+      print("user_database.dart - updateUserPhoneNumber()");
+    }
+    try {
+      await _db.collection(users).doc(_uid).update(
+        {
+          "number": _phoneNumber,
+        },
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
+
   // Delete User By ID
   Future<void> deleteUserByID(String _uid) async {
     if (kDebugMode) {

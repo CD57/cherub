@@ -139,7 +139,29 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () async {
         if (_loginFormKey.currentState!.validate()) {
           _loginFormKey.currentState!.save();
-          await _auth.emailLogin(_email!, _password!);
+          bool valid;
+          valid = await _auth.emailLogin(_email!, _password!);
+
+          if (mounted) {
+            if (!valid) {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Error"),
+                      content: const Text("Login Failed - Incorrect Details"),
+                      actions: [
+                        ElevatedButton(
+                          child: const Text("Continue"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    );
+                  });
+            }
+          }
         }
         if (_auth.authorised) {
           if (kDebugMode) {

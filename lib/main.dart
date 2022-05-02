@@ -1,5 +1,6 @@
 // main.dart - Cherub Application - C18465384
 
+import 'package:cherub/pages/users_activities/account_options_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -38,11 +39,11 @@ class MainApp extends StatelessWidget {
     }
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       if (kDebugMode) {
-        print("New Token Created - " + fcmToken.toString());
+        print("main.dart - New Token Created - " + fcmToken.toString());
       }
     }).onError((err) {
       if (kDebugMode) {
-        print("Messaging Token Error - " + err.toString());
+        print("main.dart - Messaging Token Error - " + err.toString());
       }
     });
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
@@ -81,6 +82,7 @@ class MainApp extends StatelessWidget {
           '/login': (BuildContext _context) => const LoginPage(),
           '/registration': (BuildContext _context) => const RegistrationPage(),
           '/home': (BuildContext _context) => const HomePage(),
+          '/accountOptions': (BuildContext _context) => const AccountOptionsPage(),
         },
       ),
     );

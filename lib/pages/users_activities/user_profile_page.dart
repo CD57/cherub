@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cherub/models/user_model.dart';
+import 'package:cherub/pages/users_activities/account_options_page.dart';
 import 'package:cherub/services/database_service.dart';
 import 'package:cherub/services/media_service.dart';
 import 'package:cherub/services/navigation_service.dart';
@@ -80,15 +81,21 @@ class _UserProfileState extends State<UserProfilePage> {
                 flex: 1,
                 child: Column(
                   children: <Widget>[
+                    // Row(
+                    //   mainAxisSize: MainAxisSize.max,
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: const <Widget>[Text("Friends")],
+                    // ),
                     Row(
-                      mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const <Widget>[Text("Friends")],
+                      children: <Widget>[
+                        profileButtonOne(),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        profileButton(),
+                        profileButtonTwo(),
                       ],
                     ),
                   ],
@@ -111,7 +118,7 @@ class _UserProfileState extends State<UserProfilePage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 4.0),
             child: Text(
-              widget.aUser.username,
+              "Username: " + widget.aUser.username,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -121,7 +128,14 @@ class _UserProfileState extends State<UserProfilePage> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              widget.aUser.email,
+              "Email: " + widget.aUser.email,
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(top: 2.0),
+            child: Text(
+              "Verified Phone Number: " + widget.aUser.number,
             ),
           ),
         ],
@@ -129,12 +143,21 @@ class _UserProfileState extends State<UserProfilePage> {
     );
   }
 
-  profileButton() {
+  profileButtonOne() {
     bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
     if (isProfileOwner) {
-      return buildButton(text: "Upload Picture", function: editProfile);
+      return buildButton(text: "Upload Picture", function: uploadPicture);
     } else {
-      return buildButton(text: "Send Message", function: sendMessage);
+      return buildButton(text: "Create Date", function: createDate);
+    }
+  }
+
+  profileButtonTwo() {
+    bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
+    if (isProfileOwner) {
+      return buildButton(text: "Account Options", function: editProfile);
+    } else {
+      return buildButton(text: "Remove Friend", function: removeFriend);
     }
   }
 
@@ -189,10 +212,7 @@ class _UserProfileState extends State<UserProfilePage> {
     );
   }
 
-  editProfile() async {
-    if (kDebugMode) {
-      print("User Profile Edit Button Pressed");
-    }
+  uploadPicture() async {
     XFile? image;
     String? imageURL;
     await _media.getPhotoFromCamera().then((value) => image = value);
@@ -219,7 +239,20 @@ class _UserProfileState extends State<UserProfilePage> {
     }
   }
 
-  sendMessage() {
+  editProfile()  {
+    _nav.goToPage(const AccountOptionsPage());
+    setState(() {
+      
+    });
+  }
+
+  createDate() {
+    if (kDebugMode) {
+      print("User Profile Message Button Pressed");
+    }
+  }
+
+  removeFriend() {
     if (kDebugMode) {
       print("User Profile Message Button Pressed");
     }

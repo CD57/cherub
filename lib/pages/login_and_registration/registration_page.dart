@@ -1,5 +1,6 @@
 // registraion_page.dart - App page containing forms for user to enter details of registration.
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,7 +27,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   String? _username;
   String? _name;
-  String? _number;
   String? _email;
   String? _password;
   XFile? _profileImage;
@@ -133,18 +133,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
             SizedBox(
               height: _deviceHeight * 0.01,
             ),
-            CustomInputForm(
-                onSaved: (_value) {
-                  setState(() {
-                    _number = _value;
-                  });
-                },
-                regex: r".{8,}",
-                hint: "Phone Number",
-                hidden: false),
-            SizedBox(
-              height: _deviceHeight * 0.01,
-            ),
+            // CustomInputForm(
+            //     onSaved: (_value) {
+            //       setState(() {
+            //         _number = _value;
+            //       });
+            //     },
+            //     regex: r".{8,}",
+            //     hint: "Phone Number",
+            //     hidden: false),
+            // SizedBox(
+            //   height: _deviceHeight * 0.01,
+            // ),
             CustomInputForm(
                 onSaved: (_value) {
                   setState(() {
@@ -168,9 +168,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
         onPressed: () async {
           if (_registerFormKey.currentState!.validate()) {
             _registerFormKey.currentState!.save();
-
             await _auth.userRegister(_email!, _password!, _name!, _username!,
-                _number!, _profileImage);
+                "Not Set", _profileImage);
           } else {
             if (kDebugMode) {
               print(

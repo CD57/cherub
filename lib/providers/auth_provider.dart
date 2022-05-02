@@ -82,7 +82,7 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> emailLogin(String _email, String _password) async {
+  Future<bool> emailLogin(String _email, String _password) async {
     if (kDebugMode) {
       print("auth_provider.dart - emailLogin()");
     }
@@ -90,18 +90,20 @@ class AuthProvider extends ChangeNotifier {
       await authUser.signInWithEmailAndPassword(
           email: _email, password: _password);
       if (kDebugMode) {
-        print("auth_provider.dart - emailLogin() - Signed In: " +
+        print("emailLogin() - Signed In: " +
             authUser.currentUser!.email.toString());
       }
+      return true;
     } on FirebaseAuthException {
       if (kDebugMode) {
-        print(
-            "auth_provider.dart - emailLogin() - Error: Could Not Login Into Firebase");
+        print("emailLogin() - Error: Could Not Login Into Firebase");
       }
+      return false;
     } catch (e) {
       if (kDebugMode) {
-        print("auth_provider.dart - emailLogin() - " + e.toString());
+        print("emailLogin() - " + e.toString());
       }
+      return false;
     }
   }
 
@@ -117,8 +119,9 @@ class AuthProvider extends ChangeNotifier {
         print(
             "auth_provider.dart - userRegister() - Trying to Create New User in Firebase Auth");
       }
-      UserCredential _credentials = await authUser.createUserWithEmailAndPassword(
-          email: _email, password: _password);
+      // ADD ERROR MESSAGE
+      UserCredential _credentials = await authUser
+          .createUserWithEmailAndPassword(email: _email, password: _password);
       if (kDebugMode) {
         print(
             "auth_provider.dart - userRegister() - User Created in Firebase Auth");
@@ -199,6 +202,13 @@ class AuthProvider extends ChangeNotifier {
         print(e);
       }
     }
+  }
+
+  Future<void> updatePhoneNumber(String _phoneNumber) async {
+    if (kDebugMode) {
+      print("auth_provider.dart - setAccountDetails");
+    }
+    _dbService.userDb.updateUserPhoneNumber(user.userId, _phoneNumber);
   }
 
   Future<void> logout() async {
