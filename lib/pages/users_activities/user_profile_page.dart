@@ -265,12 +265,12 @@ class _UserProfileState extends State<UserProfilePage> {
     showDialog(
       context: context,
       builder: (_) {
-        final _inputFormKey2 = GlobalKey<FormState>();
+        final _reportFormKey = GlobalKey<FormState>();
         return AlertDialog(
           title: const Text('Report User?'),
           actions: [
             Form(
-              key: _inputFormKey2,
+              key: _reportFormKey,
               child: CustomInputForm(
                   onSaved: (_value) {
                     setState(() {
@@ -283,29 +283,30 @@ class _UserProfileState extends State<UserProfilePage> {
             ),
             TextButton(
               onPressed: () async {
-                if (_inputFormKey2.currentState!.validate()) {
-                  _inputFormKey2.currentState!.save();
+                if (_reportFormKey.currentState!.validate()) {
+                  _reportFormKey.currentState!.save();
                   await _db.friendDb
                       .createReport(_auth.user.userId, widget.aUser, _report);
                   setState(() {});
                   Navigator.pop(context);
                   return showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Report Sent"),
-                          content: const Text(
-                              "You're report has been sent, please conact our email for further information"),
-                          actions: [
-                            ElevatedButton(
-                              child: const Text("Continue"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        );
-                      });
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Report Sent"),
+                        content: const Text(
+                            "You're report has been sent, please conact our email for further information"),
+                        actions: [
+                          ElevatedButton(
+                            child: const Text("Continue"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                      );
+                    },
+                  );
                 }
               },
               child: const Text('Submit Report'),

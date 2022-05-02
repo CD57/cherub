@@ -185,7 +185,7 @@ class _DateChatPageState extends State<DateChatPage> {
         return Align(
           alignment: Alignment.center,
           child: Text(
-            "Say Hi!",
+            "Keep in communication and stay safe!",
             style: TextStyle(color: Colors.green.shade900),
           ),
         );
@@ -281,17 +281,23 @@ class _DateChatPageState extends State<DateChatPage> {
 
   Widget _locationUpdateButton() {
     double _size = _deviceHeight * 0.04;
-    return SizedBox(
-      height: _size,
-      width: _size,
-      child: FloatingActionButton(
-        backgroundColor: const Color.fromARGB(255, 20, 133, 43),
-        onPressed: () {
-          _pageProvider.sendUpdateMessage();
-        },
-        child: const Icon(Icons.location_on_rounded),
-      ),
-    );
+    bool isHost = _auth.user.userId == widget.dateChat.hostId;
+
+    if (isHost) {
+      return SizedBox(
+        height: _size,
+        width: _size,
+        child: FloatingActionButton(
+          backgroundColor: const Color.fromARGB(255, 20, 133, 43),
+          onPressed: () {
+            _pageProvider.sendUpdateMessage();
+          },
+          child: const Icon(Icons.location_on_rounded),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   void subscribeToDate() async {

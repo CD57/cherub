@@ -30,6 +30,8 @@ class _DateDetailsState extends State<DateDetailsPage> {
   late AuthProvider _auth;
   bool loadingBool = false;
 
+  final Map<String, Marker> _markers = {};
+
   @override
   void didChangeDependencies() {
     if (kDebugMode) {
@@ -92,13 +94,15 @@ class _DateDetailsState extends State<DateDetailsPage> {
             width: 300.0,
             height: 300.0,
             child: GoogleMap(
-              scrollGesturesEnabled: false,
+              scrollGesturesEnabled: true,
               zoomControlsEnabled: true,
+              onMapCreated: _onMapCreated,
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
                 target: _location,
                 zoom: 20.0,
               ),
+              markers: _markers.values.toSet(),
             ),
           ),
           Container(
@@ -247,5 +251,23 @@ class _DateDetailsState extends State<DateDetailsPage> {
   cancelDate() async {
     await _db.dateDb.deleteDateDetails(_auth.user.userId, widget.aDate);
     _nav.goBack();
+  }
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    var latLngString = widget.aDate.dateGPS.split(",");
+    double lat = double.parse(latLngString[0]);
+    double lng = double.parse(latLngString[1]);
+    setState(() {
+      _markers.clear();
+      final marker = Marker(
+        markerId: MarkerId(widget.aDate.dateGPS),
+        position: LatLng(lat, lng),
+        infoWindow: InfoWindow(
+          title: "Date Location",
+          snippet: widget.aDate.dateGPS,
+        ),
+      );
+      _markers[widget.aDate.dateGPS] = marker;
+    });
   }
 }

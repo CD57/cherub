@@ -167,6 +167,18 @@ class UpdateBubble extends StatelessWidget {
             const Color.fromARGB(255, 32, 75, 34),
             const Color.fromARGB(255, 69, 192, 75),
           ];
+
+    late Map<String, Marker> _markers = {};
+    final marker = Marker(
+      markerId: MarkerId(update.content),
+      position: LatLng(latitude, longitude),
+      infoWindow: InfoWindow(
+        title: "Date Location",
+        snippet: update.content,
+      ),
+    );
+    _markers[update.content] = marker;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(1),
@@ -188,11 +200,13 @@ class UpdateBubble extends StatelessWidget {
             child: GoogleMap(
               scrollGesturesEnabled: false,
               zoomControlsEnabled: true,
+              //onMapCreated: _onMapCreated,
               mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(
                 target: _location,
                 zoom: 25.0,
               ),
+              markers: _markers.values.toSet(),
             ),
           ),
           SizedBox(height: height * 0.03),
