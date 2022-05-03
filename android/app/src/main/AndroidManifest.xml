@@ -7,7 +7,7 @@
    <application
         android:label="cherub"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <meta-data android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyDuAZHCWEGu5iZAeuTO13qU_qmr6Xijc9o"/>
         <activity

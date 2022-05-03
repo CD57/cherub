@@ -1,5 +1,5 @@
 name: cherub
-description: A new Flutter project.
+description: Final Year Project - Date Safety Application.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -76,6 +76,10 @@ dev_dependencies:
   # rules and activating additional ones
   flutter_lints: ^1.0.0
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/CherubIcon.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

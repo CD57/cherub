@@ -31,8 +31,9 @@ class AuthProvider extends ChangeNotifier {
     _dbService = GetIt.instance.get<DatabaseService>();
     _storageService = GetIt.instance.get<StorageService>();
     _notificationService = GetIt.instance.get<NotificationService>();
-    
-    authUser.authStateChanges().listen((_user) {
+
+    authUser.authStateChanges().listen((_user) async {
+      await Future.delayed(const Duration(seconds: 3));
       if (_user != null && (authUser.currentUser?.uid == _user.uid)) {
         if (kDebugMode) {
           print("auth_provider.dart - AuthProvider() - User Found");

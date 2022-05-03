@@ -1,7 +1,6 @@
 //Displays and holds user search results
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cherub/models/user_model.dart';
-import 'package:cherub/pages/date_activities/date_setup_page.dart';
 import 'package:cherub/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';

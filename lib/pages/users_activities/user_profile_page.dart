@@ -166,6 +166,8 @@ class _UserProfileState extends State<UserProfilePage> {
     bool isProfileOwner = _auth.user.userId == widget.aUser.userId;
     if (!isProfileOwner) {
       return buildButton(text: "Report Account", function: reportAccount);
+    } else {
+      return Container();
     }
   }
 
